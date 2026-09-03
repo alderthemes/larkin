@@ -13,3 +13,14 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https:; frame-ancestors 'self' https://alderthemes.com https://www.alderthemes.com; base-uri 'self'; form-action 'self'
+
+# Hashed build output never changes: the filename carries a content hash, so a
+# new build is a new URL. Without this the host serves it with a short default
+# lifetime, every repeat visit revalidates every asset, and Lighthouse flags
+# "use efficient cache lifetimes" on a site that has nothing to revalidate.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts are hashed the same way and are the largest thing a first visit pulls.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
