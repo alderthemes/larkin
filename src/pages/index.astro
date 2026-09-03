@@ -6,6 +6,7 @@
  */
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
+import CroppedImage from "@studio/core/components/CroppedImage.astro";
 import type { ImageMetadata } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
@@ -129,13 +130,13 @@ const schema = [
     {
       hero && (
         <div class="hero__band">
-          <Image
+          <CroppedImage
             src={hero}
             alt={t("hero.imageAlt")}
-            widths={[900, 1400, 2000]}
+            wide={[3, 1]}
+            narrow={[4, 5]}
             sizes="100vw"
-            loading="eager"
-            fetchpriority="high"
+            eager
             class="hero__img"
           />
         </div>
@@ -304,17 +305,12 @@ const schema = [
   .hero__band {
     margin-top: var(--ts-space-16);
   }
+  /* The shape is cut into the file at build time — one crop for each screen,
+     one download. The CSS only has to stop it stretching. */
   .hero__img {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 3 / 1;
-    object-fit: cover;
-  }
-  @media (max-width: 767.98px) {
-    .hero__img {
-      aspect-ratio: 4 / 5;
-    }
   }
   .hero__location {
     margin-top: var(--ts-section-y);
