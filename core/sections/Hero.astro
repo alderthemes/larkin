@@ -17,6 +17,12 @@ interface Props {
   secondaryCta?: { label: string; href: string };
   /** "split": text beside media. "center": one centered column. */
   layout?: "split" | "center";
+  /**
+   * Which container width the hero sits in. It has to match whatever the
+   * section below it uses, or the page opens with two different left edges —
+   * which is exactly what the storefront shipped with until this prop existed.
+   */
+  width?: "bleed" | "default" | "narrow" | "wide";
   class?: string;
 }
 const {
@@ -26,13 +32,14 @@ const {
   primaryCta,
   secondaryCta,
   layout = "split",
+  width = "default",
   class: className = "",
 } = Astro.props;
 const hasMedia = Astro.slots.has("media");
 ---
 
 <section class:list={["ts-hero", `ts-hero--${layout}`, className]}>
-  <Container>
+  <Container size={width}>
     <div class="ts-hero__grid">
       <div class="ts-hero__content">
         {eyebrow && <p class="ts-hero__eyebrow">{eyebrow}</p>}
@@ -74,17 +81,29 @@ const hasMedia = Astro.slots.has("media");
   }
   .ts-hero__grid {
     display: grid;
-    gap: var(--ts-space-10);
+    gap: var(--ts-hero-gap, var(--ts-space-10));
     align-items: center;
   }
   .ts-hero--split .ts-hero__grid {
     grid-template-columns: 1fr;
   }
+  /* The split is a custom property, not a rule to be overridden. A page that
+     wanted a different ratio used to write `.my-hero :global(.ts-hero__grid)`,
+     which loses on specificity to this scoped rule — silently, since the page
+     still renders, just not at the ratio the author wrote. The storefront
+     carried such a dead override for two revisions. Set --ts-hero-split (and
+     --ts-hero-gap) on the section instead; custom properties inherit and there
+     is nothing to win.
+
+     minmax(0, …) in the default stops wide media — a code panel, a table —
+     from pushing its column past its share of the grid; a custom ratio should
+     keep that. */
   @media (min-width: 1024px) {
     .ts-hero--split .ts-hero__grid {
-      /* minmax(0, …) stops wide media — a code panel, a table — from
-         pushing its column past its share of the grid */
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-columns: var(
+        --ts-hero-split,
+        minmax(0, 1.1fr) minmax(0, 0.9fr)
+      );
     }
   }
   .ts-hero--center .ts-hero__content {

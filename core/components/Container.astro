@@ -1,18 +1,29 @@
 ---
 /**
- * Container — centres page content and supplies the horizontal padding.
- * Width comes from a token (--ts-container-max); a template may override it.
+ * Container — supplies the page's horizontal gutter, and optionally a maximum
+ * width.
+ *
+ * The gutter comes from one token (--ts-container-pad) and never varies by
+ * size, so two sections using different sizes still start at the same x on a
+ * narrow screen. Width is what the size chooses.
  */
 interface Props {
   /**
+   * "bleed" is the sheet: no maximum at all, gutter only. It is the storefront
+   * default, because the thing being sold is a screenshot and every pixel of
+   * dead gutter is a screenshot rendered smaller than it needed to be.
+   *
    * "prose" is a reading column, not a layout width: use it for a block that
-   * is mostly sentences. The others are layout.
+   * is mostly sentences. "narrow", "default" and "wide" are layout, and a
+   * page that mixes them with "bleed" gets a ragged left edge — pick one
+   * family per page and let a reading measure be the exception.
    */
-  size?: "default" | "narrow" | "wide" | "prose";
+  size?: "bleed" | "default" | "narrow" | "wide" | "prose";
   class?: string;
 }
 const { size = "default", class: className = "" } = Astro.props;
 const WIDTHS = {
+  bleed: "none",
   prose: "var(--ts-prose-max)",
   narrow: "48rem",
   wide: "80rem",
@@ -30,10 +41,5 @@ const maxWidth = WIDTHS[size] ?? WIDTHS.default;
     width: 100%;
     margin-inline: auto;
     padding-inline: var(--ts-container-pad);
-  }
-  @media (min-width: 640px) {
-    .ts-container {
-      padding-inline: var(--ts-space-6);
-    }
   }
 </style>

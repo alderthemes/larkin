@@ -276,14 +276,23 @@
 
   /* Section rhythm and container */
   --ts-section-y:      var(--ts-space-20);
-  --ts-container-max:  72rem;   /* 1152px */
+  /* The layout column for a template. 72rem (1152px) was a 2015 number: on a
+     1920px display it leaves 384px of dead margin on each side, and the site
+     reads as a phone layout that stopped growing. Measured against the
+     catalogs this repo is judged next to, the working figure is 1600px, with
+     the reading measure staying where it is — wide layout, narrow prose, and
+     the two are not the same decision.
+     A storefront that sells screenshots does not read this token at all: it
+     runs full-bleed, because every pixel of dead margin is a smaller render
+     of the thing being sold. */
+  --ts-container-max:  100rem;  /* 1600px */
   /* A reading column is not a layout column. Left to the container, body copy
      runs to eighty-odd characters and the eye loses the line return; 34rem
      lands between sixty and seventy at the body size, which is where reading
      speed peaks. Any block that is mostly sentences gets this, not the
      container width. */
   --ts-prose-max:      34rem;   /* 544px, roughly 66 characters */
-  --ts-container-pad:  var(--ts-space-4); /* 768px and up: space-8, set below */
+  --ts-container-pad:  var(--ts-space-5); /* steps to 8 / 10 / 12, set below */
 
   /* ---------- S: Radius ---------- */
   /* Two corner sizes and a pill. The primitive scale still holds five steps
@@ -401,12 +410,26 @@
   --ts-c-section-eyebrow-tracking: var(--ts-tracking-wide);
 }
 
-/* Gutter grows with the viewport: 16 -> 32 -> 40px, all from the scale */
-@media (min-width: 768px) {
+/* Gutter grows with the viewport: 20 -> 32 -> 40 -> 48px, all from the scale.
+   This is the sheet's only edge value and Container is the only thing that
+   reads it, so a section that sets its own horizontal padding is a section
+   whose left edge will not line up with the one above it. That is not
+   hypothetical: the storefront hero used the default container while the
+   filter row directly under it used the wide one, and two rows of the same
+   page started at different x. The gutter is the constant now; the width is
+   what varies.
+
+   The first step lands at 640 rather than 768 on purpose. By 640 the layout is
+   already two columns, and a 16px gutter under a two-column grid reads as a
+   phone layout stretched rather than as a small-screen layout. */
+@media (min-width: 640px) {
   :root { --ts-container-pad: var(--ts-space-8); }
 }
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
   :root { --ts-container-pad: var(--ts-space-10); }
+}
+@media (min-width: 1440px) {
+  :root { --ts-container-pad: var(--ts-space-12); }
 }
 
 /* Reduced-motion preference is honored everywhere, without exception */
