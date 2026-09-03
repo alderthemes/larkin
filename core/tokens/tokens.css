@@ -58,7 +58,11 @@
   --ts-p-color-neutral-950: #0f0d0c;
 
   /* ---------- P: Color — status ---------- */
-  --ts-p-color-success:      #15803d;
+  /* AA: 6.2:1 üzeri her tema yüzeyinde. Eski #15803d, larkin'ın krem
+     zemininde 4.37:1 kalıyordu — eşiğin altında. Fark hiç görülmemişti,
+     çünkü rengi kullanan tek öğe (açık/kapalı rozeti) CSP tarafından
+     bloklanan bir script'e bağlıydı ve hiç render edilmiyordu. */
+  --ts-p-color-success:      #166534;
   --ts-p-color-success-soft: #f0fdf4;
   --ts-p-color-warning:      #a16207;
   --ts-p-color-warning-soft: #fefce8;
