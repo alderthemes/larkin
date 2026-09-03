@@ -16,7 +16,15 @@ export type Locale = "en" | "tr";
 export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALES: Locale[] = ["en", "tr"];
 
-export type Dict = { [key: string]: string | Dict };
+/**
+ * A dictionary is nested strings, and it may also hold an array of them.
+ * Most interface copy is a sentence, but some of it is a list — a set of
+ * house rules, the things a template says it does not have — and splitting a
+ * list on a delimiter inside a JSON string is how those end up untranslatable.
+ * `t()` still resolves strings only; a template reads the array off the
+ * dictionary object, or addresses one entry by index ("about.notes.0").
+ */
+export type Dict = { [key: string]: string | string[] | Dict };
 
 function lookup(dict: Dict, key: string): string | undefined {
   const parts = key.split(".");

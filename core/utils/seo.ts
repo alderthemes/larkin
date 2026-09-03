@@ -122,9 +122,112 @@ export function medicalClinicSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("MedicalClinic", input);
 }
 
-/** Hotels — the sector queued next */
-export function hotelSchema(input: LocalBusinessInput) {
-  return baseLocalBusiness("Hotel", input);
+export interface HotelInput extends LocalBusinessInput {
+  numberOfRooms?: number;
+  /** "16:00" */
+  checkinTime?: string;
+  /** "11:00" */
+  checkoutTime?: string;
+  /** Free text rather than a boolean: "dogs in two ground-floor rooms" is a
+   *  better answer than yes, and the property accepts a string. */
+  petsAllowed?: string | boolean;
+  /** What the house has, and what it does not. A false entry is a claim too:
+   *  a guest searching for step-free access is served by an explicit no. */
+  amenities?: { name: string; value: boolean }[];
+}
+
+/**
+ * Hotels, inns and guesthouses. The check-in and check-out times are here
+ * rather than in prose because they are the first thing an answer engine is
+ * asked for, and the amenity list carries its false entries on purpose.
+ */
+export function hotelSchema(input: HotelInput) {
+  const schema = baseLocalBusiness("Hotel", input);
+  if (input.numberOfRooms) schema.numberOfRooms = input.numberOfRooms;
+  if (input.checkinTime) schema.checkinTime = input.checkinTime;
+  if (input.checkoutTime) schema.checkoutTime = input.checkoutTime;
+  if (input.petsAllowed !== undefined) schema.petsAllowed = input.petsAllowed;
+  if (input.amenities?.length) {
+    schema.amenityFeature = input.amenities.map((a) => ({
+      "@type": "LocationFeatureSpecification",
+      name: a.name,
+      value: a.value,
+    }));
+  }
+  return schema;
+}
+
+export interface HotelRoomInput {
+  name: string;
+  description?: string;
+  url?: string;
+  image?: string;
+  /** How many people sleep in it at the quoted rate. */
+  occupancy?: number;
+  floorSizeSqm?: number;
+  bed?: { type: string; count?: number };
+  amenities?: string[];
+  /** The lowest nightly rate, matching the "from" price on the page. */
+  minPrice: number;
+  priceCurrency?: string;
+  /** The hotel this room belongs to. */
+  hotelName?: string;
+}
+
+/**
+ * One room type.
+ *
+ * `offers.availability` is deliberately absent. A static site does not know
+ * what is free tonight, and a schema that claims InStock on a room that is
+ * booked is worse than no schema: it produces a result the guest cannot act
+ * on and a hotel that has to apologize for it. The price is published as a
+ * minimum, which is what the page says too.
+ */
+export function hotelRoomSchema(input: HotelRoomInput) {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "HotelRoom",
+    name: input.name,
+  };
+  if (input.description) schema.description = input.description;
+  if (input.url) schema.url = input.url;
+  if (input.image) schema.image = input.image;
+  if (input.hotelName) {
+    schema.containedInPlace = { "@type": "Hotel", name: input.hotelName };
+  }
+  if (input.occupancy) {
+    schema.occupancy = { "@type": "QuantitativeValue", maxValue: input.occupancy };
+  }
+  if (input.floorSizeSqm) {
+    schema.floorSize = {
+      "@type": "QuantitativeValue",
+      value: input.floorSizeSqm,
+      unitCode: "MTK",
+    };
+  }
+  if (input.bed) {
+    schema.bed = {
+      "@type": "BedDetails",
+      typeOfBed: input.bed.type,
+      ...(input.bed.count ? { numberOfBeds: input.bed.count } : {}),
+    };
+  }
+  if (input.amenities?.length) {
+    schema.amenityFeature = input.amenities.map((name) => ({
+      "@type": "LocationFeatureSpecification",
+      name,
+      value: true,
+    }));
+  }
+  schema.offers = {
+    "@type": "Offer",
+    priceSpecification: {
+      "@type": "PriceSpecification",
+      minPrice: input.minPrice,
+      priceCurrency: input.priceCurrency ?? "EUR",
+    },
+  };
+  return schema;
 }
 
 /* ---------------- Menu schema (Restaurant dikeyi) ---------------- */
