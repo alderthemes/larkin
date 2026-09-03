@@ -1,9 +1,11 @@
 ---
 /**
- * MenuList — kategorili menü listesi (ui-spec §4.6).
- * Tablo değil liste: sol ad + açıklama, sağ fiyat + etiketler.
- * Sezonluk öğeler accent rozetle işaretlenir (cafe kurulu: sezonluk döngü
- * cafe'nin nabzıdır). Boş kategori sessizce kaybolmaz, boş durum metni gösterir.
+ * MenuList — the menu, grouped by category.
+ * A list rather than a table: name and description on the left, price and
+ * tags on the right. Seasonal items carry an accent badge, because the
+ * seasonal rotation is what regulars come back to check. An empty category
+ * does not vanish silently — it shows an empty state, so a mistake in the
+ * content is visible rather than invisible.
  */
 import type { CollectionEntry } from "astro:content";
 import { t } from "../lib/site";
@@ -12,9 +14,9 @@ type MenuEntry = CollectionEntry<"menu">;
 
 interface Props {
   items: MenuEntry[];
-  /** Gösterilecek kategori sırası; verilmezse içerikte geçen sıra kullanılır */
+  /** Category order. Falls back to the order the content appears in. */
   categories?: string[];
-  /** Kategori başlıklarına id ver (sticky kategori nav'ı için) */
+  /** Give category headings an id, so the sticky nav can jump to them */
   withAnchors?: boolean;
   headingLevel?: "h2" | "h3";
   class?: string;
@@ -94,14 +96,17 @@ const price = (value: number, currency: string) =>
   .menu-list__group {
     scroll-margin-top: calc(var(--ts-c-nav-height, 64px) + var(--ts-space-16));
   }
+  /* A narrowed small capital, not a second display heading. At 31px the
+     category was the same size as the section title above it and the page had
+     two headings competing for the same job. */
   .menu-list__category {
-    margin: 0 0 var(--ts-space-5);
-    font-family: var(--ts-font-display);
-    font-size: var(--ts-text-2xl);
-    font-weight: var(--ts-weight-semibold);
-    letter-spacing: var(--ts-tracking-tight);
-    line-height: var(--ts-leading-snug);
-    color: var(--ts-color-primary-900);
+    margin: 0 0 var(--ts-space-4);
+    font-size: var(--larkin-label-size);
+    font-weight: var(--ts-weight-medium);
+    font-stretch: var(--larkin-label-width);
+    letter-spacing: var(--larkin-label-tracking);
+    text-transform: uppercase;
+    color: var(--ts-text-subtle);
     padding-bottom: var(--ts-space-3);
     border-bottom: 1px solid var(--ts-border);
   }
@@ -116,23 +121,22 @@ const price = (value: number, currency: string) =>
     margin: 0;
     padding: 0;
   }
+  /* The price sits at the column edge with an open corridor between it and
+     the name. That is the arrangement for a menu of short entries; the
+     restaurant theme, whose dishes carry two lines of description each, sets
+     its prices against the name instead. Neither uses a leader of dots. */
   .menu-list__item {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: var(--ts-space-6);
-    padding: var(--ts-space-4) var(--ts-space-3);
-    border-radius: var(--ts-radius-md);
+    gap: var(--ts-space-8);
+    padding: var(--ts-space-4) 0;
     border-bottom: 1px solid var(--ts-border);
   }
   .menu-list__item:last-child {
     border-bottom: none;
   }
-  @media (hover: hover) {
-    .menu-list__item:hover {
-      background: var(--ts-surface-alt);
-    }
-  }
+
   .menu-list__body {
     display: flex;
     flex-direction: column;
@@ -141,28 +145,31 @@ const price = (value: number, currency: string) =>
   .menu-list__name {
     margin: 0;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     flex-wrap: wrap;
-    gap: var(--ts-space-2);
+    gap: var(--ts-space-3);
     font-size: var(--ts-text-lg);
-    font-weight: var(--ts-weight-semibold);
-    color: var(--ts-color-primary-900);
+    font-weight: var(--ts-weight-medium);
+    color: var(--ts-text);
   }
+  /* The one place the terracotta appears. The seasonal rotation is what a
+     regular is scanning the menu for, so it is what earns the colour — and it
+     works as a mark rather than as a filled chip precisely because nothing
+     else on the page is coloured. */
   .menu-list__badge {
-    font-size: var(--ts-text-xs);
-    font-weight: var(--ts-weight-semibold);
-    letter-spacing: var(--ts-tracking-wide);
+    font-size: var(--larkin-label-size);
+    font-weight: var(--ts-weight-medium);
+    font-stretch: var(--larkin-label-width);
+    letter-spacing: var(--larkin-label-tracking);
     text-transform: uppercase;
-    background: var(--ts-color-accent-600);
-    color: var(--ts-color-on-accent);
-    padding: 2px var(--ts-space-2);
-    border-radius: var(--ts-radius-sm);
+    color: var(--ts-color-accent-600);
   }
   .menu-list__desc {
     margin: 0;
     font-size: var(--ts-text-sm);
+    line-height: var(--ts-leading-body);
     color: var(--ts-text-muted);
-    max-width: 58ch;
+    max-width: var(--ts-prose-max);
   }
   .menu-list__tags {
     list-style: none;
@@ -172,20 +179,21 @@ const price = (value: number, currency: string) =>
     margin: var(--ts-space-1) 0 0;
     padding: 0;
   }
+  /* A note, not a chip. A filled box around "Decaf available" gives it the
+     weight of a promotion; set as quiet type it reads as what it is. */
   .menu-list__tag {
     font-size: var(--ts-text-xs);
-    color: var(--ts-color-primary-700);
-    background: var(--ts-surface-alt);
-    border: 1px solid var(--ts-border);
-    border-radius: var(--ts-radius-sm);
-    padding: 2px var(--ts-space-2);
+    color: var(--ts-text-subtle);
+  }
+  .menu-list__tag + .menu-list__tag::before {
+    content: "·";
+    margin-inline-end: var(--ts-space-2);
   }
   .menu-list__price {
     margin: 0;
     flex-shrink: 0;
     font-size: var(--ts-text-base);
-    font-weight: var(--ts-weight-medium);
     font-variant-numeric: tabular-nums;
-    color: var(--ts-color-primary-700);
+    color: var(--ts-text-muted);
   }
 </style>

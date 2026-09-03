@@ -2,9 +2,9 @@ import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
 /**
- * menu — kategorili menü collection'ı.
- * Cafe menüsü küçük ve döngüseldir: sezonluk öğeler `seasonal: true` ile
- * işaretlenir ve listede rozetle öne çıkar. Yeni ürün eklemek = yeni .md dosyası.
+ * menu — the menu collection, grouped by category.
+ * A cafe menu is small and rotates: mark an item `seasonal: true` and it
+ * carries a badge in the list. Adding a drink is adding a .md file.
  */
 const menu = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/menu" }),
@@ -13,12 +13,12 @@ const menu = defineCollection({
     description: z.string().default(""),
     price: z.number().positive(),
     currency: z.string().default("USD"),
-    /** Kategori listesi büyüyecekse enum'u genişlet; i18n karşılıkları
-        src/i18n/*.json "menu.categories" altındadır. */
+    /** To add a category, extend this enum and add its label under
+        "menu.categories" in each src/i18n/*.json file. */
     category: z.enum(["espresso", "brew", "food", "seasonal"]),
     /** plant-based / vegetarian / gluten-free / decaf */
     tags: z.array(z.string()).default([]),
-    /** Sezonluk rozeti — menünün nabzı (cafe kurulu, G0) */
+    /** Seasonal badge — the part of the menu regulars come back to check */
     seasonal: z.boolean().default(false),
     order: z.number().int().default(100),
     available: z.boolean().default(true),
@@ -27,10 +27,10 @@ const menu = defineCollection({
 });
 
 /**
- * locations — şube collection'ı (G0 kararı: çoklu şube BAŞTAN desteklenir).
- * Tek dosya varsa site tek şubeli görünür; ikinci dosya eklenince ana sayfa
- * "tüm şubeler" bağlantısı açar ve iletişim sayfası kart grid'ine döner.
- * Kod değişikliği gerekmez.
+ * locations — the shop collection. Multiple locations are supported from
+ * the start rather than retrofitted. With one file the site reads as a
+ * single shop; add a second and the home page grows an "all locations"
+ * link and the contact page becomes a grid of cards. No code changes.
  */
 const locations = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/locations" }),
@@ -42,9 +42,9 @@ const locations = defineCollection({
     postalCode: z.string(),
     addressCountry: z.string().default("US"),
     phone: z.string().optional(),
-    /** Harita bağlantısı — "Get directions" butonunun hedefi */
+    /** Map link — where the "Get directions" button goes */
     mapUrl: z.string().url().optional(),
-    /** Haftalık saatler; schema.org openingHoursSpecification buradan üretilir */
+    /** Weekly hours. schema.org openingHoursSpecification is built from this. */
     hours: z
       .array(
         z.object({
@@ -54,18 +54,18 @@ const locations = defineCollection({
         })
       )
       .default([]),
-    /** "Çalışılabilir mi?" bilgisi — dürüst cevap güven kazandırır (cafe kurulu) */
+    /** The "can I work here?" facts. An honest no is still an answer. */
     wifi: z.boolean().default(true),
     outlets: z.boolean().default(true),
     laptopFriendly: z.boolean().default(true),
-    /** Ana şube: ana sayfa kartı ve schema.org bu kaydı kullanır */
+    /** The main shop: the home page card and the schema.org entry use it */
     primary: z.boolean().default(false),
     order: z.number().int().default(100),
   }),
 });
 
 /**
- * faq — SSS collection'ı. FAQPage schema'ya otomatik bağlanır;
+ * faq — the questions collection. Wired into FAQPage schema automatically,
  * GEO'nun ana yemi (docs/seo-geo-playbook.md).
  */
 const faq = defineCollection({
@@ -78,8 +78,9 @@ const faq = defineCollection({
 });
 
 /**
- * legal — yasal sayfalar (privacy/terms). Gövde markdown'dır; alıcı kendi
- * metniyle değiştirir (dokümantasyonda hukuki uyarı notu vardır).
+ * legal — the privacy and terms pages. The body is markdown and is meant to
+ * be replaced with your own text; the shipped copy is a starting structure,
+ * not legal advice. See docs/README.md before publishing it.
  */
 const legal = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/legal" }),

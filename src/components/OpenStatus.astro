@@ -1,11 +1,12 @@
 ---
 /**
- * OpenStatus — "Today: 07:00 - 18:00 · Open now" satırı.
+ * OpenStatus — the "Today: 07:00 - 18:00 · Open now" line.
  *
- * Cafe ziyaretçisinin ekranda ilk aradığı bilgi (research.md §4, AK-1).
- * Sunucuda gerçek bir fallback basılır (JS kapalıysa da doğru bilgi görünür);
- * `/open-status.js` yalnızca BUGÜNÜN aralığını ve açık/kapalı durumunu
- * ziyaretçinin saatine göre günceller.
+ * This is the first thing a cafe visitor looks for, so it is rendered on
+ * the server with a real fallback: with JavaScript off the line still shows
+ * correct opening information. `/open-status.js` only narrows it to today's
+ * range and the open or closed state, and it has to run in the browser
+ * because "today" depends on the visitor's clock, not on the build's.
  */
 import { t } from "../lib/site";
 import { weeklyRanges, weeklyMinutes, type Location } from "../lib/locations";
@@ -18,7 +19,8 @@ const { location, class: className = "" } = Astro.props;
 
 const ranges = weeklyRanges(location);
 const minutes = weeklyMinutes(location);
-/* Fallback: tüm hafta aynıysa o aralık, değilse genel açılış cümlesi. */
+/* Fallback: the single range when every day matches, otherwise a general
+   opening sentence. */
 const distinct = [...new Set(ranges.filter(Boolean))];
 const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback");
 ---
@@ -38,7 +40,7 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
   </span>
 </p>
 
-<!-- CSP: bu script inline OLAMAZ (public/_headers → script-src 'self') -->
+{/* CSP: bu script inline OLAMAZ (public/_headers → script-src 'self') */}
 <script type="module" src="/open-status.js"></script>
 
 <style>

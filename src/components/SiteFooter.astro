@@ -1,7 +1,8 @@
 ---
 /**
- * SiteFooter — marka, gezinme, saatler ve şube(ler) (ui-spec §4.10).
- * Şube listesi collection'dan gelir: ikinci şube eklendiğinde footer da
+ * SiteFooter — brand, navigation, hours and locations.
+ * The location list comes from the collection, so adding a second shop
+ * updates the footer as well as
  * kendini uyarlar (AK-5).
  */
 import Container from "@studio/core/components/Container.astro";
@@ -12,7 +13,8 @@ const year = new Date().getFullYear();
 const locations = await getLocations();
 const primary = locations.find((l) => l.data.primary) ?? locations[0];
 
-/* Saat satırları: aynı aralığa sahip ardışık günler tek satırda toplanır. */
+/* Consecutive days sharing a range collapse into one line, the way a shop
+   writes its hours on the door. */
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const ORDER = [1, 2, 3, 4, 5, 6, 0];
 const ranges = primary ? weeklyRanges(primary) : [];

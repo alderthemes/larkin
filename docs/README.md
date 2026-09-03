@@ -4,7 +4,7 @@ A complete five-page café website: a seasonal menu, one or many locations,
 honest workspace information, FAQ and legal pages. Built with Astro 7,
 Tailwind CSS 4 and TypeScript. No JavaScript framework, no build-time surprises.
 
-**This theme is free.** Same quality bar as the paid catalogue, same license
+**This theme is free.** Same quality bar as the paid catalog, same license
 terms for client work. If your client needs table reservations and a deeper
 multi-course menu, that is Bramley.
 

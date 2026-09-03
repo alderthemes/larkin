@@ -1,11 +1,12 @@
 ---
 /**
- * GalleryStrip — yatay kaydırmalı mekan şeridi (ui-spec §4.7).
+ * GalleryStrip — a horizontally scrolling strip showing the room.
  *
- * Görseller `src/assets/images/` içinden konvansiyonla bulunur. Bir dosya
- * yoksa o kart sessizce atlanır; hiç görsel yoksa BÖLÜM HİÇ RENDER EDİLMEZ.
- * Kırık görsel veya "foto buraya gelecek" kutusu imkânsızdır — plug-and-play
- * standardı görünür placeholder'ı yasaklar.
+ * Images are found by convention in `src/assets/images/`. A missing file
+ * drops its card; if no image resolves at all the whole section stops
+ * rendering. That makes a broken image or a "photo goes here" box
+ * impossible, which matters for a template: the site has to look finished
+ * from the first minute, including before you have replaced the photography.
  */
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
@@ -18,7 +19,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>("../assets/images/*.
 });
 const pick = (file: string) => images[`../assets/images/${file}.jpg`]?.default;
 
-/* Sıra art direction listesine göre (brand-direction.md §4.1) */
+/* Order follows the art direction: room, bar, then detail */
 const SHOTS = [
   { file: "02-bar", altKey: "bar" },
   { file: "03-latte", altKey: "latte" },
@@ -82,18 +83,26 @@ const shots = SHOTS.map((s) => ({ ...s, img: pick(s.file) })).filter((s) => s.im
     scroll-snap-align: start;
     flex: 0 0 auto;
   }
+  /* Portrait, and the ratio is declared rather than implied by a height in
+     pixels. Two things follow: the row of images reserves its space before
+     they load, so nothing below it jumps, and a strip of upright frames reads
+     as photography rather than as thumbnails. A room, a cup and a face all
+     sit better in a tall frame than a wide one. */
   .gallery__img {
     display: block;
     width: 240px;
-    height: 170px;
+    aspect-ratio: 3 / 4;
+    height: auto;
     object-fit: cover;
-    border-radius: var(--ts-radius-lg);
+    /* Square, like the full-width band above. Surfaces in this theme are
+       rounded and photographs are not: one rounded image beside one squared
+       one is the difference that reads as an oversight. */
+    border-radius: 0;
     background: var(--ts-surface-alt);
   }
   @media (min-width: 768px) {
     .gallery__img {
       width: 280px;
-      height: 200px;
     }
     .gallery__scroller {
       padding-inline: max(var(--ts-container-pad), calc((100vw - var(--ts-container-max)) / 2));

@@ -1,7 +1,8 @@
 ---
 /**
- * Ana sayfa — cafe ziyaretçisinin ilk 10 saniyesi (research.md §4):
- * nerede, açık mı, ne var, çalışılır mı. Konum kartı İLK EKRANDA.
+ * Home — built around the first ten seconds of a cafe visit: where it is,
+ * whether it is open, what they serve, and whether you can work there. The
+ * location card sits above the fold for that reason.
  */
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
@@ -56,7 +57,14 @@ const schema = [
 ---
 
 <BaseLayout title={t("hero.title")} description={t("hero.lead")} schema={schema}>
-  <!-- Hero: mekan hissi + konum kartı ilk ekranda (ui-spec §5.2) -->
+  {/* Hero: a statement, then the room.
+
+      The first screen is type and nothing else. A cafe visitor is standing on
+      the pavement deciding whether to walk in, so the four things they came
+      for — the name, where it is, whether it is open, and how to get there —
+      are readable before an image has loaded. The photograph earns its place
+      immediately after, running the full width of the screen, where it
+      answers the fifth question: what it feels like inside. */}
   <section class="hero">
     <Container>
       <div class="hero__grid">
@@ -64,10 +72,13 @@ const schema = [
           <p class="hero__eyebrow">{t("hero.eyebrow")}</p>
           <h1 class="hero__title">{t("hero.title")}</h1>
           <p class="hero__lead">{t("hero.lead")}</p>
+        </div>
 
-          {/* AK-1: "nerede ve açık mı" ilk ekranda olmalı. 390×844'te tam
-              konum kartı katlamanın altında kalıyordu; bu iki satırlık şerit
-              kritik cevabı hero'nun içine taşır, kart detayı aşağıda kalır. */}
+        <div class="hero__side">
+
+          {/* Where it is and whether it is open, on the first screen and
+              above the photograph. This is the answer a cafe visitor came
+              for, and it should not depend on an image having loaded. */}
           {
             primary && (
               <div class="hero__meta">
@@ -77,6 +88,9 @@ const schema = [
             )
           }
 
+          {/* One filled action. The menu is a link: a visitor who wants the
+              menu will find a link, and a visitor who wants the shop should
+              not have to choose between two identical buttons. */}
           <div class="hero__actions">
             {
               primary?.data.mapUrl && (
@@ -91,45 +105,45 @@ const schema = [
                 </Button>
               )
             }
-            <Button href="/menu/" variant="secondary" size="lg">
-              {t("hero.secondaryCta")}
-            </Button>
+            <a class="hero__link" href="/menu/">{t("hero.secondaryCta")}</a>
           </div>
         </div>
-
-        {
-          hero && (
-            <div class="hero__media">
-              <Image
-                src={hero}
-                alt={t("hero.imageAlt")}
-                widths={[640, 960, 1280]}
-                sizes="(min-width: 1024px) 46rem, 100vw"
-                loading="eager"
-                fetchpriority="high"
-                class="hero__img"
-              />
-            </div>
-          )
-        }
       </div>
 
+      {/* With a single shop the hero strip is the location, and a card
+          underneath repeats the address and the open state word for word.
+          With more than one there is something to tell apart, so the cards
+          appear then. */}
       {
-        primary && (
+        locations.length > 1 && (
           <div class="hero__location">
             <LocationCard location={primary} headingLevel="h2" />
-            {locations.length > 1 && (
-              <p class="hero__all-locations">
-                <a href="/contact/">{t("location.viewAll")}</a>
-              </p>
-            )}
+            <p class="hero__all-locations">
+              <a href="/contact/">{t("location.viewAll")}</a>
+            </p>
           </div>
         )
       }
     </Container>
+
+    {
+      hero && (
+        <div class="hero__band">
+          <Image
+            src={hero}
+            alt={t("hero.imageAlt")}
+            widths={[900, 1400, 2000]}
+            sizes="100vw"
+            loading="eager"
+            fetchpriority="high"
+            class="hero__img"
+          />
+        </div>
+      )
+    }
   </section>
 
-  <!-- Menü öne çıkanları -->
+  {/* Menu highlights */}
   {
     featured.length > 0 && (
       <section class="featured">
@@ -160,7 +174,7 @@ const schema = [
 
   <GalleryStrip />
 
-  <!-- SSS -->
+  {/* SSS */}
   {
     faqs.length > 0 && (
       <section class="faq-section" id="faq">
@@ -178,7 +192,7 @@ const schema = [
     )
   }
 
-  <!-- İletişim kısayolu -->
+  {/* Contact shortcut */}
   <section class="say-hello">
     <Container>
       <div class="say-hello__inner">
@@ -198,78 +212,112 @@ const schema = [
 
 <style>
   .hero {
-    padding-block: var(--ts-space-10) var(--ts-section-y);
+    padding-top: var(--ts-space-16);
   }
   @media (min-width: 768px) {
     .hero {
-      padding-block: var(--ts-space-16) var(--ts-section-y);
+      padding-top: var(--ts-space-24);
     }
   }
+  /* The statement and the practical detail sit side by side, unevenly. The
+     heading gets the room; the address, the open state and the way in get a
+     narrower column so they read as a block rather than as a tail on the end
+     of the paragraph. */
   .hero__grid {
     display: grid;
     gap: var(--ts-space-10);
-    align-items: center;
   }
-  @media (min-width: 1024px) {
+  @media (min-width: 900px) {
     .hero__grid {
-      grid-template-columns: 1fr 1.1fr;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
       gap: var(--ts-space-16);
+      align-items: end;
     }
   }
   .hero__eyebrow {
-    margin: 0 0 var(--ts-space-3);
-    font-size: var(--ts-text-xs);
-    font-weight: var(--ts-weight-semibold);
-    letter-spacing: var(--ts-tracking-wide);
+    margin: 0 0 var(--ts-space-4);
+    font-size: var(--larkin-label-size);
+    font-weight: var(--ts-weight-medium);
+    font-stretch: var(--larkin-label-width);
+    letter-spacing: var(--larkin-label-tracking);
     text-transform: uppercase;
-    color: var(--ts-color-accent-600);
+    color: var(--ts-text-subtle);
   }
   .hero__title {
     margin: 0;
     font-family: var(--ts-font-display);
     font-size: var(--ts-text-display);
-    font-weight: var(--ts-weight-bold);
+    font-weight: var(--ts-weight-medium);
     line-height: var(--ts-leading-display);
     letter-spacing: var(--ts-tracking-tight);
-    color: var(--ts-color-primary-900);
+    color: var(--ts-text);
+    max-width: 16ch;
+    text-wrap: balance;
   }
   .hero__lead {
-    margin: var(--ts-space-5) 0 0;
+    margin: var(--ts-space-6) 0 0;
     font-size: var(--ts-text-lg);
-    line-height: var(--ts-leading-body);
+    line-height: var(--ts-leading-snug);
     color: var(--ts-text-muted);
-    max-width: 46ch;
+    max-width: var(--ts-prose-max);
   }
-  .hero__meta {
-    margin-top: var(--ts-space-5);
+  /* A rule above, not a bar beside. The keyline separates the practical block
+     from the sentence above it without pretending to be a card. */
+  .hero__side {
     display: flex;
     flex-direction: column;
-    gap: var(--ts-space-1);
-    padding-left: var(--ts-space-4);
-    border-left: 2px solid var(--ts-color-accent-400);
+  }
+  .hero__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-2);
+    padding-top: var(--ts-space-5);
+    border-top: 1px solid var(--ts-border-strong);
   }
   .hero__address {
     margin: 0;
     font-size: var(--ts-text-sm);
-    font-weight: var(--ts-weight-medium);
-    color: var(--ts-color-primary-700);
+    color: var(--ts-text-muted);
   }
   .hero__actions {
     margin-top: var(--ts-space-6);
     display: flex;
     flex-wrap: wrap;
-    gap: var(--ts-space-3);
+    align-items: center;
+    gap: var(--ts-space-6);
+  }
+  .hero__link {
+    color: var(--ts-text);
+    font-size: var(--ts-text-base);
+    text-decoration: underline;
+    text-underline-offset: 0.35em;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--ts-border-strong);
+    transition: text-decoration-color var(--ts-duration-fast) var(--ts-ease-out);
+  }
+  .hero__link:hover {
+    text-decoration-color: var(--ts-text);
+  }
+  /* Edge to edge. Inside the container the same photograph reads as an
+     illustration of the sentence above it; at full width it reads as the
+     room. */
+  .hero__band {
+    margin-top: var(--ts-space-16);
   }
   .hero__img {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 1;
     object-fit: cover;
-    border-radius: var(--ts-radius-xl);
+  }
+  @media (max-width: 767.98px) {
+    .hero__img {
+      aspect-ratio: 4 / 5;
+    }
   }
   .hero__location {
-    margin-top: var(--ts-space-12);
+    margin-top: var(--ts-section-y);
     display: flex;
     flex-direction: column;
     gap: var(--ts-space-3);

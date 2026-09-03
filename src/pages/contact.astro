@@ -1,7 +1,7 @@
 ---
 /**
- * İletişim — şube kart(lar)ı + haftalık saatler + form + harita slotu.
- * Çoklu şube: locations collection'ında ikinci dosya varsa grid'e döner (AK-5).
+ * Contact — location cards, the weekly hours, the form and a map slot.
+ * With a second file in the locations collection the cards become a grid.
  */
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -119,7 +119,7 @@ const schema = cafeSchema({
                 placeholder={t("contact.form.messagePlaceholder")}></textarea>
             </div>
 
-            <!-- Honeypot: botlar doldurur, insanlar görmez (güvenlik standardı) -->
+            {/* Honeypot: a bot fills this in, a person never sees it */}
             <div class="contact__hp" aria-hidden="true">
               <label for="contact-company">Company</label>
               <input id="contact-company" name="company" type="text" tabindex="-1" autocomplete="off" />
@@ -130,8 +130,9 @@ const schema = cafeSchema({
         </div>
       </div>
 
-      <!-- Harita gömme alanı: alıcı kendi iframe'ini buraya koyar.
-           Boşken bölüm hiç render edilmez (görünür placeholder yok). -->
+      {/* Map slot: drop your own embed in here. While it is empty the
+           section does not render, so the page never shows a grey box
+           where a map should be. */}
     </Container>
   </section>
 </BaseLayout>

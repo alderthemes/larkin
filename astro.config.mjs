@@ -4,9 +4,11 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  // Alıcı kendi domain'ini buraya yazar. Demo deploy'da bu dosya DEĞİŞMEZ:
-  // Cloudflare build'inde SITE ortam değişkeni verilir (D-038). Alıcı SITE
-  // tanımlamaz, "example.com" görür ve kendi adresini yazmak zorunda kalır (D-019).
+  // Put your own domain here. The demo deployment does not edit this file:
+  // it passes a SITE environment variable at build time instead. If you set
+  // neither, the canonical tags read "example.com", which is deliberate —
+  // a wrong domain that looks right is worse than one that is obviously
+  // unset.
   site: process.env.SITE ?? "https://example.com",
   vite: {
     plugins: [tailwindcss()],

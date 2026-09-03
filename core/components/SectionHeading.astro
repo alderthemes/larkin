@@ -1,14 +1,14 @@
 ---
 /**
- * SectionHeading — eyebrow + başlık + alt metin üçlüsü.
- * Section'ların standart açılış bloğu; hizalama prop ile seçilir.
+ * SectionHeading — the eyebrow + title + subtitle trio.
+ * The standard opening block of a section; alignment is chosen by prop.
  */
 interface Props {
   eyebrow?: string;
   title: string;
   subtitle?: string;
   align?: "start" | "center";
-  /** Başlık etiketi — sayfa hiyerarşisine göre h1/h2/h3 */
+  /** Heading tag — h1/h2/h3, chosen to fit the page's heading hierarchy */
   level?: "h1" | "h2" | "h3";
   class?: string;
 }
@@ -42,11 +42,11 @@ const {
   }
   .ts-heading__eyebrow {
     margin: 0;
-    font-size: var(--ts-text-sm);
-    font-weight: var(--ts-weight-semibold);
-    letter-spacing: var(--ts-tracking-wide);
+    font-size: var(--ts-c-section-eyebrow-size);
+    font-weight: var(--ts-c-section-eyebrow-weight);
+    letter-spacing: var(--ts-c-section-eyebrow-tracking);
     text-transform: uppercase;
-    color: var(--ts-color-accent-600);
+    color: var(--ts-c-section-eyebrow-color);
   }
   .ts-heading__title {
     margin: 0;

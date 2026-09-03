@@ -1,7 +1,8 @@
 ---
 /**
- * BaseLayout — meta/OG, fontlar, schema.org JSON-LD ve site kabuğu.
- * Sayfalar `schema` prop'u ile kendi JSON-LD'sini geçirir.
+ * BaseLayout — meta and Open Graph tags, fonts, schema.org JSON-LD and the
+ * site shell. A page passes its own structured data through the `schema`
+ * prop.
  */
 import "../styles/global.css";
 import { buildTitle, jsonLd } from "@studio/core/utils/seo";
@@ -34,7 +35,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    <!-- Open Graph / Twitter -->
+    {/* Open Graph / Twitter */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={fullTitle} />
@@ -43,7 +44,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
     <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
 
-    <!-- Fontlar self-host edilir (@fontsource, global.css içinden) — dış istek yok -->
+    {/* Fonts are self-hosted through @fontsource, imported from global.css.
+        No request leaves the visitor's browser for a font file. */}
 
     {schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}
   </head>

@@ -1,8 +1,10 @@
 ---
 /**
- * Hero — sayfa açılış section'ı.
- * Metin + CTA'lar prop'la, görsel alanı slot'la gelir ("media" slot).
- * Tek baskın CTA ilkesi (Von Restorff): primary tek, secondary yardımcı.
+ * Hero — the opening section of a page.
+ * Text and calls to action arrive as props, the visual through the "media"
+ * slot. One dominant action only: a single primary button with the
+ * secondary kept quiet. Two buttons of equal weight read as no
+ * recommendation, and the visitor picks neither.
  */
 import Container from "../components/Container.astro";
 import Button from "../components/Button.astro";
@@ -13,7 +15,7 @@ interface Props {
   lead?: string;
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
-  /** "split": metin + media yan yana; "center": ortalanmış tek kolon */
+  /** "split": text beside media. "center": one centered column. */
   layout?: "split" | "center";
   class?: string;
 }
@@ -80,7 +82,8 @@ const hasMedia = Astro.slots.has("media");
   }
   @media (min-width: 1024px) {
     .ts-hero--split .ts-hero__grid {
-      /* minmax(0, …): uzun satırlı media (kod paneli, tablo) kolonu şişiremez */
+      /* minmax(0, …) stops wide media — a code panel, a table — from
+         pushing its column past its share of the grid */
       grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     }
   }
@@ -106,7 +109,7 @@ const hasMedia = Astro.slots.has("media");
   .ts-hero__title {
     margin: 0;
     font-family: var(--ts-font-display);
-    /* akışkan display ölçeği (T2): 3xl → 5xl, tek token */
+    /* fluid display scale, 3xl to 5xl, in a single token */
     font-size: var(--ts-text-display);
     line-height: var(--ts-leading-display);
     letter-spacing: var(--ts-tracking-tight);

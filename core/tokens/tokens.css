@@ -1,31 +1,33 @@
 /* =============================================================
    @studio/core — Design Tokens (single source of truth)
    -------------------------------------------------------------
-   3 KATMANLI MİMARİ (D-025):
+   Three layers, and the order matters:
 
-     1. PRIMITIVE  (--ts-p-*)  — Ham ölçekler, mutlak değerler.
-        Tema override etmez; sistemin referans veritabanı.
-     2. SEMANTIC   (--ts-*)    — Rol bazlı. Component'ler ve
-        tema override'ları BU katmanla çalışır.
-     3. COMPONENT  (--ts-c-*)  — Bileşen başına. Semantic'e bağlı;
-        nadiren override edilir, tema sözleşmesinde belirtilir.
+     1. PRIMITIVE  (--ts-p-*)  Raw scales and absolute values. A theme never
+        overrides these; they are the system's reference table.
+     2. SEMANTIC   (--ts-*)    Roles. Components read this layer and a theme
+        retheming the site overrides this layer. Nothing else.
+     3. COMPONENT  (--ts-c-*)  One group per component, resolved from the
+        semantic layer. Rarely overridden, and when it is, the theme says so.
 
-   Geriye dönük uyum: mevcut --ts-* adları KORUNDU. Tema override
-   kalıbı (global.css :root) DEĞİŞMEDİ — 2 canlı site görsel
-   olarak aynı kalır.
+   Retheming a site means rewriting semantic tokens in the theme's
+   `global.css :root` block. If you find yourself reaching for a primitive
+   from a component, the semantic layer is missing a role — add the role
+   rather than the shortcut, or the next theme inherits a color it cannot
+   change.
 
-   Ölçekler: ux-ai-pipeline-v2 referans katmanından:
-   spacing 4px base / type scale 1.25 (Major Third) / WCAG 2.1 AA.
+   Scales: 4px spacing base, a 1.25 (major third) type scale, and contrast
+   held to WCAG 2.1 AA throughout.
    ============================================================= */
 
 :root {
   /* ==========================================================
-     KATMAN 1 — PRIMITIVE (--ts-p-*)
-     Ham renk skalaları, tipografi değerleri, spacing birimleri.
-     Doğrudan component'te KULLANILMAZ; semantic katmana beslenir.
+     LAYER 1 — PRIMITIVE (--ts-p-*)
+     Raw color scales, typographic values, spacing units. Never used
+     directly by a component; they feed the semantic layer.
      ========================================================== */
 
-  /* ---------- P: Color — brand primary (nötr varsayılan) ---------- */
+  /* ---------- P: Color — brand primary (neutral default) ---------- */
   --ts-p-color-primary-50:  #f4f6f7;
   --ts-p-color-primary-100: #e3e8ea;
   --ts-p-color-primary-200: #c9d3d7;
@@ -58,10 +60,10 @@
   --ts-p-color-neutral-950: #0f0d0c;
 
   /* ---------- P: Color — status ---------- */
-  /* AA: 6.2:1 üzeri her tema yüzeyinde. Eski #15803d, larkin'ın krem
-     zemininde 4.37:1 kalıyordu — eşiğin altında. Fark hiç görülmemişti,
-     çünkü rengi kullanan tek öğe (açık/kapalı rozeti) CSP tarafından
-     bloklanan bir script'e bağlıydı ve hiç render edilmiyordu. */
+  /* Clears 6.2:1 on every theme surface. The previous #15803d fell to
+     4.37:1 on a cream background, under the threshold, and nobody saw it:
+     the only element using the color was an open/closed badge driven by a
+     script the content security policy was blocking, so it never rendered. */
   --ts-p-color-success:      #166534;
   --ts-p-color-success-soft: #f0fdf4;
   --ts-p-color-warning:      #a16207;
@@ -84,15 +86,15 @@
   --ts-p-text-2xl:  1.9375rem; /* 31px */
   --ts-p-text-3xl:  2.4375rem; /* 39px */
   --ts-p-text-4xl:  3.0625rem; /* 49px */
-  --ts-p-text-5xl:  3.8125rem; /* 61px — display/hero üst sınırı */
+  --ts-p-text-5xl:  3.8125rem; /* 61px — upper bound for display and hero */
 
   --ts-p-leading-tight: 1.15;
   --ts-p-leading-snug:  1.35;
   --ts-p-leading-body:  1.6;
-  --ts-p-leading-display: 1.05; /* ≥3xl display başlıklar */
+  --ts-p-leading-display: 1.05; /* display headings, 3xl and above */
 
-  --ts-p-tracking-tight: -0.02em; /* display başlık */
-  --ts-p-tracking-wide:  0.08em;  /* eyebrow / uppercase etiket */
+  --ts-p-tracking-tight: -0.02em; /* display headings */
+  --ts-p-tracking-wide:  0.08em;  /* eyebrow and uppercase labels */
 
   --ts-p-weight-regular:  400;
   --ts-p-weight-medium:   500;
@@ -126,7 +128,7 @@
   --ts-p-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
   --ts-p-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
 
-  /* ---------- P: Z-index katmanları ---------- */
+  /* ---------- P: Z-index layers ---------- */
   --ts-p-z-header:  10;
   --ts-p-z-sticky:  20;
   --ts-p-z-overlay: 40;
@@ -142,13 +144,13 @@
   --ts-p-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
   /* ==========================================================
-     KATMAN 2 — SEMANTIC (--ts-*)
-     Rol bazlı token'lar. Tema override'ları BU katmanda yapılır.
-     Primitive'lere referans verir; template'ler :root bloğunda
-     bu token'ları doğrudan override ederek temalanır.
+     LAYER 2 — SEMANTIC (--ts-*)
+     Role-based tokens. A theme overrides this layer and no other.
+     Values point at primitives; a template rethemes the site by
+     redeclaring these in its own :root block.
      ========================================================== */
 
-  /* ---------- S: Color — brand palette (tema override eder) ---------- */
+  /* ---------- S: Color — brand palette, overridden per theme ---------- */
   --ts-color-primary-50:  var(--ts-p-color-primary-50);
   --ts-color-primary-100: var(--ts-p-color-primary-100);
   --ts-color-primary-200: var(--ts-p-color-primary-200);
@@ -161,12 +163,12 @@
   --ts-color-primary-900: var(--ts-p-color-primary-900);
   --ts-color-primary-950: var(--ts-p-color-primary-950);
 
-  /* ---------- S: Color — accent (tema override eder) ---------- */
+  /* ---------- S: Color — accent, overridden per theme ---------- */
   --ts-color-accent-400: var(--ts-p-color-accent-400);
   --ts-color-accent-500: var(--ts-p-color-accent-500);
   --ts-color-accent-600: var(--ts-p-color-accent-600);
 
-  /* ---------- S: Color — neutral (nadiren override; sabit skala) ---------- */
+  /* ---------- S: Color — neutral, a fixed scale, rarely overridden ---------- */
   --ts-color-neutral-0:   var(--ts-p-color-neutral-0);
   --ts-color-neutral-50:  var(--ts-p-color-neutral-50);
   --ts-color-neutral-100: var(--ts-p-color-neutral-100);
@@ -190,18 +192,32 @@
   --ts-color-info:         var(--ts-p-color-info);
   --ts-color-info-soft:    var(--ts-p-color-info-soft);
 
-  /* ---------- S: Color roles (component'ler BUNLARI kullanır) ---------- */
+  /* ---------- S: Color roles — what components read ---------- */
   --ts-surface:        var(--ts-color-neutral-0);
   --ts-surface-alt:    var(--ts-color-neutral-50);
   --ts-surface-invert: var(--ts-color-neutral-900);
-  --ts-text:           var(--ts-color-neutral-900);
-  --ts-text-muted:     var(--ts-color-neutral-600);
-  --ts-text-invert:    var(--ts-color-neutral-50);
+  /* Three ink levels and no more. Measuring the catalog found eight to eleven
+     text colors on a single page: the semantic layer offered two, so every
+     component that needed a quieter caption invented one. A third named level
+     removes the reason to invent, and a page with exactly three reads as one
+     document rather than several pasted together. */
+  --ts-text:           var(--ts-color-neutral-900); /* primary */
+  --ts-text-muted:     var(--ts-color-neutral-600); /* secondary */
+  --ts-text-subtle:    var(--ts-color-neutral-400); /* tertiary: captions, meta */
+  /* The same three levels, reversed. A footer on a dark surface needs its own
+     ladder, and without one it reaches into the raw neutral scale — which is
+     how a theme with an olive ink ends up with grey type in its footer. */
+  --ts-text-invert:        var(--ts-color-neutral-50);
+  --ts-text-invert-muted:  var(--ts-color-neutral-300);
+  --ts-text-invert-subtle: var(--ts-color-neutral-400);
   --ts-border:         var(--ts-color-neutral-200);
   --ts-border-strong:  var(--ts-color-neutral-300);
+  /* The hairline on a dark surface. Without it a footer reaches for a raw
+     neutral and brings a second hue family onto the page with it. */
+  --ts-border-invert:  var(--ts-color-neutral-700);
 
-  /* "on-color" — dolgulu yüzeylerin üstündeki metin. Tema, primary/accent
-     skalasını değiştiriyorsa BUNLARI da doğrulamak zorundadır (≥4.5:1). */
+  /* "on-color": text sitting on a filled surface. A theme that changes the
+     primary or accent scale has to re-check these for 4.5:1 as well. */
   --ts-color-on-primary: var(--ts-color-neutral-0);
   --ts-color-on-accent:  var(--ts-color-neutral-0);
 
@@ -220,8 +236,9 @@
   --ts-text-3xl:  var(--ts-p-text-3xl);
   --ts-text-4xl:  var(--ts-p-text-4xl);
   --ts-text-5xl:  var(--ts-p-text-5xl);
-  /* akışkan display ölçeği: hero/section başlıkları 360→1440 arasında
-     3xl'den 5xl'e büyür; ara değer ölçek dışına çıkmaz (clamp uçları token) */
+  /* Fluid display scale: hero and section headings grow from 3xl to 5xl
+     between 360 and 1440px. Both clamp ends are tokens, so an intermediate
+     size can never land outside the scale. */
   --ts-text-display: clamp(var(--ts-text-3xl), 1.6rem + 2.6vw, var(--ts-text-5xl));
 
   --ts-leading-tight: var(--ts-p-leading-tight);
@@ -232,9 +249,15 @@
   --ts-tracking-tight: var(--ts-p-tracking-tight);
   --ts-tracking-wide:  var(--ts-p-tracking-wide);
 
+  /* Three weights render, not four. Body at 400, anything that has to hold
+     its own against body at 500, display at 700. The 600 step is kept as a
+     name so components do not all have to change, but it resolves to 500:
+     600 beside 700 is a difference nobody sees, and a page carrying four
+     weights reads as a page where hierarchy was set by bolding rather than by
+     size and space. Reach for the next size before the next weight. */
   --ts-weight-regular:  var(--ts-p-weight-regular);
   --ts-weight-medium:   var(--ts-p-weight-medium);
-  --ts-weight-semibold: var(--ts-p-weight-semibold);
+  --ts-weight-semibold: var(--ts-p-weight-medium);
   --ts-weight-bold:     var(--ts-p-weight-bold);
 
   /* ---------- S: Spacing ---------- */
@@ -251,25 +274,47 @@
   --ts-space-20: var(--ts-p-space-20);
   --ts-space-24: var(--ts-p-space-24);
 
-  /* section dikey boşluğu ve container */
+  /* Section rhythm and container */
   --ts-section-y:      var(--ts-space-20);
   --ts-container-max:  72rem;   /* 1152px */
-  --ts-container-pad:  var(--ts-space-4); /* ≥768px: space-8 (aşağıda) */
+  /* A reading column is not a layout column. Left to the container, body copy
+     runs to eighty-odd characters and the eye loses the line return; 34rem
+     lands between sixty and seventy at the body size, which is where reading
+     speed peaks. Any block that is mostly sentences gets this, not the
+     container width. */
+  --ts-prose-max:      34rem;   /* 544px, roughly 66 characters */
+  --ts-container-pad:  var(--ts-space-4); /* 768px and up: space-8, set below */
 
   /* ---------- S: Radius ---------- */
+  /* Two corner sizes and a pill. The primitive scale still holds five steps
+     because it is a reference table, but a page may show at most three, and
+     the two large steps resolve to the medium one: 12px and 16px on adjacent
+     images is a difference that reads as carelessness rather than as
+     intent. A theme that wants square corners sets --ts-radius-md to 0 in its
+     own block and the whole site follows. */
   --ts-radius-sm:   var(--ts-p-radius-sm);
   --ts-radius-md:   var(--ts-p-radius-md);
-  --ts-radius-lg:   var(--ts-p-radius-lg);
-  --ts-radius-xl:   var(--ts-p-radius-xl);
+  --ts-radius-lg:   var(--ts-radius-md);
+  --ts-radius-xl:   var(--ts-radius-md);
   --ts-radius-full: var(--ts-p-radius-full);
 
   /* ---------- S: Shadow / elevation ---------- */
-  --ts-shadow-sm: var(--ts-p-shadow-sm);
-  --ts-shadow-md: var(--ts-p-shadow-md);
-  --ts-shadow-lg: var(--ts-p-shadow-lg);
-  --ts-shadow-xl: var(--ts-p-shadow-xl);
-  /* Focus: iki halka — 2px zemin rengi + 3px güçlü renk. Her zeminde ≥3:1
-     (WCAG 2.2 Focus Appearance); primary-700 açık zeminde ≥4.5:1'dir. */
+  /* One shadow, and most surfaces do not use it. The elevation ladder was
+     four steps of the framework default, tinted with pure black; measured
+     against sites that read as designed, depth there comes from a hairline
+     and a change of surface tone, and half of them carry no shadow at all.
+     What is left is a single lift, tinted with the theme's own ink so it
+     warms rather than greys whatever it falls on. The four names remain so
+     components need no edit; they all resolve here. */
+  --ts-shadow: 0 1px 2px -1px color-mix(in srgb, var(--ts-text) 10%, transparent),
+    0 12px 28px -18px color-mix(in srgb, var(--ts-text) 40%, transparent);
+  --ts-shadow-sm: var(--ts-shadow);
+  --ts-shadow-md: var(--ts-shadow);
+  --ts-shadow-lg: var(--ts-shadow);
+  --ts-shadow-xl: var(--ts-shadow);
+  /* Focus: two rings — 2px in the background color, 3px in a strong one.
+     That holds 3:1 against any surface (WCAG 2.2 focus appearance), and
+     primary-700 on a light surface clears 4.5:1. */
   --ts-focus-ring-color: var(--ts-color-primary-700);
   --ts-focus-ring: 0 0 0 2px var(--ts-surface), 0 0 0 5px var(--ts-focus-ring-color);
 
@@ -289,9 +334,9 @@
   --ts-ease-in-out: var(--ts-p-ease-in-out);
 
   /* ==========================================================
-     KATMAN 3 — COMPONENT (--ts-c-*)
-     Bileşen başına token. Semantic katmana bağlıdır.
-     Tema sözleşmesinde belirtilmedikçe override EDİLMEZ.
+     LAYER 3 — COMPONENT (--ts-c-*)
+     One group per component, resolved from the semantic layer. Not
+     overridden unless the theme's contract says otherwise.
      ========================================================== */
 
   /* ---------- C: Button ---------- */
@@ -313,9 +358,13 @@
   /* ---------- C: Card ---------- */
   --ts-c-card-bg:      var(--ts-surface);
   --ts-c-card-border:  var(--ts-border);
-  --ts-c-card-radius:  var(--ts-radius-lg);
-  --ts-c-card-shadow:  var(--ts-shadow-sm);
-  --ts-c-card-shadow-hover: var(--ts-shadow-md);
+  --ts-c-card-radius:  var(--ts-radius-md);
+  /* A card at rest carries no shadow. It is separated from the page by a
+     hairline and, where the theme wants it, by surface tone — the same way a
+     printed card is separated from the page it sits on. The lift is kept for
+     hover, where it means something. */
+  --ts-c-card-shadow:  none;
+  --ts-c-card-shadow-hover: var(--ts-shadow);
 
   /* ---------- C: Input ---------- */
   --ts-c-input-bg:          var(--ts-surface);
@@ -342,9 +391,17 @@
   /* ---------- C: Section Heading ---------- */
   --ts-c-section-heading-color: var(--ts-text);
   --ts-c-section-subheading-color: var(--ts-text-muted);
+  /* The eyebrow is a theme decision, not a component one. Defaulting it to
+     the accent puts the accent above every section on the page, which is the
+     fastest way to spend a color that only works while it is rare — so a
+     theme that reserves its accent for one action overrides these four. */
+  --ts-c-section-eyebrow-color:    var(--ts-color-accent-600);
+  --ts-c-section-eyebrow-size:     var(--ts-text-sm);
+  --ts-c-section-eyebrow-weight:   var(--ts-weight-semibold);
+  --ts-c-section-eyebrow-tracking: var(--ts-tracking-wide);
 }
 
-/* Kenar boşluğu viewport ile büyür: 16 → 32 → 40px (token ölçeğinden) */
+/* Gutter grows with the viewport: 16 -> 32 -> 40px, all from the scale */
 @media (min-width: 768px) {
   :root { --ts-container-pad: var(--ts-space-8); }
 }
@@ -352,7 +409,7 @@
   :root { --ts-container-pad: var(--ts-space-10); }
 }
 
-/* Erişilebilirlik: hareket azaltma tercihi her zaman desteklenir */
+/* Reduced-motion preference is honored everywhere, without exception */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -1,7 +1,8 @@
 ---
 /**
- * SiteHeader — sticky nav + mobil açılır menü.
- * Mobil menü details/summary ile CSS-only: sıfır JS, klavye-erişilebilir.
+ * SiteHeader — the sticky navigation and the mobile menu.
+ * The mobile menu is details/summary and CSS only: no JavaScript, and
+ * keyboard and screen-reader behavior come from the browser.
  * CTA yol tarifidir; cafe'de rezervasyon YOKTUR (cafe kurulu, G0).
  */
 import Container from "@studio/core/components/Container.astro";
@@ -129,7 +130,9 @@ const external = Boolean(primary?.data.mapUrl);
     width: 22px;
     height: 22px;
     fill: none;
-    stroke: var(--ts-color-accent-600);
+    /* Ink, not the accent. The terracotta is spent on the seasonal mark in
+       the menu and nowhere else; a coloured logo would make it decoration. */
+    stroke: var(--ts-text);
     stroke-width: 1.6;
     stroke-linecap: round;
     stroke-linejoin: round;

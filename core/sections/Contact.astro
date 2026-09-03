@@ -1,8 +1,10 @@
 ---
 /**
- * Contact — iletişim section'ı: bilgi kolonu + form + opsiyonel harita.
- * Form action'ı template belirler (Netlify Forms, Formspree vb.).
- * Tüm input'lar label'lı (WCAG); placeholder label yerine geçmez.
+ * Contact — an info column, a form, and an optional map slot.
+ * The template picks the form action (Netlify Forms, Formspree, and so on).
+ * Every input carries a real label. A placeholder is not a label: it
+ * disappears the moment someone starts typing, and a screen reader that
+ * reaches the field late gets nothing at all.
  */
 import Container from "../components/Container.astro";
 import SectionHeading from "../components/SectionHeading.astro";
@@ -18,9 +20,9 @@ interface Props {
   hours?: { label: string; value: string }[];
   formAction?: string;
   submitLabel?: string;
-  /** i18n: form alan etiketleri */
+  /** i18n: labels for the form fields */
   labels?: { name: string; email: string; message: string };
-  /** i18n: bilgi bloğu etiketleri */
+  /** i18n: labels for the info block */
   infoLabels?: { address: string; phone: string; email: string; hours: string };
   class?: string;
 }

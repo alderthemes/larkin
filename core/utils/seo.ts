@@ -1,13 +1,13 @@
 /**
- * SEO / meta / schema.org yardımcıları.
- * Her template kendi dikeyinin schema builder'ını kullanır;
- * JSON-LD çıktısı BaseLayout içinde <script type="application/ld+json"> ile basılır.
+ * Helpers for titles, canonical URLs and schema.org output.
+ * Each template calls the schema builder for its own sector; the JSON-LD is
+ * written by BaseLayout inside a <script type="application/ld+json">.
  */
 
 export interface SEOProps {
   title: string;
   description: string;
-  /** Site adı — "Sayfa — Site" kalıbında birleşir */
+  /** Site name — joined as "Page — Site" */
   siteName: string;
   url?: string;
   image?: string;
@@ -23,7 +23,7 @@ export function buildTitle(pageTitle: string, siteName: string): string {
 /* ---------------- schema.org builders ---------------- */
 
 export interface OpeningHoursSpec {
-  /** ör. ["Monday","Tuesday"] */
+  /** e.g. ["Monday","Tuesday"] */
   dayOfWeek: string[];
   opens: string; // "12:00"
   closes: string; // "23:00"
@@ -92,7 +92,7 @@ export interface RestaurantInput extends LocalBusinessInput {
   menuUrl?: string;
 }
 
-/** FoodEstablishment ailesinin ortak alanları (Restaurant, CafeOrCoffeeShop, Bakery…). */
+/** Fields shared by the FoodEstablishment family (Restaurant, CafeOrCoffeeShop, Bakery). */
 function foodEstablishment(type: string, input: RestaurantInput) {
   const schema = baseLocalBusiness(type, input);
   if (input.servesCuisine?.length) schema.servesCuisine = input.servesCuisine;
@@ -107,21 +107,22 @@ export function restaurantSchema(input: RestaurantInput) {
 }
 
 /**
- * Cafe dikeyi. Restaurant DEĞİL: arama motorları ve AI asistanlar için
- * "kahve içilecek yer" ile "yemek yenecek yer" farklı niyetlerdir ve
- * CafeOrCoffeeShop ayrı bir entity tipidir.
- * `acceptsReservations: false` bilinçli bir sinyaldir (cafe kurulu, G0).
+ * The cafe type, and deliberately not Restaurant. To a search engine and to
+ * an AI assistant, "somewhere to get coffee" and "somewhere to eat" are
+ * different intents, and CafeOrCoffeeShop is a separate entity type.
+ * `acceptsReservations: false` is a signal rather than an omission: cafes do
+ * not take bookings, and claiming otherwise brings the wrong visitor.
  */
 export function cafeSchema(input: RestaurantInput) {
   return foodEstablishment("CafeOrCoffeeShop", input);
 }
 
-/** Diş kliniği / estetik merkezi için (sonraki dikeyler) */
+/** Dental and aesthetic clinics — the sectors queued next */
 export function medicalClinicSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("MedicalClinic", input);
 }
 
-/** Otel dikeyi için (sonraki dikeyler) */
+/** Hotels — the sector queued next */
 export function hotelSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("Hotel", input);
 }
@@ -148,8 +149,9 @@ export interface MenuSectionInput {
 }
 
 /**
- * schema.org Menu/MenuSection/MenuItem üretir — menü collection'ının
- * makine-okur karşılığı (GEO: AI cevap motorları menü öğelerini tek tek okur).
+ * Builds schema.org Menu/MenuSection/MenuItem: the machine-readable form of
+ * the menu collection. Answer engines read menu items one at a time, so a
+ * menu that exists only as styled text is a menu they cannot quote.
  */
 export function menuSchema(sections: MenuSectionInput[], url?: string) {
   return {
@@ -196,7 +198,7 @@ export function faqSchema(items: FAQItem[]) {
   };
 }
 
-/** Mağaza ürün sayfaları için */
+/** For the store's product pages */
 export interface ProductInput {
   name: string;
   description: string;
@@ -224,6 +226,6 @@ export function productSchema(input: ProductInput) {
 }
 
 export function jsonLd(schema: unknown): string {
-  // </script> injection'a karşı güvenli serileştirme
+  // Serialize safely: an unescaped </script> inside JSON-LD closes the tag
   return JSON.stringify(schema).replace(/</g, "\\u003c");
 }

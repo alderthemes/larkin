@@ -1,8 +1,8 @@
 ---
 /**
- * Button — href verilirse <a>, verilmezse <button> render eder.
- * Variant ve boyutlar token'lardan türetilir; focus ring + min 44px
- * touch target (WCAG 2.1 AA) garanti edilir.
+ * Button — renders an <a> when `href` is given, a <button> otherwise.
+ * Variants and sizes derive from tokens. A visible focus ring and a
+ * 44px minimum touch target (WCAG 2.1 AA) are guaranteed by the styles.
  */
 interface Props {
   href?: string;
@@ -65,13 +65,13 @@ const Tag = href ? "a" : "button";
     pointer-events: none;
   }
 
-  /* Sizes — hepsi ≥44px touch target */
+  /* Sizes — every one keeps a >=44px touch target */
   .ts-btn--sm { min-height: 44px; padding: var(--ts-space-2) var(--ts-space-4); font-size: var(--ts-text-sm); }
   .ts-btn--md { min-height: 44px; padding: var(--ts-space-2) var(--ts-space-5); font-size: var(--ts-text-base); }
   .ts-btn--lg { min-height: 48px; padding: var(--ts-space-3) var(--ts-space-6); font-size: var(--ts-text-base); }
 
   /* Variants */
-  /* Variant renkleri COMPONENT katmanından gelir (--ts-c-btn-*) */
+  /* Variant colors come from the component token layer (--ts-c-btn-*) */
   .ts-btn--primary {
     background: var(--ts-c-btn-bg);
     color: var(--ts-c-btn-text);

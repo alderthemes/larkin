@@ -1,59 +1,110 @@
-/* larkin — global stil girişi
-   Sıra önemli: Tailwind → core token'lar → theme köprüsü → tema override */
-/* Self-host fontlar (D-011): GDPR + performans + sıfır dış istek */
-@import "@fontsource-variable/bricolage-grotesque";
-@import "@fontsource-variable/inter";
+/* larkin — the global stylesheet entry point.
+   Order matters: Tailwind, then the core tokens, then the Tailwind bridge,
+   then this theme's overrides. Move one and the cascade stops working. */
+/* Self-hosted fonts: no third-party request, nothing to disclose in a
+   privacy policy, and one less connection before first paint.
+   The width axis is imported rather than the plain weight file: it is what
+   lets one family behave like two. */
+@import "@fontsource-variable/instrument-sans/wdth.css";
 @import "tailwindcss";
 @import "@studio/core/tokens.css";
 @import "@studio/core/theme.css";
 
 /* =====================================================
-   larkin TEMA OVERRIDE'ı
-   Kimlik üçlemesi (theme-contract §5.1): gündüz / krem / toprak
-   Core token'ların üzerine bu template'in kimliği yazılır.
-   Başka bir dikey/tema üretirken YALNIZCA bu blok değişir.
-   Kaynak: design/ui-spec.md §1 · Kontrast tablosu: design/brand-direction.md §2.3
+   larkin theme overrides
+   This block writes the template's identity over the core tokens. It is the
+   only block that changes when the site is rethemed — if you find yourself
+   editing a component to change a color, the token is missing, not the rule.
+
+   The identity in three words: daylight, one voice, no colour. A cafe is read
+   standing up, in a hurry, usually in the sun, and the page is built for
+   that: one typeface, black type on near-white, and a single warm mark
+   reserved for the one thing regulars come back to check — what is on this
+   season.
+
+   Set deliberately against the restaurant theme in the catalog. That one is a
+   serif on warm paper with an ember accent and square corners; this one is a
+   grotesque on cool white, achromatic, with soft corners. Two templates that
+   share a look are two templates a buyer only buys one of.
    ===================================================== */
 :root {
-  /* Krem/espresso marka skalası — gündüz cafe kimliği */
-  --ts-color-primary-50:  #faf8f5;
-  --ts-color-primary-100: #f3efe8;
-  --ts-color-primary-200: #e5dfd5;
-  --ts-color-primary-300: #cfc5b5;
-  --ts-color-primary-400: #a89a88;
-  --ts-color-primary-500: #7a6e5e;
-  --ts-color-primary-600: #5c5244;
-  --ts-color-primary-700: #443c32;
-  --ts-color-primary-800: #302a22;
-  --ts-color-primary-900: #231e18;
-  --ts-color-primary-950: #161310;
+  /* Near-black through to near-white, all in one hue family so nothing on the
+     page is a foreign grey. 16.4 / 7.2 / 5.1 against the ground. */
+  --ts-color-primary-50:  #f8f7f4;
+  --ts-color-primary-100: #efede8;
+  --ts-color-primary-200: #e2dfd8;
+  --ts-color-primary-300: #cbc7be;
+  --ts-color-primary-400: #a8a49b;
+  --ts-color-primary-500: #86827a;
+  --ts-color-primary-600: #6c6961;
+  --ts-color-primary-700: #55534e;
+  --ts-color-primary-800: #33322f;
+  --ts-color-primary-900: #1a1917;
+  --ts-color-primary-950: #0e0e0d;
 
-  /* Terracotta/kil accent — seramik ve tarçın referansı.
-     bramley'in bakır/amber accent'inden ~25° hue farkı (raf testi). */
-  --ts-color-accent-400: #c4936e;
-  --ts-color-accent-500: #a86f52;
-  --ts-color-accent-600: #956048; /* 4.9:1 on --ts-surface (WCAG AA) */
+  /* Terracotta, and it appears once: on the seasonal mark in the menu. The
+     rotation is the thing a regular is actually scanning for, so it is the
+     thing that gets the colour. Everything else — buttons included — is ink.
+     5.1:1 on the ground. */
+  --ts-color-accent-400: #cf7a52;
+  --ts-color-accent-500: #b8623a;
+  --ts-color-accent-600: #a6522f;
 
-  /* Krem zemin tonları — sabah ışığı, saf beyaz değil */
-  --ts-surface:     #faf8f5;
-  --ts-surface-alt: #f3efe8;
+  --ts-surface:        #f8f7f4;
+  --ts-surface-alt:    #efede8;
+  --ts-surface-invert: #1a1917;
 
-  /* On-color sözleşmesi (D-027): accent değişti → on-accent doğrulandı */
-  --ts-color-on-primary: #ffffff; /* 16.5:1 on primary-900 */
-  --ts-color-on-accent:  #ffffff; /* 5.2:1 on accent-600 */
+  --ts-text:        #1a1917;
+  --ts-text-muted:  #55534e;
+  --ts-text-subtle: #6c6961;
+  --ts-border:        #e2dfd8;
+  --ts-border-strong: #cbc7be;
 
-  /* Buton zemini: espresso koyu.
-     Component katmanı override'ı — theme-contract §7'de larkin gerekçesiyle
-     izinli listeye alındı: CTA ağırlığı dikeye göre değişir (restoran orta
-     tonlu marka rengi, cafe editoryal siyaha yakın). */
+  --ts-text-invert:        #f4f3f0;
+  --ts-text-invert-muted:  #c9c6bf;
+  --ts-text-invert-subtle: #9d9a92;
+  --ts-border-invert:      #33322f;
+
+  /* One family, both roles. Contrast comes from the width axis, from case and
+     from size — not from a second typeface. Five of the fifteen best-set sites
+     measured in this sector use a single family, and none of the weakest do:
+     a page that needs two faces to build a hierarchy usually has not built
+     one. Instrument Sans also carries tabular figures, which the menu and the
+     opening hours both need. */
+  --ts-font-display: "Instrument Sans Variable", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ts-font-sans: var(--ts-font-display);
+
+  /* Buttons are ink. A cafe has one action — get here — and it does not need
+     a colour to say so when it is the only filled thing on the page. */
   --ts-c-btn-bg:       var(--ts-color-primary-900);
   --ts-c-btn-bg-hover: var(--ts-color-primary-950);
 
-  /* Focus ring iç halkası terracotta — her iki zeminde de ≥3:1 */
-  --ts-focus-ring-color: var(--ts-color-accent-600);
+  /* Tighter than the restaurant's rhythm. Short sections, read quickly. */
+  --ts-section-y: var(--ts-space-20); /* 80px */
 
-  /* Display: Bricolage Grotesque (yumuşak sans), gövde: Inter */
-  --ts-font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
-  --ts-font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, sans-serif;
+  /* The micro-label, set in the condensed width. That narrowing is the whole
+     reason one family is enough: at 11px with wide tracking a condensed
+     grotesque reads as a different voice without being a different face. */
+  --larkin-label-size: 0.6875rem;
+  --larkin-label-tracking: 0.14em;
+  --larkin-label-width: 82%;
+
+  --ts-c-section-eyebrow-color:    var(--ts-text-subtle);
+  --ts-c-section-eyebrow-size:     var(--larkin-label-size);
+  --ts-c-section-eyebrow-weight:   var(--ts-weight-medium);
+  --ts-c-section-eyebrow-tracking: var(--larkin-label-tracking);
+}
+
+/* Every uppercase label in the theme narrows. Applied here rather than in each
+   component so the voice cannot drift one section at a time. */
+.ts-heading__eyebrow {
+  font-stretch: var(--larkin-label-width);
+}
+
+/* Figures line up in columns: prices, opening hours, the week table. */
+[data-numeric],
+.menu-list__price,
+time {
+  font-variant-numeric: tabular-nums;
 }

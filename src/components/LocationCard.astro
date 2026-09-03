@@ -1,9 +1,11 @@
 ---
 /**
- * LocationCard — adres + bugünkü saat + olanaklar + yol tarifi (ui-spec §4.5).
+ * LocationCard — address, today's hours, amenities and directions.
  *
- * Ana sayfada hero'nun yanında (above the fold), iletişim sayfasında grid
- * içinde kullanılır. Gölge yok: bilgi taşıyan kart, tıklanabilir yüzey değil.
+ * Sits beside the hero on the home page and inside a grid on the contact
+ * page. No shadow, deliberately: this card carries information, it is not a
+ * clickable surface, and a shadow would promise an interaction that is not
+ * there.
  */
 import Button from "@studio/core/components/Button.astro";
 import OpenStatus from "./OpenStatus.astro";
@@ -12,7 +14,7 @@ import { formatAddress, weeklyRanges, type Location } from "../lib/locations";
 
 interface Props {
   location: Location;
-  /** Haftanın tamamını açılabilir <details> olarak göster */
+  /** Show the full week inside an expandable <details> */
   showAllHours?: boolean;
   headingLevel?: "h2" | "h3";
   class?: string;
@@ -29,7 +31,7 @@ const address = formatAddress(location);
 const ranges = weeklyRanges(location);
 const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-/* Pazartesiden başlat — haftalık tabloların yerleşik okuma sırası */
+/* Start on Monday, the order people expect to read a week in */
 const week = [1, 2, 3, 4, 5, 6, 0].map((i) => ({
   key: DAY_KEYS[i],
   label: DAY_LABELS[i],

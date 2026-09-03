@@ -1,27 +1,28 @@
 /**
- * locations.ts — şube collection'ının okuma yardımcıları.
+ * locations.ts — read helpers for the shop collection.
  *
- * Cafe ziyaretçisinin ilk sorusu "nerede ve açık mı" (research.md §4), bu
- * yüzden şube verisi tek yerden okunur ve hem UI hem schema.org aynı kaynağı
- * kullanır. Tek şube ile çok şube arasındaki fark bir dosyadır, kod değil.
+ * A cafe visitor's first question is where it is and whether it is open, so
+ * the shop data is read in one place and both the interface and the
+ * schema.org output draw on it. The difference between one shop and five is
+ * a file, not a code path.
  */
 import { getCollection, type CollectionEntry } from "astro:content";
 
 export type Location = CollectionEntry<"locations">;
 
-/** Sıralı tüm şubeler. */
+/** Every shop, in order. */
 export async function getLocations(): Promise<Location[]> {
   const all = await getCollection("locations");
   return all.sort((a, b) => a.data.order - b.data.order);
 }
 
-/** Ana şube: `primary: true` işaretli olan, yoksa ilk kayıt. */
+/** The main shop: whichever is marked `primary: true`, else the first. */
 export async function getPrimaryLocation(): Promise<Location | undefined> {
   const all = await getLocations();
   return all.find((l) => l.data.primary) ?? all[0];
 }
 
-/** Tek satırlık posta adresi. */
+/** The postal address on one line. */
 export function formatAddress(loc: Location): string {
   const d = loc.data;
   return `${d.streetAddress}, ${d.addressLocality}, ${d.addressRegion} ${d.postalCode}`;
@@ -38,9 +39,10 @@ const DAYS = [
 ] as const;
 
 /**
- * Gün indeksi (0 = Pazar) → "07:00 - 18:00" haritası.
- * Kapalı günler boş string döner. Sunucuda üretilir, istemcide okunur:
- * "bugün" hesabı ziyaretçinin saatine göre yapılmalı (build saatine göre değil).
+ * Day index (0 = Sunday) to a "07:00 - 18:00" range.
+ * A closed day returns an empty string. Built on the server and read in the
+ * browser, because "today" has to be worked out from the visitor's clock
+ * rather than from the time the site was built.
  */
 export function weeklyRanges(loc: Location): string[] {
   const map: Record<string, string> = {};
@@ -50,7 +52,7 @@ export function weeklyRanges(loc: Location): string[] {
   return DAYS.map((d) => map[d] ?? "");
 }
 
-/** Açılış/kapanış dakikalarını gün indeksine göre verir (istemci hesabı için). */
+/** Opening and closing minutes by day index, for the client-side check. */
 export function weeklyMinutes(loc: Location): ([number, number] | null)[] {
   const toMin = (t: string) => {
     const [h, m] = t.split(":").map(Number);

@@ -1,7 +1,8 @@
 ---
 /**
- * FaqList — details/summary accordion (ui-spec §4.8). Sıfır JS.
- * FAQPage schema'yı sayfa besler; burası yalnızca sunumdur.
+ * FaqList — an accordion built on details/summary, with no JavaScript.
+ * The page supplies the FAQPage structured data; this file is presentation
+ * only.
  */
 import type { CollectionEntry } from "astro:content";
 
@@ -79,7 +80,7 @@ const { items, class: className = "" } = Astro.props;
     font-size: var(--ts-text-base);
     line-height: var(--ts-leading-body);
     color: var(--ts-color-primary-700);
-    max-width: 62ch;
+    max-width: var(--ts-prose-max);
   }
   @media (prefers-reduced-motion: reduce) {
     .faq__chevron {

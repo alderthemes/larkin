@@ -1,12 +1,12 @@
 /* =============================================================
-   @studio/core — Tailwind CSS 4 theme köprüsü
+   @studio/core — the Tailwind CSS 4 bridge
    -------------------------------------------------------------
-   Tailwind utility'lerini token custom property'lerine bağlar.
-   `@theme inline` kullanıldığı için utility'ler var() referansı
-   üretir → template, :root'ta --ts-* değerini override ettiğinde
-   tüm utility'ler otomatik temalanır.
+   Binds Tailwind utilities to the token custom properties. Because this
+   uses `@theme inline`, a utility emits a var() reference rather than a
+   resolved value: the moment a template overrides a --ts-* token in :root,
+   every utility follows. That is the whole retheming mechanism.
 
-   Kullanım (her projenin global.css'inde):
+   Usage, in each project's global.css:
      @import "tailwindcss";
      @import "@studio/core/tokens.css";
      @import "@studio/core/theme.css";
@@ -87,7 +87,7 @@
   --ease-in-out: var(--ts-ease-in-out);
 }
 
-/* Taban gövde stili — her iki projede ortak zemin */
+/* Base body style — the common ground under every theme */
 @layer base {
   body {
     background-color: var(--ts-surface);
@@ -98,8 +98,9 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Focus ring: outline yerine iki halkalı box-shadow (T1). Öğenin kendi
-     border-radius'ına dokunulmaz — kart/görsel köşeleri bozulmaz. */
+  /* Focus ring: a two-ring box-shadow rather than an outline, so the
+     element keeps its own border-radius and card and image corners stay
+     intact. */
   :focus-visible {
     outline: none;
     box-shadow: var(--ts-focus-ring);

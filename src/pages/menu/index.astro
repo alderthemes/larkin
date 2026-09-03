@@ -1,7 +1,8 @@
 ---
 /**
- * Menü sayfası — tek sayfa, sticky kategori navigasyonu.
- * Menu/MenuSection/MenuItem schema'sı collection'dan otomatik üretilir.
+ * Menu — one page with sticky category navigation.
+ * The Menu/MenuSection/MenuItem structured data is built from the
+ * collection, so the markup and the machine-readable menu cannot disagree.
  */
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -15,7 +16,7 @@ const CATEGORY_ORDER = ["espresso", "brew", "food", "seasonal"] as const;
 
 const items = (await getCollection("menu")).filter((i) => i.data.available);
 
-/* Boş kategori sticky nav'da yer kaplamaz */
+/* An empty category takes no room in the sticky nav */
 const categories = CATEGORY_ORDER.filter((c) => items.some((i) => i.data.category === c));
 
 const url = new URL("/menu/", Astro.site).toString();
@@ -44,8 +45,9 @@ const schema = menuSchema(
 >
   <section class="menu-page">
     <Container>
-      <!-- Eyebrow bilerek yok: sayfanın tek güçlü başlığı H1'dir; "What we serve"
-           hem eyebrow hem başlık olarak tekrarlanırsa hiyerarşi zayıflar. -->
+      {/* No eyebrow here, deliberately: the page has one strong heading and
+           repeating "What we serve" above it as a kicker would weaken the
+           hierarchy rather than reinforce it. */}
       <SectionHeading title={t("menu.pageTitle")} subtitle={t("menu.pageSubtitle")} level="h1" />
 
       <nav class="menu-page__nav" aria-label={t("menu.categoriesNav")}>

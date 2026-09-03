@@ -1,28 +1,30 @@
 /**
- * Site yapılandırması — alıcının düzenleyeceği TEK dosya olacak şekilde tasarlandı.
- * UI string'leri src/i18n/*.json'da; şube/adres/saat bilgisi
- * src/content/locations/ collection'ında; burada yalnızca işletme kimliği var.
+ * Site configuration, written to be the only file you have to edit.
+ * Interface strings live in src/i18n/*.json, and addresses and hours live in
+ * the src/content/locations/ collection. What is left here is the identity
+ * of the business itself.
  */
 import { createT, DEFAULT_LOCALE, type Locale } from "@studio/core/utils/i18n";
 import en from "../i18n/en.json";
 import tr from "../i18n/tr.json";
 
-/** Aktif dil — "tr" yapınca tüm UI Türkçe'ye döner. */
+/** Active language. Set it to "tr" and the whole interface switches. */
 export const LOCALE: Locale = DEFAULT_LOCALE;
 
 const dicts: Record<Locale, typeof en> = { en, tr };
 export const t = createT(dicts[LOCALE], en);
 
 /**
- * İletişim formu hedefi. Cloudflare/Netlify dışı bir host kullanıyorsanız
- * Formspree veya Basin gibi bir servisin endpoint'ini yazın (docs/README.md).
+ * Where the contact form posts. On a host other than Cloudflare or Netlify,
+ * put a form service endpoint here — Formspree, Basin, or similar. The step
+ * is in docs/README.md.
  */
 export const contactFormAction = "#";
 
 /**
- * İşletme kimliği — schema.org LocalBusiness alanları buradan beslenir.
- * Adres ve saatler ŞUBEDEN gelir (src/content/locations/), böylece ikinci
- * şube eklemek tek markdown dosyası eklemektir.
+ * The identity of the business, feeding the schema.org LocalBusiness
+ * fields. Addresses and hours come from the location files instead, which
+ * is what makes opening a second shop a matter of adding one markdown file.
  */
 export const business = {
   name: en.site.name,
@@ -30,8 +32,9 @@ export const business = {
   phone: "+1 503 555 0142",
   priceRange: "$",
   servesCuisine: ["Coffee", "Light bites"],
-  /** Instagram embed slotu için hesap adı; boş bırakılırsa bölüm gizlenir. */
+  /** Handle for the Instagram embed slot. Leave it empty and the section
+   *  does not render. */
   instagramHandle: "",
-  /** Kuruluş yılı — hakkında sayfası ve schema.org */
+  /** Year founded — used on the about page and in schema.org */
   foundingYear: "2019",
 };

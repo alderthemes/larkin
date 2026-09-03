@@ -1,7 +1,7 @@
 /**
- * /llms.txt — AI asistanları için makine-okur işletme özeti (GEO).
- * İçerik site.ts + locations collection + i18n'den üretilir; elle güncelleme
- * gerekmez. Şube eklendiğinde bu dosya da kendini günceller.
+ * /llms.txt — a machine-readable summary of the business for AI assistants.
+ * Generated from site.ts, the locations collection and the i18n files, so it
+ * updates itself when a shop is added and cannot fall behind the site.
  */
 import type { APIRoute } from "astro";
 import { t, business } from "../lib/site";
