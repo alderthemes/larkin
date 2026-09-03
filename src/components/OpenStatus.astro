@@ -4,7 +4,7 @@
  *
  * Cafe ziyaretçisinin ekranda ilk aradığı bilgi (research.md §4, AK-1).
  * Sunucuda gerçek bir fallback basılır (JS kapalıysa da doğru bilgi görünür);
- * ~400B inline script yalnızca BUGÜNÜN aralığını ve açık/kapalı durumunu
+ * `/open-status.js` yalnızca BUGÜNÜN aralığını ve açık/kapalı durumunu
  * ziyaretçinin saatine göre günceller.
  */
 import { t } from "../lib/site";
@@ -38,31 +38,8 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
   </span>
 </p>
 
-<script>
-  for (const el of document.querySelectorAll<HTMLElement>(".open-status")) {
-    try {
-      const ranges = JSON.parse(el.dataset.ranges || "[]") as string[];
-      const minutes = JSON.parse(el.dataset.minutes || "[]") as ([number, number] | null)[];
-      const now = new Date();
-      const day = now.getDay();
-      const value = el.querySelector(".open-status__value");
-      if (ranges[day] && value) value.textContent = ranges[day];
-
-      const today = minutes[day];
-      const state = el.querySelector<HTMLElement>(".open-status__state");
-      const text = el.querySelector(".open-status__state-text");
-      if (state && text) {
-        const nowMin = now.getHours() * 60 + now.getMinutes();
-        const isOpen = Boolean(today && nowMin >= today[0] && nowMin < today[1]);
-        text.textContent = isOpen ? el.dataset.open || "" : el.dataset.closed || "";
-        state.classList.toggle("open-status__state--open", isOpen);
-        state.hidden = false;
-      }
-    } catch {
-      /* sunucu tarafı fallback metni yerinde kalır */
-    }
-  }
-</script>
+<!-- CSP: bu script inline OLAMAZ (public/_headers → script-src 'self') -->
+<script type="module" src="/open-status.js"></script>
 
 <style>
   .open-status {
