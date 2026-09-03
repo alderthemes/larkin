@@ -1,11 +1,16 @@
-# Güvenlik header'ları — Cloudflare Workers Static Assets
-# Alıcı: bu dosya canlıya çıkmadan ÖNCE kendi ihtiyaçlarına göre düzenlenmeli.
-# Rehber: docs içindeki "Canlıya Çıkmadan Önce — Güvenlik Kontrol Listesi" bölümü.
-# Detay: https://developers.cloudflare.com/pages/configuration/headers/
+# Security headers.
+# Cloudflare Pages/Workers and Netlify both read this file.
+# Review it before you go live: https://developers.cloudflare.com/pages/configuration/headers/
+#
+# Cloudflare Web Analytics injects a beacon script into every page when your
+# site is hosted on Cloudflare, and a strict script-src blocks it (console
+# errors, lower Lighthouse Best Practices). That is why the two hosts below are
+# allowed. Not hosting on Cloudflare? Delete them — the policy gets tighter and
+# nothing breaks.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'

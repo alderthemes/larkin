@@ -1,4 +1,4 @@
-# Netlify — tek tık deploy yapılandırması
+# Netlify — one-click deploy configuration.
 [build]
   command = "npm run build"
   publish = "dist"
@@ -6,7 +6,9 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Güvenlik header'ları — alıcı kendi ihtiyaçlarına göre düzenlemeli
+# Security headers. Kept identical to public/_headers so the site behaves the
+# same on either host. The two cloudflareinsights hosts are only needed when
+# you deploy to Cloudflare with Web Analytics on; delete them otherwise.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -15,4 +17,4 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    Content-Security-Policy = "default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"

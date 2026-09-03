@@ -1,15 +1,15 @@
 /**
- * OpenStatus — bugünün saat aralığını ve açık/kapalı durumunu ziyaretçinin
- * kendi saatine göre günceller.
+ * Updates today's opening hours and the open/closed badge to the visitor's
+ * own clock.
  *
- * Neden ayrı bir dosya, bileşenin içinde inline değil: bu template'in ürettiği
- * Content-Security-Policy `script-src 'self'` diyor (public/_headers). Inline
- * script o politikayı ihlal eder ve tarayıcı onu SESSİZCE bloklar — sayfa
- * açılır, hata görünmez, yalnızca "Open now" rozeti hiç çıkmaz. Aynı kaynaktan
- * servis edilen bu dosya politikaya uyar.
+ * Why this lives in a file instead of inline in the component: the template
+ * ships a Content-Security-Policy of `script-src 'self'` (public/_headers).
+ * An inline script violates it and the browser blocks it SILENTLY — the page
+ * loads, nothing looks broken, the badge just never appears. Served from the
+ * same origin, this file complies.
  *
- * Sunucu tarafı zaten doğru bir fallback basar; bu dosya yalnızca onu
- * bugüne özelleştirir. JavaScript kapalıysa saatler yine görünür.
+ * The server already renders correct fallback hours, so the page still makes
+ * sense with JavaScript disabled. This only personalises it to today.
  */
 for (const el of document.querySelectorAll(".open-status")) {
   try {
@@ -32,6 +32,6 @@ for (const el of document.querySelectorAll(".open-status")) {
       state.hidden = false;
     }
   } catch {
-    /* sunucu tarafı fallback metni yerinde kalır */
+    /* keep the server-rendered fallback */
   }
 }
