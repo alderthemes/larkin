@@ -1,0 +1,31 @@
+---
+/**
+ * Container — sayfa içeriğini ortalayan, yatay padding'li sarmalayıcı.
+ * Genişlik token'dan gelir (--ts-container-max), template override edebilir.
+ */
+interface Props {
+  /** "default" | "narrow" | "wide" */
+  size?: "default" | "narrow" | "wide";
+  class?: string;
+}
+const { size = "default", class: className = "" } = Astro.props;
+const maxWidth =
+  size === "narrow" ? "48rem" : size === "wide" ? "80rem" : "var(--ts-container-max)";
+---
+
+<div class:list={["ts-container", className]} style={`max-width:${maxWidth}`}>
+  <slot />
+</div>
+
+<style>
+  .ts-container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--ts-container-pad);
+  }
+  @media (min-width: 640px) {
+    .ts-container {
+      padding-inline: var(--ts-space-6);
+    }
+  }
+</style>

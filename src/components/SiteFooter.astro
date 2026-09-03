@@ -1,0 +1,226 @@
+---
+/**
+ * SiteFooter — marka, gezinme, saatler ve şube(ler) (ui-spec §4.10).
+ * Şube listesi collection'dan gelir: ikinci şube eklendiğinde footer da
+ * kendini uyarlar (AK-5).
+ */
+import Container from "@studio/core/components/Container.astro";
+import { t, business } from "../lib/site";
+import { getLocations, formatAddress, weeklyRanges } from "../lib/locations";
+
+const year = new Date().getFullYear();
+const locations = await getLocations();
+const primary = locations.find((l) => l.data.primary) ?? locations[0];
+
+/* Saat satırları: aynı aralığa sahip ardışık günler tek satırda toplanır. */
+const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const ORDER = [1, 2, 3, 4, 5, 6, 0];
+const ranges = primary ? weeklyRanges(primary) : [];
+const grouped: { label: string; value: string }[] = [];
+for (const i of ORDER) {
+  const value = ranges[i] || t("location.closedNow");
+  const last = grouped[grouped.length - 1];
+  const day = DAY_LABELS[i];
+  if (last && last.value === value) {
+    last.label = `${last.label.split(" to ")[0]} to ${day}`;
+  } else {
+    grouped.push({ label: day, value });
+  }
+}
+
+const navLinks = [
+  { href: "/menu/", label: t("nav.menu") },
+  { href: "/about/", label: t("nav.about") },
+  { href: "/contact/", label: t("nav.contact") },
+];
+---
+
+<footer class="site-footer">
+  <Container>
+    <div class="site-footer__grid">
+      <div class="site-footer__col">
+        <p class="site-footer__brand">{t("site.name")}</p>
+        <p class="site-footer__tagline">{t("site.tagline")}</p>
+      </div>
+
+      <nav class="site-footer__col" aria-label="Footer">
+        <h2 class="site-footer__heading">{t("footer.browse")}</h2>
+        <ul class="site-footer__list">
+          {navLinks.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="site-footer__col">
+        <h2 class="site-footer__heading">{t("footer.hoursTitle")}</h2>
+        <dl class="site-footer__hours">
+          {
+            grouped.map((row) => (
+              <div class="site-footer__hours-row">
+                <dt>{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="site-footer__col">
+        <h2 class="site-footer__heading">{t("footer.findUs")}</h2>
+        <ul class="site-footer__list">
+          {
+            locations.map((loc) => (
+              <li>
+                <span class="site-footer__loc-name">{loc.data.name}</span>
+                <span class="site-footer__loc-address">{formatAddress(loc)}</span>
+              </li>
+            ))
+          }
+          <li>
+            <a href={`mailto:${business.email}`}>{business.email}</a>
+          </li>
+          {
+            business.phone && (
+              <li>
+                <a href={`tel:${business.phone.replace(/\s/g, "")}`}>{business.phone}</a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__legal">
+      <p>© {year} {t("site.name")}. {t("footer.rights")}</p>
+      <ul class="site-footer__legal-links">
+        <li><a href="/legal/privacy/">{t("footer.privacy")}</a></li>
+        <li><a href="/legal/terms/">{t("footer.terms")}</a></li>
+      </ul>
+    </div>
+  </Container>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--ts-color-primary-900);
+    color: var(--ts-color-primary-50);
+    padding-block: var(--ts-space-16) var(--ts-space-8);
+    margin-top: var(--ts-space-24);
+  }
+  .site-footer__grid {
+    display: grid;
+    gap: var(--ts-space-8);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .site-footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    }
+  }
+  .site-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-3);
+  }
+  .site-footer__brand {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-xl);
+    font-weight: var(--ts-weight-bold);
+    letter-spacing: var(--ts-tracking-tight);
+  }
+  .site-footer__tagline {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    color: var(--ts-color-primary-300);
+    max-width: 32ch;
+  }
+  .site-footer__heading {
+    margin: 0;
+    font-size: var(--ts-text-xs);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: var(--ts-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ts-color-accent-400);
+  }
+  .site-footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+  }
+  .site-footer__list li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .site-footer__loc-name {
+    font-weight: var(--ts-weight-medium);
+  }
+  .site-footer__loc-address {
+    color: var(--ts-color-primary-300);
+  }
+  .site-footer a {
+    color: var(--ts-color-primary-50);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .site-footer a:hover {
+    color: var(--ts-color-accent-400);
+    border-bottom-color: currentColor;
+  }
+  .site-footer a:focus-visible {
+    outline: none;
+    box-shadow: var(--ts-focus-ring);
+    border-radius: var(--ts-radius-sm);
+  }
+  .site-footer__hours {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+  }
+  .site-footer__hours-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ts-space-4);
+  }
+  .site-footer__hours dt {
+    color: var(--ts-color-primary-300);
+  }
+  .site-footer__hours dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .site-footer__legal {
+    margin-top: var(--ts-space-12);
+    padding-top: var(--ts-space-6);
+    border-top: 1px solid var(--ts-color-primary-700);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--ts-space-4);
+    font-size: var(--ts-text-xs);
+    color: var(--ts-color-primary-300);
+  }
+  .site-footer__legal p {
+    margin: 0;
+  }
+  .site-footer__legal-links {
+    list-style: none;
+    display: flex;
+    gap: var(--ts-space-6);
+    margin: 0;
+    padding: 0;
+  }
+</style>

@@ -1,0 +1,13 @@
+{
+  "name": "@studio/core",
+  "version": "0.1.0",
+  "description": "Alder Themes core: design tokens, components, sections, utils (Astro + Tailwind 4)",
+  "type": "module",
+  "exports": {
+    "./tokens.css": "./tokens/tokens.css",
+    "./theme.css": "./tokens/theme.css",
+    "./components/*": "./components/*",
+    "./sections/*": "./sections/*",
+    "./utils/*": "./utils/*.ts"
+  }
+}

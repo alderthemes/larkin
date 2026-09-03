@@ -1,0 +1,279 @@
+---
+/**
+ * SiteHeader — sticky nav + mobil açılır menü.
+ * Mobil menü details/summary ile CSS-only: sıfır JS, klavye-erişilebilir.
+ * CTA yol tarifidir; cafe'de rezervasyon YOKTUR (cafe kurulu, G0).
+ */
+import Container from "@studio/core/components/Container.astro";
+import Button from "@studio/core/components/Button.astro";
+import { t } from "../lib/site";
+import { getPrimaryLocation } from "../lib/locations";
+
+const links = [
+  { href: "/", label: t("nav.home") },
+  { href: "/menu/", label: t("nav.menu") },
+  { href: "/about/", label: t("nav.about") },
+  { href: "/contact/", label: t("nav.contact") },
+];
+const current = Astro.url.pathname;
+const primary = await getPrimaryLocation();
+const ctaHref = primary?.data.mapUrl ?? "/contact/";
+const external = Boolean(primary?.data.mapUrl);
+---
+
+<header class="site-header">
+  <Container>
+    <div class="site-header__inner">
+      <a href="/" class="site-header__brand">
+        <svg class="site-header__mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 27c0-7 4-11 10-12-1 7-4 11-10 12Z" />
+          <path d="M16 27C16 19 12 15 6 14c1 7 4 11 10 13Z" />
+          <path d="M16 27V13" />
+        </svg>
+        <span>{t("site.name")}</span>
+      </a>
+
+      <nav aria-label="Main" class="site-header__desktop">
+        <ul class="site-header__nav">
+          {
+            links.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  aria-current={current === l.href ? "page" : undefined}
+                  class="site-header__link"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <span class="site-header__cta">
+        <Button
+          href={ctaHref}
+          variant="primary"
+          size="sm"
+          target={external ? "_blank" : undefined}
+          rel={external ? "noopener noreferrer" : undefined}
+        >
+          {t("nav.cta")}
+        </Button>
+      </span>
+
+      <details class="site-header__mobile">
+        <summary class="site-header__toggle" aria-label={t("nav.menuToggle")}>
+          <span class="site-header__bars" aria-hidden="true"
+            ><span></span><span></span><span></span></span
+          >
+        </summary>
+        <nav aria-label="Main" class="site-header__panel">
+          <ul>
+            {
+              links.map((l) => (
+                <li>
+                  <a href={l.href} aria-current={current === l.href ? "page" : undefined}>
+                    {l.label}
+                  </a>
+                </li>
+              ))
+            }
+            <li>
+              <a
+                href={ctaHref}
+                class="site-header__panel-cta"
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
+              >
+                {t("nav.cta")}
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </Container>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--ts-z-header);
+    background: color-mix(in srgb, var(--ts-surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--ts-space-4);
+    min-height: 56px;
+  }
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ts-space-2);
+    white-space: nowrap;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-lg);
+    font-weight: var(--ts-weight-bold);
+    letter-spacing: var(--ts-tracking-tight);
+    color: var(--ts-color-primary-900);
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .site-header__mark {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: var(--ts-color-accent-600);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .site-header__desktop {
+    display: none;
+  }
+  .site-header__nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: var(--ts-space-6);
+  }
+  .site-header__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ts-color-primary-700);
+    text-decoration: none;
+    font-weight: var(--ts-weight-medium);
+    font-size: var(--ts-text-sm);
+    border-bottom: 2px solid transparent;
+  }
+  .site-header__link:hover {
+    color: var(--ts-color-primary-900);
+    border-bottom-color: var(--ts-color-accent-500);
+  }
+  .site-header__link[aria-current="page"] {
+    color: var(--ts-color-primary-900);
+    font-weight: var(--ts-weight-semibold);
+    border-bottom-color: var(--ts-color-accent-600);
+  }
+
+  /* --- Mobil --- */
+  .site-header__mobile {
+    position: relative;
+  }
+  .site-header__toggle {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ts-radius-md);
+    border: 1px solid var(--ts-border-strong);
+    cursor: pointer;
+    background: var(--ts-surface);
+  }
+  .site-header__toggle::-webkit-details-marker {
+    display: none;
+  }
+  .site-header__toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--ts-focus-ring);
+  }
+  .site-header__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .site-header__bars span {
+    width: 18px;
+    height: 2px;
+    background: var(--ts-color-primary-800);
+    border-radius: 1px;
+    transition:
+      transform var(--ts-duration-fast) var(--ts-ease-out),
+      opacity var(--ts-duration-fast) var(--ts-ease-out);
+  }
+  .site-header__mobile[open] .site-header__bars span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .site-header__mobile[open] .site-header__bars span:nth-child(2) {
+    opacity: 0;
+  }
+  .site-header__mobile[open] .site-header__bars span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+  .site-header__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--ts-space-3));
+    min-width: 220px;
+    background: var(--ts-surface);
+    border: 1px solid var(--ts-border);
+    border-radius: var(--ts-radius-lg);
+    box-shadow: var(--ts-shadow-lg);
+    padding: var(--ts-space-3);
+  }
+  .site-header__panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-1);
+  }
+  .site-header__panel a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--ts-space-4);
+    border-radius: var(--ts-radius-md);
+    text-decoration: none;
+    color: var(--ts-color-primary-800);
+    font-weight: var(--ts-weight-medium);
+  }
+  .site-header__panel a:hover,
+  .site-header__panel a[aria-current="page"] {
+    background: var(--ts-surface-alt);
+    color: var(--ts-color-primary-900);
+  }
+  .site-header__panel-cta {
+    background: var(--ts-color-primary-900);
+    color: var(--ts-color-on-primary) !important;
+    justify-content: center;
+    font-weight: var(--ts-weight-semibold);
+    margin-top: var(--ts-space-2);
+  }
+  .site-header__panel-cta:hover {
+    background: var(--ts-color-primary-950) !important;
+  }
+
+  @media (min-width: 768px) {
+    .site-header__inner {
+      min-height: 64px;
+    }
+    .site-header__desktop {
+      display: block;
+    }
+    .site-header__mobile {
+      display: none;
+    }
+  }
+  @media (max-width: 767.98px) {
+    .site-header__cta {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header__bars span {
+      transition: none;
+    }
+  }
+</style>

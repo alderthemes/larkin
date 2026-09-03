@@ -1,0 +1,89 @@
+---
+/**
+ * FaqList — details/summary accordion (ui-spec §4.8). Sıfır JS.
+ * FAQPage schema'yı sayfa besler; burası yalnızca sunumdur.
+ */
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  items: CollectionEntry<"faq">[];
+  class?: string;
+}
+const { items, class: className = "" } = Astro.props;
+---
+
+<div class:list={["faq", className]}>
+  {
+    items.map((item) => (
+      <details class="faq__item">
+        <summary class="faq__question">
+          <span>{item.data.question}</span>
+          <svg class="faq__chevron" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+        <p class="faq__answer">{item.data.answer}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    max-width: 46rem;
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .faq__question {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ts-space-4);
+    min-height: 44px;
+    padding: var(--ts-space-4) var(--ts-space-2);
+    cursor: pointer;
+    font-size: var(--ts-text-lg);
+    font-weight: var(--ts-weight-semibold);
+    color: var(--ts-color-primary-900);
+  }
+  .faq__question::-webkit-details-marker {
+    display: none;
+  }
+  .faq__question:hover {
+    background: var(--ts-surface-alt);
+  }
+  .faq__question:focus-visible {
+    outline: none;
+    box-shadow: var(--ts-focus-ring);
+    border-radius: var(--ts-radius-sm);
+  }
+  .faq__chevron {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--ts-color-primary-400);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform var(--ts-duration-fast) var(--ts-ease-out);
+  }
+  .faq__item[open] .faq__chevron {
+    transform: rotate(180deg);
+  }
+  .faq__answer {
+    margin: 0;
+    padding: 0 var(--ts-space-2) var(--ts-space-6);
+    font-size: var(--ts-text-base);
+    line-height: var(--ts-leading-body);
+    color: var(--ts-color-primary-700);
+    max-width: 62ch;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq__chevron {
+      transition: none;
+    }
+  }
+</style>

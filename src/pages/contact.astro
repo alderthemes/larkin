@@ -1,0 +1,258 @@
+---
+/**
+ * İletişim — şube kart(lar)ı + haftalık saatler + form + harita slotu.
+ * Çoklu şube: locations collection'ında ikinci dosya varsa grid'e döner (AK-5).
+ */
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "@studio/core/components/Container.astro";
+import Button from "@studio/core/components/Button.astro";
+import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import LocationCard from "../components/LocationCard.astro";
+import { t, business, contactFormAction } from "../lib/site";
+import { getLocations, openingHours } from "../lib/locations";
+import { cafeSchema } from "@studio/core/utils/seo";
+
+const locations = await getLocations();
+const primary = locations.find((l) => l.data.primary) ?? locations[0];
+
+const weekly = [
+  { label: t("hours.monFri"), value: t("hours.monFriValue") },
+  { label: t("hours.sat"), value: t("hours.satValue") },
+  { label: t("hours.sun"), value: t("hours.sunValue") },
+];
+
+const schema = cafeSchema({
+  name: business.name,
+  description: t("contact.subtitle"),
+  url: new URL("/contact/", Astro.site).toString(),
+  telephone: business.phone,
+  email: business.email,
+  priceRange: business.priceRange,
+  servesCuisine: business.servesCuisine,
+  acceptsReservations: false,
+  streetAddress: primary?.data.streetAddress,
+  addressLocality: primary?.data.addressLocality,
+  addressRegion: primary?.data.addressRegion,
+  postalCode: primary?.data.postalCode,
+  addressCountry: primary?.data.addressCountry,
+  openingHours: primary ? openingHours(primary) : [],
+});
+---
+
+<BaseLayout title={t("nav.contact")} description={t("contact.subtitle")} schema={schema}>
+  <section class="contact">
+    <Container>
+      <SectionHeading
+        eyebrow={t("contact.eyebrow")}
+        title={t("contact.title")}
+        subtitle={t("contact.subtitle")}
+        level="h1"
+      />
+
+      <div class="contact__grid">
+        <div class="contact__locations">
+          <ul
+            class:list={["contact__loc-list", locations.length > 1 && "contact__loc-list--multi"]}
+          >
+            {
+              locations.map((loc) => (
+                <li>
+                  <LocationCard location={loc} showAllHours />
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="contact__hours">
+            <h2 class="contact__subtitle">{t("contact.hoursTitle")}</h2>
+            <dl class="contact__hours-list">
+              {
+                weekly.map((row) => (
+                  <div class="contact__hours-row">
+                    <dt>{row.label}</dt>
+                    <dd>{row.value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+
+          <div class="contact__direct">
+            <h2 class="contact__subtitle">{t("contact.info.email")}</h2>
+            <p><a href={`mailto:${business.email}`}>{business.email}</a></p>
+            {
+              business.phone && (
+                <p>
+                  <a href={`tel:${business.phone.replace(/\s/g, "")}`}>{business.phone}</a>
+                </p>
+              )
+            }
+          </div>
+        </div>
+
+        <div class="contact__form-wrap">
+          <h2 class="contact__subtitle">{t("contact.formTitle")}</h2>
+          <form class="contact__form" action={contactFormAction} method="POST">
+            <div class="contact__field">
+              <label for="contact-name">{t("contact.form.name")}</label>
+              <input id="contact-name" name="name" type="text" required autocomplete="name" />
+            </div>
+            <div class="contact__field">
+              <label for="contact-email">{t("contact.form.email")}</label>
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder={t("contact.form.emailPlaceholder")}
+              />
+            </div>
+            <div class="contact__field">
+              <label for="contact-message">{t("contact.form.message")}</label>
+              <textarea
+                id="contact-message"
+                name="message"
+                rows="5"
+                required
+                placeholder={t("contact.form.messagePlaceholder")}></textarea>
+            </div>
+
+            <!-- Honeypot: botlar doldurur, insanlar görmez (güvenlik standardı) -->
+            <div class="contact__hp" aria-hidden="true">
+              <label for="contact-company">Company</label>
+              <input id="contact-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <Button type="submit" variant="primary">{t("contact.form.submit")}</Button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Harita gömme alanı: alıcı kendi iframe'ini buraya koyar.
+           Boşken bölüm hiç render edilmez (görünür placeholder yok). -->
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    padding-block: var(--ts-space-16) var(--ts-section-y);
+  }
+  .contact__grid {
+    margin-top: var(--ts-space-12);
+    display: grid;
+    gap: var(--ts-space-12);
+  }
+  @media (min-width: 1024px) {
+    .contact__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ts-space-16);
+      align-items: start;
+    }
+  }
+  .contact__locations {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-10);
+  }
+  .contact__loc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--ts-space-6);
+  }
+  @media (min-width: 640px) {
+    .contact__loc-list--multi {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .contact__subtitle {
+    margin: 0 0 var(--ts-space-4);
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-xl);
+    font-weight: var(--ts-weight-semibold);
+    line-height: var(--ts-leading-snug);
+    color: var(--ts-color-primary-900);
+  }
+  .contact__hours-list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+    max-width: 24rem;
+  }
+  .contact__hours-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ts-space-4);
+    padding-bottom: var(--ts-space-2);
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .contact__hours-row dt {
+    color: var(--ts-text-muted);
+  }
+  .contact__hours-row dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    color: var(--ts-color-primary-700);
+  }
+  .contact__direct p {
+    margin: 0 0 var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+  }
+  .contact__direct a {
+    color: var(--ts-color-accent-600);
+  }
+
+  .contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-5);
+    max-width: 30rem;
+  }
+  .contact__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-1);
+  }
+  .contact__field label {
+    font-size: var(--ts-text-sm);
+    font-weight: var(--ts-weight-medium);
+    color: var(--ts-color-primary-700);
+  }
+  .contact__field input,
+  .contact__field textarea {
+    min-height: 44px;
+    padding: var(--ts-space-3);
+    font: inherit;
+    font-size: var(--ts-text-base);
+    color: var(--ts-c-input-text);
+    background: var(--ts-c-input-bg);
+    border: 1px solid var(--ts-c-input-border);
+    border-radius: var(--ts-c-input-radius);
+  }
+  .contact__field textarea {
+    resize: vertical;
+  }
+  .contact__field input::placeholder,
+  .contact__field textarea::placeholder {
+    color: var(--ts-c-input-placeholder);
+  }
+  .contact__field input:focus-visible,
+  .contact__field textarea:focus-visible {
+    outline: none;
+    border-color: var(--ts-c-input-border-focus);
+    box-shadow: var(--ts-focus-ring);
+  }
+  .contact__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

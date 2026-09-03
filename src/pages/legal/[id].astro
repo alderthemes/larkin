@@ -1,0 +1,72 @@
+---
+/**
+ * Yasal sayfa şablonu — legal collection'ından üretilir (privacy, terms).
+ */
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "@studio/core/components/Container.astro";
+import { t } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("legal");
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={`${entry.data.title} — ${t("site.name")}`}>
+  <section class="legal">
+    <Container size="narrow">
+      <h1 class="legal__title">{entry.data.title}</h1>
+      <p class="legal__updated">
+        {t("legal.updated")}: <time datetime={entry.data.updated}>{entry.data.updated}</time>
+      </p>
+      <div class="legal__body">
+        <Content />
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal {
+    padding-block: var(--ts-space-16) var(--ts-section-y);
+  }
+  .legal__title {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-3xl);
+    line-height: var(--ts-leading-tight);
+  }
+  .legal__updated {
+    margin: var(--ts-space-3) 0 0;
+    font-size: var(--ts-text-sm);
+    color: var(--ts-text-muted);
+  }
+  .legal__body {
+    margin-top: var(--ts-space-10);
+    line-height: var(--ts-leading-body);
+  }
+  .legal__body :global(h2) {
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-xl);
+    margin: var(--ts-space-10) 0 var(--ts-space-3);
+  }
+  .legal__body :global(p) {
+    margin: 0 0 var(--ts-space-4);
+    color: var(--ts-text-muted);
+  }
+  .legal__body :global(strong) { color: var(--ts-text); }
+  .legal__body :global(em) {
+    display: block;
+    margin-top: var(--ts-space-8);
+    padding: var(--ts-space-4) var(--ts-space-5);
+    background: var(--ts-color-warning-soft);
+    border-left: 3px solid var(--ts-color-warning);
+    border-radius: var(--ts-radius-sm);
+    font-style: normal;
+    font-size: var(--ts-text-sm);
+  }
+</style>

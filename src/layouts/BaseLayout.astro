@@ -1,0 +1,81 @@
+---
+/**
+ * BaseLayout — meta/OG, fontlar, schema.org JSON-LD ve site kabuğu.
+ * Sayfalar `schema` prop'u ile kendi JSON-LD'sini geçirir.
+ */
+import "../styles/global.css";
+import { buildTitle, jsonLd } from "@studio/core/utils/seo";
+import { LOCALE, t } from "../lib/site";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  schema?: unknown;
+  noindex?: boolean;
+}
+
+const { title, description, image = "/og.jpg", schema, noindex = false } = Astro.props;
+const siteName = t("site.name");
+const fullTitle = buildTitle(title, siteName);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={LOCALE}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+    <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+
+    <!-- Fontlar self-host edilir (@fontsource, global.css içinden) — dış istek yok -->
+
+    {schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}
+  </head>
+  <body>
+    <a href="#main" class="skip-link">{t("a11y.skipToContent")}</a>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: var(--ts-space-4);
+    top: calc(-1 * var(--ts-space-24));
+    z-index: var(--ts-z-skip);
+    background: var(--ts-surface);
+    color: var(--ts-text);
+    padding: var(--ts-space-3) var(--ts-space-4);
+    border-radius: var(--ts-radius-md);
+    box-shadow: var(--ts-shadow-md);
+    transition: top var(--ts-duration-fast) var(--ts-ease-out);
+  }
+  .skip-link:focus-visible {
+    top: var(--ts-space-4);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skip-link {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,125 @@
+---
+/**
+ * Menü sayfası — tek sayfa, sticky kategori navigasyonu.
+ * Menu/MenuSection/MenuItem schema'sı collection'dan otomatik üretilir.
+ */
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Container from "@studio/core/components/Container.astro";
+import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import MenuList from "../../components/MenuList.astro";
+import { t } from "../../lib/site";
+import { menuSchema } from "@studio/core/utils/seo";
+
+const CATEGORY_ORDER = ["espresso", "brew", "food", "seasonal"] as const;
+
+const items = (await getCollection("menu")).filter((i) => i.data.available);
+
+/* Boş kategori sticky nav'da yer kaplamaz */
+const categories = CATEGORY_ORDER.filter((c) => items.some((i) => i.data.category === c));
+
+const url = new URL("/menu/", Astro.site).toString();
+const schema = menuSchema(
+  categories.map((category) => ({
+    name: t(`menu.categories.${category}`),
+    items: items
+      .filter((i) => i.data.category === category)
+      .sort((a, b) => a.data.order - b.data.order)
+      .map((i) => ({
+        name: i.data.name,
+        description: i.data.description,
+        price: i.data.price,
+        currency: i.data.currency,
+        tags: i.data.tags,
+      })),
+  })),
+  url
+);
+---
+
+<BaseLayout
+  title={t("nav.menu")}
+  description={t("menu.pageSubtitle")}
+  schema={schema}
+>
+  <section class="menu-page">
+    <Container>
+      <!-- Eyebrow bilerek yok: sayfanın tek güçlü başlığı H1'dir; "What we serve"
+           hem eyebrow hem başlık olarak tekrarlanırsa hiyerarşi zayıflar. -->
+      <SectionHeading title={t("menu.pageTitle")} subtitle={t("menu.pageSubtitle")} level="h1" />
+
+      <nav class="menu-page__nav" aria-label={t("menu.categoriesNav")}>
+        <ul>
+          {
+            categories.map((category) => (
+              <li>
+                <a href={`#${category}`}>{t(`menu.categories.${category}`)}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="menu-page__list">
+        <MenuList items={items} categories={[...categories]} withAnchors />
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .menu-page {
+    padding-block: var(--ts-space-16) var(--ts-section-y);
+  }
+  .menu-page__nav {
+    position: sticky;
+    top: var(--ts-c-nav-height, 64px);
+    z-index: var(--ts-z-sticky);
+    margin-top: var(--ts-space-10);
+    padding-block: var(--ts-space-3);
+    background: color-mix(in srgb, var(--ts-surface) 94%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .menu-page__nav ul {
+    list-style: none;
+    display: flex;
+    gap: var(--ts-space-1);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .menu-page__nav ul::-webkit-scrollbar {
+    display: none;
+  }
+  .menu-page__nav li {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+  .menu-page__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--ts-space-4);
+    border-radius: var(--ts-radius-md);
+    font-size: var(--ts-text-sm);
+    font-weight: var(--ts-weight-medium);
+    color: var(--ts-color-primary-700);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .menu-page__nav a:hover {
+    background: var(--ts-surface-alt);
+    color: var(--ts-color-primary-900);
+  }
+  .menu-page__nav a:focus-visible {
+    outline: none;
+    box-shadow: var(--ts-focus-ring);
+  }
+  .menu-page__list {
+    margin-top: var(--ts-space-12);
+    max-width: 44rem;
+  }
+</style>

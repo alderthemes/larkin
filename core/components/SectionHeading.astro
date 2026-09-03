@@ -1,0 +1,70 @@
+---
+/**
+ * SectionHeading — eyebrow + başlık + alt metin üçlüsü.
+ * Section'ların standart açılış bloğu; hizalama prop ile seçilir.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  align?: "start" | "center";
+  /** Başlık etiketi — sayfa hiyerarşisine göre h1/h2/h3 */
+  level?: "h1" | "h2" | "h3";
+  class?: string;
+}
+const {
+  eyebrow,
+  title,
+  subtitle,
+  align = "start",
+  level: Heading = "h2",
+  class: className = "",
+} = Astro.props;
+---
+
+<header class:list={["ts-heading", `ts-heading--${align}`, className]}>
+  {eyebrow && <p class="ts-heading__eyebrow">{eyebrow}</p>}
+  <Heading class="ts-heading__title">{title}</Heading>
+  {subtitle && <p class="ts-heading__subtitle">{subtitle}</p>}
+</header>
+
+<style>
+  .ts-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-3);
+    max-width: 44rem;
+  }
+  .ts-heading--center {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+  .ts-heading__eyebrow {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: var(--ts-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ts-color-accent-600);
+  }
+  .ts-heading__title {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-2xl);
+    line-height: var(--ts-leading-tight);
+    letter-spacing: var(--ts-tracking-tight);
+    font-weight: var(--ts-weight-bold);
+    color: var(--ts-c-section-heading-color);
+    text-wrap: balance;
+  }
+  .ts-heading__subtitle {
+    margin: 0;
+    font-size: var(--ts-text-lg);
+    line-height: var(--ts-leading-snug);
+    color: var(--ts-text-muted);
+  }
+  @media (min-width: 768px) {
+    .ts-heading__title { font-size: var(--ts-text-3xl); }
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+/**
+ * Hero — sayfa açılış section'ı.
+ * Metin + CTA'lar prop'la, görsel alanı slot'la gelir ("media" slot).
+ * Tek baskın CTA ilkesi (Von Restorff): primary tek, secondary yardımcı.
+ */
+import Container from "../components/Container.astro";
+import Button from "../components/Button.astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  /** "split": metin + media yan yana; "center": ortalanmış tek kolon */
+  layout?: "split" | "center";
+  class?: string;
+}
+const {
+  eyebrow,
+  title,
+  lead,
+  primaryCta,
+  secondaryCta,
+  layout = "split",
+  class: className = "",
+} = Astro.props;
+const hasMedia = Astro.slots.has("media");
+---
+
+<section class:list={["ts-hero", `ts-hero--${layout}`, className]}>
+  <Container>
+    <div class="ts-hero__grid">
+      <div class="ts-hero__content">
+        {eyebrow && <p class="ts-hero__eyebrow">{eyebrow}</p>}
+        <h1 class="ts-hero__title">{title}</h1>
+        {lead && <p class="ts-hero__lead">{lead}</p>}
+        {
+          (primaryCta || secondaryCta) && (
+            <div class="ts-hero__actions">
+              {primaryCta && (
+                <Button href={primaryCta.href} variant="primary" size="lg">
+                  {primaryCta.label}
+                </Button>
+              )}
+              {secondaryCta && (
+                <Button href={secondaryCta.href} variant="secondary" size="lg">
+                  {secondaryCta.label}
+                </Button>
+              )}
+            </div>
+          )
+        }
+        <slot name="extra" />
+      </div>
+      {
+        hasMedia && (
+          <div class="ts-hero__media">
+            <slot name="media" />
+          </div>
+        )
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  .ts-hero {
+    padding-block: var(--ts-section-y);
+    background: var(--ts-surface-alt);
+  }
+  .ts-hero__grid {
+    display: grid;
+    gap: var(--ts-space-10);
+    align-items: center;
+  }
+  .ts-hero--split .ts-hero__grid {
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 1024px) {
+    .ts-hero--split .ts-hero__grid {
+      /* minmax(0, …): uzun satırlı media (kod paneli, tablo) kolonu şişiremez */
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
+  }
+  .ts-hero--center .ts-hero__content {
+    text-align: center;
+    align-items: center;
+    margin-inline: auto;
+    max-width: 46rem;
+  }
+  .ts-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-5);
+  }
+  .ts-hero__eyebrow {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: var(--ts-tracking-wide);
+    text-transform: uppercase;
+    color: var(--ts-color-accent-600);
+  }
+  .ts-hero__title {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    /* akışkan display ölçeği (T2): 3xl → 5xl, tek token */
+    font-size: var(--ts-text-display);
+    line-height: var(--ts-leading-display);
+    letter-spacing: var(--ts-tracking-tight);
+    font-weight: var(--ts-weight-bold);
+    text-wrap: balance;
+  }
+  .ts-hero__lead {
+    margin: 0;
+    font-size: var(--ts-text-lg);
+    line-height: var(--ts-leading-snug);
+    color: var(--ts-text-muted);
+    max-width: 40rem;
+  }
+  .ts-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ts-space-3);
+    margin-top: var(--ts-space-2);
+  }
+  .ts-hero--center .ts-hero__actions { justify-content: center; }
+  .ts-hero__media :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--ts-radius-xl);
+    box-shadow: var(--ts-shadow-lg);
+    display: block;
+  }
+</style>

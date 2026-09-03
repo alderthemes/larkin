@@ -1,0 +1,102 @@
+---
+/**
+ * GalleryStrip — yatay kaydırmalı mekan şeridi (ui-spec §4.7).
+ *
+ * Görseller `src/assets/images/` içinden konvansiyonla bulunur. Bir dosya
+ * yoksa o kart sessizce atlanır; hiç görsel yoksa BÖLÜM HİÇ RENDER EDİLMEZ.
+ * Kırık görsel veya "foto buraya gelecek" kutusu imkânsızdır — plug-and-play
+ * standardı görünür placeholder'ı yasaklar.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Container from "@studio/core/components/Container.astro";
+import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import { t } from "../lib/site";
+
+const images = import.meta.glob<{ default: ImageMetadata }>("../assets/images/*.jpg", {
+  eager: true,
+});
+const pick = (file: string) => images[`../assets/images/${file}.jpg`]?.default;
+
+/* Sıra art direction listesine göre (brand-direction.md §4.1) */
+const SHOTS = [
+  { file: "02-bar", altKey: "bar" },
+  { file: "03-latte", altKey: "latte" },
+  { file: "04-pourover", altKey: "pourover" },
+  { file: "05-food", altKey: "food" },
+  { file: "06-storefront", altKey: "storefront" },
+  { file: "07-detail", altKey: "detail" },
+];
+
+const shots = SHOTS.map((s) => ({ ...s, img: pick(s.file) })).filter((s) => s.img);
+---
+
+{
+  shots.length > 0 && (
+    <section class="gallery">
+      <Container>
+        <SectionHeading eyebrow={t("gallery.eyebrow")} title={t("gallery.title")} />
+      </Container>
+      <div class="gallery__scroller">
+        <ul class="gallery__track">
+          {shots.map((shot) => (
+            <li class="gallery__item">
+              <Image
+                src={shot.img!}
+                alt={t(`gallery.alts.${shot.altKey}`)}
+                widths={[280, 560]}
+                sizes="(min-width: 768px) 280px, 240px"
+                loading="lazy"
+                decoding="async"
+                class="gallery__img"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .gallery {
+    padding-block: var(--ts-section-y);
+  }
+  .gallery__scroller {
+    margin-top: var(--ts-space-10);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    padding-inline: var(--ts-container-pad);
+    padding-bottom: var(--ts-space-3);
+  }
+  .gallery__track {
+    list-style: none;
+    display: flex;
+    gap: var(--ts-space-4);
+    margin: 0;
+    padding: 0;
+    width: max-content;
+  }
+  .gallery__item {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+  .gallery__img {
+    display: block;
+    width: 240px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: var(--ts-radius-lg);
+    background: var(--ts-surface-alt);
+  }
+  @media (min-width: 768px) {
+    .gallery__img {
+      width: 280px;
+      height: 200px;
+    }
+    .gallery__scroller {
+      padding-inline: max(var(--ts-container-pad), calc((100vw - var(--ts-container-max)) / 2));
+    }
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "@studio/core/components/Container.astro";
+import Button from "@studio/core/components/Button.astro";
+import { t } from "../lib/site";
+---
+
+<BaseLayout title="404" description={t("notFound.body")} noindex>
+  <section class="nf">
+    <Container size="narrow">
+      <p class="nf__code" aria-hidden="true">404</p>
+      <h1 class="nf__title">{t("notFound.title")}</h1>
+      <p class="nf__body">{t("notFound.body")}</p>
+      <div class="nf__actions">
+        <Button href="/" variant="primary">{t("notFound.cta")}</Button>
+        <Button href="/menu/" variant="secondary">{t("notFound.ctaSecondary")}</Button>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    padding-block: var(--ts-space-24);
+    text-align: center;
+  }
+  .nf :global(.ts-container) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ts-space-5);
+  }
+  .nf__code {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-4xl);
+    color: var(--ts-color-primary-500); /* büyük metin >=3:1 (WCAG AA) */
+    font-weight: var(--ts-weight-bold);
+  }
+  .nf__title {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-2xl);
+    color: var(--ts-color-primary-900);
+  }
+  .nf__body {
+    margin: 0;
+    color: var(--ts-text-muted);
+    max-width: 42ch;
+  }
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ts-space-3);
+  }
+</style>

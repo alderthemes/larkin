@@ -1,0 +1,97 @@
+---
+/**
+ * Button — href verilirse <a>, verilmezse <button> render eder.
+ * Variant ve boyutlar token'lardan türetilir; focus ring + min 44px
+ * touch target (WCAG 2.1 AA) garanti edilir.
+ */
+interface Props {
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  variant?: "primary" | "secondary" | "ghost";
+  size?: "sm" | "md" | "lg";
+  class?: string;
+  ariaLabel?: string;
+  target?: string;
+  rel?: string;
+}
+const {
+  href,
+  type = "button",
+  variant = "primary",
+  size = "md",
+  class: className = "",
+  ariaLabel,
+  target,
+  rel,
+} = Astro.props;
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  target={target}
+  rel={rel}
+  aria-label={ariaLabel}
+  class:list={["ts-btn", `ts-btn--${variant}`, `ts-btn--${size}`, className]}
+>
+  <slot />
+</Tag>
+
+<style>
+  .ts-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ts-space-2);
+    font-family: var(--ts-font-sans);
+    font-weight: var(--ts-weight-semibold);
+    border-radius: var(--ts-c-btn-radius);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--ts-duration-fast) var(--ts-ease-out),
+      border-color var(--ts-duration-fast) var(--ts-ease-out),
+      color var(--ts-duration-fast) var(--ts-ease-out);
+  }
+  .ts-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ts-c-btn-focus-ring);
+  }
+  .ts-btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* Sizes — hepsi ≥44px touch target */
+  .ts-btn--sm { min-height: 44px; padding: var(--ts-space-2) var(--ts-space-4); font-size: var(--ts-text-sm); }
+  .ts-btn--md { min-height: 44px; padding: var(--ts-space-2) var(--ts-space-5); font-size: var(--ts-text-base); }
+  .ts-btn--lg { min-height: 48px; padding: var(--ts-space-3) var(--ts-space-6); font-size: var(--ts-text-base); }
+
+  /* Variants */
+  /* Variant renkleri COMPONENT katmanından gelir (--ts-c-btn-*) */
+  .ts-btn--primary {
+    background: var(--ts-c-btn-bg);
+    color: var(--ts-c-btn-text);
+    border-color: var(--ts-c-btn-border);
+  }
+  .ts-btn--primary:hover { background: var(--ts-c-btn-bg-hover); }
+
+  .ts-btn--secondary {
+    background: var(--ts-c-btn-secondary-bg);
+    color: var(--ts-c-btn-secondary-text);
+    border-color: var(--ts-c-btn-secondary-border);
+  }
+  .ts-btn--secondary:hover {
+    border-color: var(--ts-c-btn-secondary-border-hover);
+    background: var(--ts-c-btn-secondary-bg-hover);
+  }
+
+  .ts-btn--ghost {
+    background: transparent;
+    color: var(--ts-c-btn-secondary-text);
+  }
+  .ts-btn--ghost:hover { background: var(--ts-surface-alt); }
+</style>

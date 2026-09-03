@@ -1,0 +1,105 @@
+---
+/**
+ * OpenStatus — "Today: 07:00 - 18:00 · Open now" satırı.
+ *
+ * Cafe ziyaretçisinin ekranda ilk aradığı bilgi (research.md §4, AK-1).
+ * Sunucuda gerçek bir fallback basılır (JS kapalıysa da doğru bilgi görünür);
+ * ~400B inline script yalnızca BUGÜNÜN aralığını ve açık/kapalı durumunu
+ * ziyaretçinin saatine göre günceller.
+ */
+import { t } from "../lib/site";
+import { weeklyRanges, weeklyMinutes, type Location } from "../lib/locations";
+
+interface Props {
+  location: Location;
+  class?: string;
+}
+const { location, class: className = "" } = Astro.props;
+
+const ranges = weeklyRanges(location);
+const minutes = weeklyMinutes(location);
+/* Fallback: tüm hafta aynıysa o aralık, değilse genel açılış cümlesi. */
+const distinct = [...new Set(ranges.filter(Boolean))];
+const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback");
+---
+
+<p
+  class:list={["open-status", className]}
+  data-ranges={JSON.stringify(ranges)}
+  data-minutes={JSON.stringify(minutes)}
+  data-open={t("location.openNow")}
+  data-closed={t("location.closedNow")}
+>
+  <span class="open-status__label">{t("location.todayLabel")}:</span>
+  <span class="open-status__value">{fallback}</span>
+  <span class="open-status__state" hidden>
+    <span class="open-status__dot" aria-hidden="true"></span>
+    <span class="open-status__state-text"></span>
+  </span>
+</p>
+
+<script>
+  for (const el of document.querySelectorAll<HTMLElement>(".open-status")) {
+    try {
+      const ranges = JSON.parse(el.dataset.ranges || "[]") as string[];
+      const minutes = JSON.parse(el.dataset.minutes || "[]") as ([number, number] | null)[];
+      const now = new Date();
+      const day = now.getDay();
+      const value = el.querySelector(".open-status__value");
+      if (ranges[day] && value) value.textContent = ranges[day];
+
+      const today = minutes[day];
+      const state = el.querySelector<HTMLElement>(".open-status__state");
+      const text = el.querySelector(".open-status__state-text");
+      if (state && text) {
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        const isOpen = Boolean(today && nowMin >= today[0] && nowMin < today[1]);
+        text.textContent = isOpen ? el.dataset.open || "" : el.dataset.closed || "";
+        state.classList.toggle("open-status__state--open", isOpen);
+        state.hidden = false;
+      }
+    } catch {
+      /* sunucu tarafı fallback metni yerinde kalır */
+    }
+  }
+</script>
+
+<style>
+  .open-status {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+    color: var(--ts-text-muted);
+  }
+  .open-status__label {
+    font-weight: var(--ts-weight-semibold);
+    color: var(--ts-color-primary-700);
+  }
+  .open-status__value {
+    font-variant-numeric: tabular-nums;
+    color: var(--ts-color-primary-700);
+  }
+  .open-status__state {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ts-space-2);
+    padding-left: var(--ts-space-2);
+    border-left: 1px solid var(--ts-border);
+    font-weight: var(--ts-weight-medium);
+  }
+  .open-status__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--ts-radius-full);
+    background: var(--ts-color-primary-400);
+  }
+  .open-status__state--open .open-status__dot {
+    background: var(--ts-color-success);
+  }
+  .open-status__state--open .open-status__state-text {
+    color: var(--ts-color-success);
+  }
+</style>

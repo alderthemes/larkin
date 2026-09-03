@@ -1,0 +1,77 @@
+---
+/**
+ * WorkspaceInfo — "çalışılabilir mi?" bloğu (cafe kurulu: dürüst cevap
+ * güven kazandırır; laptop politikasını saklamak en sık yapılan hatadır).
+ * Dört gerçek: wifi, priz, ses seviyesi, laptop politikası.
+ */
+import Container from "@studio/core/components/Container.astro";
+import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import { t } from "../lib/site";
+
+const facts = [
+  { key: "wifi", title: t("workspace.wifiTitle"), body: t("workspace.wifiBody") },
+  { key: "power", title: t("workspace.powerTitle"), body: t("workspace.powerBody") },
+  { key: "noise", title: t("workspace.noiseTitle"), body: t("workspace.noiseBody") },
+  { key: "laptop", title: t("workspace.laptopTitle"), body: t("workspace.laptopBody") },
+];
+---
+
+<section class="workspace" id="workspace">
+  <Container>
+    <div class="workspace__inner">
+      <SectionHeading
+        eyebrow={t("workspace.eyebrow")}
+        title={t("workspace.title")}
+        subtitle={t("workspace.lead")}
+      />
+      <dl class="workspace__grid">
+        {
+          facts.map((fact) => (
+            <div class="workspace__item">
+              <dt class="workspace__term">{fact.title}</dt>
+              <dd class="workspace__def">{fact.body}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .workspace {
+    padding-block: var(--ts-section-y);
+    background: var(--ts-surface-alt);
+  }
+  .workspace__inner {
+    max-width: 46rem;
+  }
+  .workspace__grid {
+    margin: var(--ts-space-10) 0 0;
+    display: grid;
+    gap: var(--ts-space-6);
+  }
+  @media (min-width: 640px) {
+    .workspace__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--ts-space-8);
+    }
+  }
+  .workspace__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-1);
+    padding-left: var(--ts-space-4);
+    border-left: 2px solid var(--ts-color-accent-400);
+  }
+  .workspace__term {
+    font-size: var(--ts-text-base);
+    font-weight: var(--ts-weight-semibold);
+    color: var(--ts-color-primary-900);
+  }
+  .workspace__def {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    color: var(--ts-text-muted);
+  }
+</style>

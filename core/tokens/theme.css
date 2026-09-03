@@ -1,0 +1,111 @@
+/* =============================================================
+   @studio/core — Tailwind CSS 4 theme köprüsü
+   -------------------------------------------------------------
+   Tailwind utility'lerini token custom property'lerine bağlar.
+   `@theme inline` kullanıldığı için utility'ler var() referansı
+   üretir → template, :root'ta --ts-* değerini override ettiğinde
+   tüm utility'ler otomatik temalanır.
+
+   Kullanım (her projenin global.css'inde):
+     @import "tailwindcss";
+     @import "@studio/core/tokens.css";
+     @import "@studio/core/theme.css";
+   ============================================================= */
+
+@theme inline {
+  /* Colors */
+  --color-primary-50:  var(--ts-color-primary-50);
+  --color-primary-100: var(--ts-color-primary-100);
+  --color-primary-200: var(--ts-color-primary-200);
+  --color-primary-300: var(--ts-color-primary-300);
+  --color-primary-400: var(--ts-color-primary-400);
+  --color-primary-500: var(--ts-color-primary-500);
+  --color-primary-600: var(--ts-color-primary-600);
+  --color-primary-700: var(--ts-color-primary-700);
+  --color-primary-800: var(--ts-color-primary-800);
+  --color-primary-900: var(--ts-color-primary-900);
+  --color-primary-950: var(--ts-color-primary-950);
+
+  --color-accent-400: var(--ts-color-accent-400);
+  --color-accent-500: var(--ts-color-accent-500);
+  --color-accent-600: var(--ts-color-accent-600);
+
+  --color-surface:        var(--ts-surface);
+  --color-surface-alt:    var(--ts-surface-alt);
+  --color-surface-invert: var(--ts-surface-invert);
+  --color-ink:            var(--ts-text);
+  --color-ink-muted:      var(--ts-text-muted);
+  --color-ink-invert:     var(--ts-text-invert);
+  --color-line:           var(--ts-border);
+  --color-line-strong:    var(--ts-border-strong);
+  --color-on-primary:     var(--ts-color-on-primary);
+  --color-on-accent:      var(--ts-color-on-accent);
+
+  --color-success:      var(--ts-color-success);
+  --color-success-soft: var(--ts-color-success-soft);
+  --color-warning:      var(--ts-color-warning);
+  --color-warning-soft: var(--ts-color-warning-soft);
+  --color-error:        var(--ts-color-error);
+  --color-error-soft:   var(--ts-color-error-soft);
+  --color-info:         var(--ts-color-info);
+  --color-info-soft:    var(--ts-color-info-soft);
+
+  /* Typography */
+  --font-sans:    var(--ts-font-sans);
+  --font-display: var(--ts-font-display);
+  --font-mono:    var(--ts-font-mono);
+
+  --text-xs:   var(--ts-text-xs);
+  --text-sm:   var(--ts-text-sm);
+  --text-base: var(--ts-text-base);
+  --text-lg:   var(--ts-text-lg);
+  --text-xl:   var(--ts-text-xl);
+  --text-2xl:  var(--ts-text-2xl);
+  --text-3xl:  var(--ts-text-3xl);
+  --text-4xl:  var(--ts-text-4xl);
+  --text-5xl:  var(--ts-text-5xl);
+  --text-display: var(--ts-text-display);
+
+  --tracking-tight: var(--ts-tracking-tight);
+  --tracking-wide:  var(--ts-tracking-wide);
+
+  /* Radius */
+  --radius-sm:  var(--ts-radius-sm);
+  --radius-md:  var(--ts-radius-md);
+  --radius-lg:  var(--ts-radius-lg);
+  --radius-xl:  var(--ts-radius-xl);
+
+  /* Shadows */
+  --shadow-sm: var(--ts-shadow-sm);
+  --shadow-md: var(--ts-shadow-md);
+  --shadow-lg: var(--ts-shadow-lg);
+  --shadow-xl: var(--ts-shadow-xl);
+
+  /* Motion */
+  --ease-out:    var(--ts-ease-out);
+  --ease-in:     var(--ts-ease-in);
+  --ease-in-out: var(--ts-ease-in-out);
+}
+
+/* Taban gövde stili — her iki projede ortak zemin */
+@layer base {
+  body {
+    background-color: var(--ts-surface);
+    color: var(--ts-text);
+    font-family: var(--ts-font-sans);
+    font-size: var(--ts-text-base);
+    line-height: var(--ts-leading-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Focus ring: outline yerine iki halkalı box-shadow (T1). Öğenin kendi
+     border-radius'ına dokunulmaz — kart/görsel köşeleri bozulmaz. */
+  :focus-visible {
+    outline: none;
+    box-shadow: var(--ts-focus-ring);
+  }
+
+  ::selection {
+    background: var(--ts-color-primary-200);
+  }
+}

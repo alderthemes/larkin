@@ -1,0 +1,59 @@
+/* larkin — global stil girişi
+   Sıra önemli: Tailwind → core token'lar → theme köprüsü → tema override */
+/* Self-host fontlar (D-011): GDPR + performans + sıfır dış istek */
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+@import "@studio/core/tokens.css";
+@import "@studio/core/theme.css";
+
+/* =====================================================
+   larkin TEMA OVERRIDE'ı
+   Kimlik üçlemesi (theme-contract §5.1): gündüz / krem / toprak
+   Core token'ların üzerine bu template'in kimliği yazılır.
+   Başka bir dikey/tema üretirken YALNIZCA bu blok değişir.
+   Kaynak: design/ui-spec.md §1 · Kontrast tablosu: design/brand-direction.md §2.3
+   ===================================================== */
+:root {
+  /* Krem/espresso marka skalası — gündüz cafe kimliği */
+  --ts-color-primary-50:  #faf8f5;
+  --ts-color-primary-100: #f3efe8;
+  --ts-color-primary-200: #e5dfd5;
+  --ts-color-primary-300: #cfc5b5;
+  --ts-color-primary-400: #a89a88;
+  --ts-color-primary-500: #7a6e5e;
+  --ts-color-primary-600: #5c5244;
+  --ts-color-primary-700: #443c32;
+  --ts-color-primary-800: #302a22;
+  --ts-color-primary-900: #231e18;
+  --ts-color-primary-950: #161310;
+
+  /* Terracotta/kil accent — seramik ve tarçın referansı.
+     bramley'in bakır/amber accent'inden ~25° hue farkı (raf testi). */
+  --ts-color-accent-400: #c4936e;
+  --ts-color-accent-500: #a86f52;
+  --ts-color-accent-600: #956048; /* 4.9:1 on --ts-surface (WCAG AA) */
+
+  /* Krem zemin tonları — sabah ışığı, saf beyaz değil */
+  --ts-surface:     #faf8f5;
+  --ts-surface-alt: #f3efe8;
+
+  /* On-color sözleşmesi (D-027): accent değişti → on-accent doğrulandı */
+  --ts-color-on-primary: #ffffff; /* 16.5:1 on primary-900 */
+  --ts-color-on-accent:  #ffffff; /* 5.2:1 on accent-600 */
+
+  /* Buton zemini: espresso koyu.
+     Component katmanı override'ı — theme-contract §7'de larkin gerekçesiyle
+     izinli listeye alındı: CTA ağırlığı dikeye göre değişir (restoran orta
+     tonlu marka rengi, cafe editoryal siyaha yakın). */
+  --ts-c-btn-bg:       var(--ts-color-primary-900);
+  --ts-c-btn-bg-hover: var(--ts-color-primary-950);
+
+  /* Focus ring iç halkası terracotta — her iki zeminde de ≥3:1 */
+  --ts-focus-ring-color: var(--ts-color-accent-600);
+
+  /* Display: Bricolage Grotesque (yumuşak sans), gövde: Inter */
+  --ts-font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --ts-font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+}

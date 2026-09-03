@@ -1,0 +1,37 @@
+---
+/**
+ * Card — slot tabanlı içerik kartı. Görsel + gövde düzenini
+ * template belirler; kart yalnızca zemin/çerçeve/gölge sağlar.
+ */
+interface Props {
+  as?: "div" | "article" | "li";
+  padding?: "none" | "md" | "lg";
+  hover?: boolean;
+  class?: string;
+}
+const { as: Tag = "div", padding = "md", hover = false, class: className = "" } = Astro.props;
+---
+
+<Tag class:list={["ts-card", `ts-card--pad-${padding}`, hover && "ts-card--hover", className]}>
+  <slot />
+</Tag>
+
+<style>
+  .ts-card {
+    background: var(--ts-surface);
+    border: 1px solid var(--ts-border);
+    border-radius: var(--ts-radius-lg);
+    box-shadow: var(--ts-shadow-sm);
+    overflow: hidden;
+  }
+  .ts-card--pad-md { padding: var(--ts-space-6); }
+  .ts-card--pad-lg { padding: var(--ts-space-8); }
+  .ts-card--hover {
+    transition: box-shadow var(--ts-duration-base) var(--ts-ease-out),
+      transform var(--ts-duration-base) var(--ts-ease-out);
+  }
+  .ts-card--hover:hover {
+    box-shadow: var(--ts-shadow-lg);
+    transform: translateY(-2px);
+  }
+</style>

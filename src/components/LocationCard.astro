@@ -1,0 +1,195 @@
+---
+/**
+ * LocationCard — adres + bugünkü saat + olanaklar + yol tarifi (ui-spec §4.5).
+ *
+ * Ana sayfada hero'nun yanında (above the fold), iletişim sayfasında grid
+ * içinde kullanılır. Gölge yok: bilgi taşıyan kart, tıklanabilir yüzey değil.
+ */
+import Button from "@studio/core/components/Button.astro";
+import OpenStatus from "./OpenStatus.astro";
+import { t } from "../lib/site";
+import { formatAddress, weeklyRanges, type Location } from "../lib/locations";
+
+interface Props {
+  location: Location;
+  /** Haftanın tamamını açılabilir <details> olarak göster */
+  showAllHours?: boolean;
+  headingLevel?: "h2" | "h3";
+  class?: string;
+}
+const {
+  location,
+  showAllHours = false,
+  headingLevel: Heading = "h3",
+  class: className = "",
+} = Astro.props;
+
+const d = location.data;
+const address = formatAddress(location);
+const ranges = weeklyRanges(location);
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+/* Pazartesiden başlat — haftalık tabloların yerleşik okuma sırası */
+const week = [1, 2, 3, 4, 5, 6, 0].map((i) => ({
+  key: DAY_KEYS[i],
+  label: DAY_LABELS[i],
+  range: ranges[i],
+}));
+
+const amenities = [
+  d.wifi ? "Free Wi-Fi" : null,
+  d.outlets ? "Power outlets" : null,
+  d.laptopFriendly ? "Laptop-friendly" : null,
+].filter(Boolean) as string[];
+---
+
+<article class:list={["loc-card", className]}>
+  <Heading class="loc-card__name">{d.name}</Heading>
+
+  <p class="loc-card__address">
+    <svg class="loc-card__icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+    <span>{address}</span>
+  </p>
+
+  <OpenStatus location={location} class="loc-card__hours" />
+
+  {
+    showAllHours && (
+      <details class="loc-card__all-hours">
+        <summary>{t("location.allHours")}</summary>
+        <dl class="loc-card__week">
+          {week.map((day) => (
+            <div class="loc-card__week-row">
+              <dt>{day.label}</dt>
+              <dd>{day.range || t("location.closedNow")}</dd>
+            </div>
+          ))}
+        </dl>
+      </details>
+    )
+  }
+
+  {
+    amenities.length > 0 && (
+      <p class="loc-card__amenities">
+        <span class="loc-card__amenities-label">{t("location.amenities")}:</span>{" "}
+        {amenities.join(" · ")}
+      </p>
+    )
+  }
+
+  <p class="loc-card__walkin">{t("location.walkInOnly")}</p>
+
+  {
+    d.mapUrl && (
+      <div class="loc-card__actions">
+        <Button
+          href={d.mapUrl}
+          variant="secondary"
+          size="sm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t("location.directions")}
+        </Button>
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .loc-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-3);
+    background: var(--ts-surface-alt);
+    border: 1px solid var(--ts-border);
+    border-radius: var(--ts-radius-lg);
+    padding: var(--ts-space-6);
+  }
+  .loc-card__name {
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-xl);
+    font-weight: var(--ts-weight-semibold);
+    line-height: var(--ts-leading-snug);
+    color: var(--ts-color-primary-900);
+  }
+  .loc-card__address {
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+    color: var(--ts-color-primary-700);
+  }
+  .loc-card__icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    fill: none;
+    stroke: var(--ts-color-accent-600);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .loc-card__all-hours {
+    font-size: var(--ts-text-sm);
+  }
+  .loc-card__all-hours summary {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ts-color-accent-600);
+    font-weight: var(--ts-weight-medium);
+  }
+  .loc-card__all-hours summary:focus-visible {
+    outline: none;
+    box-shadow: var(--ts-focus-ring);
+    border-radius: var(--ts-radius-sm);
+  }
+  .loc-card__week {
+    margin: 0;
+    display: grid;
+    gap: var(--ts-space-1);
+  }
+  .loc-card__week-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ts-space-4);
+    padding-block: var(--ts-space-1);
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .loc-card__week-row:last-child {
+    border-bottom: none;
+  }
+  .loc-card__week dt {
+    color: var(--ts-text-muted);
+  }
+  .loc-card__week dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    color: var(--ts-color-primary-700);
+  }
+  .loc-card__amenities {
+    margin: 0;
+    font-size: var(--ts-text-xs);
+    color: var(--ts-text-muted);
+  }
+  .loc-card__amenities-label {
+    font-weight: var(--ts-weight-semibold);
+  }
+  .loc-card__walkin {
+    margin: 0;
+    font-size: var(--ts-text-xs);
+    color: var(--ts-text-muted);
+  }
+  .loc-card__actions {
+    margin-top: var(--ts-space-1);
+  }
+</style>

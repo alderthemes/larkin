@@ -1,0 +1,359 @@
+/* =============================================================
+   @studio/core — Design Tokens (single source of truth)
+   -------------------------------------------------------------
+   3 KATMANLI MİMARİ (D-025):
+
+     1. PRIMITIVE  (--ts-p-*)  — Ham ölçekler, mutlak değerler.
+        Tema override etmez; sistemin referans veritabanı.
+     2. SEMANTIC   (--ts-*)    — Rol bazlı. Component'ler ve
+        tema override'ları BU katmanla çalışır.
+     3. COMPONENT  (--ts-c-*)  — Bileşen başına. Semantic'e bağlı;
+        nadiren override edilir, tema sözleşmesinde belirtilir.
+
+   Geriye dönük uyum: mevcut --ts-* adları KORUNDU. Tema override
+   kalıbı (global.css :root) DEĞİŞMEDİ — 2 canlı site görsel
+   olarak aynı kalır.
+
+   Ölçekler: ux-ai-pipeline-v2 referans katmanından:
+   spacing 4px base / type scale 1.25 (Major Third) / WCAG 2.1 AA.
+   ============================================================= */
+
+:root {
+  /* ==========================================================
+     KATMAN 1 — PRIMITIVE (--ts-p-*)
+     Ham renk skalaları, tipografi değerleri, spacing birimleri.
+     Doğrudan component'te KULLANILMAZ; semantic katmana beslenir.
+     ========================================================== */
+
+  /* ---------- P: Color — brand primary (nötr varsayılan) ---------- */
+  --ts-p-color-primary-50:  #f4f6f7;
+  --ts-p-color-primary-100: #e3e8ea;
+  --ts-p-color-primary-200: #c9d3d7;
+  --ts-p-color-primary-300: #a3b4bb;
+  --ts-p-color-primary-400: #768e97;
+  --ts-p-color-primary-500: #5b737d;
+  --ts-p-color-primary-600: #4e616a;
+  --ts-p-color-primary-700: #435159;
+  --ts-p-color-primary-800: #3c464c;
+  --ts-p-color-primary-900: #353d42;
+  --ts-p-color-primary-950: #21272b;
+
+  /* ---------- P: Color — accent ---------- */
+  --ts-p-color-accent-400: #d9a441;
+  --ts-p-color-accent-500: #c98f2b;
+  --ts-p-color-accent-600: #8a5c17;
+
+  /* ---------- P: Color — neutral ---------- */
+  --ts-p-color-neutral-0:   #ffffff;
+  --ts-p-color-neutral-50:  #fafaf9;
+  --ts-p-color-neutral-100: #f5f5f4;
+  --ts-p-color-neutral-200: #e7e5e4;
+  --ts-p-color-neutral-300: #d6d3d1;
+  --ts-p-color-neutral-400: #a8a29e;
+  --ts-p-color-neutral-500: #78716c;
+  --ts-p-color-neutral-600: #57534e;
+  --ts-p-color-neutral-700: #44403c;
+  --ts-p-color-neutral-800: #292524;
+  --ts-p-color-neutral-900: #1c1917;
+  --ts-p-color-neutral-950: #0f0d0c;
+
+  /* ---------- P: Color — status ---------- */
+  --ts-p-color-success:      #15803d;
+  --ts-p-color-success-soft: #f0fdf4;
+  --ts-p-color-warning:      #a16207;
+  --ts-p-color-warning-soft: #fefce8;
+  --ts-p-color-error:        #b91c1c;
+  --ts-p-color-error-soft:   #fef2f2;
+  --ts-p-color-info:         #1d4ed8;
+  --ts-p-color-info-soft:    #eff6ff;
+
+  /* ---------- P: Typography ---------- */
+  --ts-p-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --ts-p-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ts-p-text-xs:   0.8125rem; /* 13px */
+  --ts-p-text-sm:   0.875rem;  /* 14px */
+  --ts-p-text-base: 1rem;      /* 16px */
+  --ts-p-text-lg:   1.25rem;   /* 20px */
+  --ts-p-text-xl:   1.5625rem; /* 25px */
+  --ts-p-text-2xl:  1.9375rem; /* 31px */
+  --ts-p-text-3xl:  2.4375rem; /* 39px */
+  --ts-p-text-4xl:  3.0625rem; /* 49px */
+  --ts-p-text-5xl:  3.8125rem; /* 61px — display/hero üst sınırı */
+
+  --ts-p-leading-tight: 1.15;
+  --ts-p-leading-snug:  1.35;
+  --ts-p-leading-body:  1.6;
+  --ts-p-leading-display: 1.05; /* ≥3xl display başlıklar */
+
+  --ts-p-tracking-tight: -0.02em; /* display başlık */
+  --ts-p-tracking-wide:  0.08em;  /* eyebrow / uppercase etiket */
+
+  --ts-p-weight-regular:  400;
+  --ts-p-weight-medium:   500;
+  --ts-p-weight-semibold: 600;
+  --ts-p-weight-bold:     700;
+
+  /* ---------- P: Spacing (4px base) ---------- */
+  --ts-p-space-1:  0.25rem;  /* 4  */
+  --ts-p-space-2:  0.5rem;   /* 8  */
+  --ts-p-space-3:  0.75rem;  /* 12 */
+  --ts-p-space-4:  1rem;     /* 16 */
+  --ts-p-space-5:  1.25rem;  /* 20 */
+  --ts-p-space-6:  1.5rem;   /* 24 */
+  --ts-p-space-8:  2rem;     /* 32 */
+  --ts-p-space-10: 2.5rem;   /* 40 */
+  --ts-p-space-12: 3rem;     /* 48 */
+  --ts-p-space-16: 4rem;     /* 64 */
+  --ts-p-space-20: 5rem;     /* 80 */
+  --ts-p-space-24: 6rem;     /* 96 */
+
+  /* ---------- P: Radius ---------- */
+  --ts-p-radius-sm:   0.25rem;
+  --ts-p-radius-md:   0.5rem;
+  --ts-p-radius-lg:   0.75rem;
+  --ts-p-radius-xl:   1rem;
+  --ts-p-radius-full: 9999px;
+
+  /* ---------- P: Shadow ---------- */
+  --ts-p-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ts-p-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --ts-p-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --ts-p-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+
+  /* ---------- P: Z-index katmanları ---------- */
+  --ts-p-z-header:  10;
+  --ts-p-z-sticky:  20;
+  --ts-p-z-overlay: 40;
+  --ts-p-z-modal:   50;
+  --ts-p-z-skip:    100;
+
+  /* ---------- P: Motion ---------- */
+  --ts-p-duration-fast: 150ms;
+  --ts-p-duration-base: 200ms;
+  --ts-p-duration-slow: 300ms;
+  --ts-p-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ts-p-ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ts-p-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ==========================================================
+     KATMAN 2 — SEMANTIC (--ts-*)
+     Rol bazlı token'lar. Tema override'ları BU katmanda yapılır.
+     Primitive'lere referans verir; template'ler :root bloğunda
+     bu token'ları doğrudan override ederek temalanır.
+     ========================================================== */
+
+  /* ---------- S: Color — brand palette (tema override eder) ---------- */
+  --ts-color-primary-50:  var(--ts-p-color-primary-50);
+  --ts-color-primary-100: var(--ts-p-color-primary-100);
+  --ts-color-primary-200: var(--ts-p-color-primary-200);
+  --ts-color-primary-300: var(--ts-p-color-primary-300);
+  --ts-color-primary-400: var(--ts-p-color-primary-400);
+  --ts-color-primary-500: var(--ts-p-color-primary-500);
+  --ts-color-primary-600: var(--ts-p-color-primary-600);
+  --ts-color-primary-700: var(--ts-p-color-primary-700);
+  --ts-color-primary-800: var(--ts-p-color-primary-800);
+  --ts-color-primary-900: var(--ts-p-color-primary-900);
+  --ts-color-primary-950: var(--ts-p-color-primary-950);
+
+  /* ---------- S: Color — accent (tema override eder) ---------- */
+  --ts-color-accent-400: var(--ts-p-color-accent-400);
+  --ts-color-accent-500: var(--ts-p-color-accent-500);
+  --ts-color-accent-600: var(--ts-p-color-accent-600);
+
+  /* ---------- S: Color — neutral (nadiren override; sabit skala) ---------- */
+  --ts-color-neutral-0:   var(--ts-p-color-neutral-0);
+  --ts-color-neutral-50:  var(--ts-p-color-neutral-50);
+  --ts-color-neutral-100: var(--ts-p-color-neutral-100);
+  --ts-color-neutral-200: var(--ts-p-color-neutral-200);
+  --ts-color-neutral-300: var(--ts-p-color-neutral-300);
+  --ts-color-neutral-400: var(--ts-p-color-neutral-400);
+  --ts-color-neutral-500: var(--ts-p-color-neutral-500);
+  --ts-color-neutral-600: var(--ts-p-color-neutral-600);
+  --ts-color-neutral-700: var(--ts-p-color-neutral-700);
+  --ts-color-neutral-800: var(--ts-p-color-neutral-800);
+  --ts-color-neutral-900: var(--ts-p-color-neutral-900);
+  --ts-color-neutral-950: var(--ts-p-color-neutral-950);
+
+  /* ---------- S: Color — status ---------- */
+  --ts-color-success:      var(--ts-p-color-success);
+  --ts-color-success-soft: var(--ts-p-color-success-soft);
+  --ts-color-warning:      var(--ts-p-color-warning);
+  --ts-color-warning-soft: var(--ts-p-color-warning-soft);
+  --ts-color-error:        var(--ts-p-color-error);
+  --ts-color-error-soft:   var(--ts-p-color-error-soft);
+  --ts-color-info:         var(--ts-p-color-info);
+  --ts-color-info-soft:    var(--ts-p-color-info-soft);
+
+  /* ---------- S: Color roles (component'ler BUNLARI kullanır) ---------- */
+  --ts-surface:        var(--ts-color-neutral-0);
+  --ts-surface-alt:    var(--ts-color-neutral-50);
+  --ts-surface-invert: var(--ts-color-neutral-900);
+  --ts-text:           var(--ts-color-neutral-900);
+  --ts-text-muted:     var(--ts-color-neutral-600);
+  --ts-text-invert:    var(--ts-color-neutral-50);
+  --ts-border:         var(--ts-color-neutral-200);
+  --ts-border-strong:  var(--ts-color-neutral-300);
+
+  /* "on-color" — dolgulu yüzeylerin üstündeki metin. Tema, primary/accent
+     skalasını değiştiriyorsa BUNLARI da doğrulamak zorundadır (≥4.5:1). */
+  --ts-color-on-primary: var(--ts-color-neutral-0);
+  --ts-color-on-accent:  var(--ts-color-neutral-0);
+
+  /* ---------- S: Typography ---------- */
+  --ts-font-sans:    var(--ts-p-font-sans);
+  --ts-font-display: var(--ts-font-sans); /* template override: serif vb. */
+  --ts-font-mono:    var(--ts-p-font-mono);
+
+  /* type scale — 1.25 Major Third, body min 16px */
+  --ts-text-xs:   var(--ts-p-text-xs);
+  --ts-text-sm:   var(--ts-p-text-sm);
+  --ts-text-base: var(--ts-p-text-base);
+  --ts-text-lg:   var(--ts-p-text-lg);
+  --ts-text-xl:   var(--ts-p-text-xl);
+  --ts-text-2xl:  var(--ts-p-text-2xl);
+  --ts-text-3xl:  var(--ts-p-text-3xl);
+  --ts-text-4xl:  var(--ts-p-text-4xl);
+  --ts-text-5xl:  var(--ts-p-text-5xl);
+  /* akışkan display ölçeği: hero/section başlıkları 360→1440 arasında
+     3xl'den 5xl'e büyür; ara değer ölçek dışına çıkmaz (clamp uçları token) */
+  --ts-text-display: clamp(var(--ts-text-3xl), 1.6rem + 2.6vw, var(--ts-text-5xl));
+
+  --ts-leading-tight: var(--ts-p-leading-tight);
+  --ts-leading-snug:  var(--ts-p-leading-snug);
+  --ts-leading-body:  var(--ts-p-leading-body);
+  --ts-leading-display: var(--ts-p-leading-display);
+
+  --ts-tracking-tight: var(--ts-p-tracking-tight);
+  --ts-tracking-wide:  var(--ts-p-tracking-wide);
+
+  --ts-weight-regular:  var(--ts-p-weight-regular);
+  --ts-weight-medium:   var(--ts-p-weight-medium);
+  --ts-weight-semibold: var(--ts-p-weight-semibold);
+  --ts-weight-bold:     var(--ts-p-weight-bold);
+
+  /* ---------- S: Spacing ---------- */
+  --ts-space-1:  var(--ts-p-space-1);
+  --ts-space-2:  var(--ts-p-space-2);
+  --ts-space-3:  var(--ts-p-space-3);
+  --ts-space-4:  var(--ts-p-space-4);
+  --ts-space-5:  var(--ts-p-space-5);
+  --ts-space-6:  var(--ts-p-space-6);
+  --ts-space-8:  var(--ts-p-space-8);
+  --ts-space-10: var(--ts-p-space-10);
+  --ts-space-12: var(--ts-p-space-12);
+  --ts-space-16: var(--ts-p-space-16);
+  --ts-space-20: var(--ts-p-space-20);
+  --ts-space-24: var(--ts-p-space-24);
+
+  /* section dikey boşluğu ve container */
+  --ts-section-y:      var(--ts-space-20);
+  --ts-container-max:  72rem;   /* 1152px */
+  --ts-container-pad:  var(--ts-space-4); /* ≥768px: space-8 (aşağıda) */
+
+  /* ---------- S: Radius ---------- */
+  --ts-radius-sm:   var(--ts-p-radius-sm);
+  --ts-radius-md:   var(--ts-p-radius-md);
+  --ts-radius-lg:   var(--ts-p-radius-lg);
+  --ts-radius-xl:   var(--ts-p-radius-xl);
+  --ts-radius-full: var(--ts-p-radius-full);
+
+  /* ---------- S: Shadow / elevation ---------- */
+  --ts-shadow-sm: var(--ts-p-shadow-sm);
+  --ts-shadow-md: var(--ts-p-shadow-md);
+  --ts-shadow-lg: var(--ts-p-shadow-lg);
+  --ts-shadow-xl: var(--ts-p-shadow-xl);
+  /* Focus: iki halka — 2px zemin rengi + 3px güçlü renk. Her zeminde ≥3:1
+     (WCAG 2.2 Focus Appearance); primary-700 açık zeminde ≥4.5:1'dir. */
+  --ts-focus-ring-color: var(--ts-color-primary-700);
+  --ts-focus-ring: 0 0 0 2px var(--ts-surface), 0 0 0 5px var(--ts-focus-ring-color);
+
+  /* ---------- S: Z-index ---------- */
+  --ts-z-header:  var(--ts-p-z-header);
+  --ts-z-sticky:  var(--ts-p-z-sticky);
+  --ts-z-overlay: var(--ts-p-z-overlay);
+  --ts-z-modal:   var(--ts-p-z-modal);
+  --ts-z-skip:    var(--ts-p-z-skip);
+
+  /* ---------- S: Motion ---------- */
+  --ts-duration-fast: var(--ts-p-duration-fast);
+  --ts-duration-base: var(--ts-p-duration-base);
+  --ts-duration-slow: var(--ts-p-duration-slow);
+  --ts-ease-out:    var(--ts-p-ease-out);
+  --ts-ease-in:     var(--ts-p-ease-in);
+  --ts-ease-in-out: var(--ts-p-ease-in-out);
+
+  /* ==========================================================
+     KATMAN 3 — COMPONENT (--ts-c-*)
+     Bileşen başına token. Semantic katmana bağlıdır.
+     Tema sözleşmesinde belirtilmedikçe override EDİLMEZ.
+     ========================================================== */
+
+  /* ---------- C: Button ---------- */
+  --ts-c-btn-bg:           var(--ts-color-primary-700);
+  --ts-c-btn-bg-hover:     var(--ts-color-primary-800);
+  --ts-c-btn-text:         var(--ts-color-on-primary);
+  --ts-c-btn-border:       transparent;
+  --ts-c-btn-radius:       var(--ts-radius-md);
+  --ts-c-btn-focus-ring:   var(--ts-focus-ring);
+
+  /* ---------- C: Button — secondary variant ---------- */
+  --ts-c-btn-secondary-bg:       transparent;
+  --ts-c-btn-secondary-bg-hover: var(--ts-color-primary-50);
+  --ts-c-btn-secondary-text:     var(--ts-color-primary-800);
+  --ts-c-btn-secondary-border:   var(--ts-border-strong);
+  --ts-c-btn-secondary-border-hover: var(--ts-color-primary-600);
+  --ts-c-btn-secondary-bg-hover: var(--ts-surface-alt);
+
+  /* ---------- C: Card ---------- */
+  --ts-c-card-bg:      var(--ts-surface);
+  --ts-c-card-border:  var(--ts-border);
+  --ts-c-card-radius:  var(--ts-radius-lg);
+  --ts-c-card-shadow:  var(--ts-shadow-sm);
+  --ts-c-card-shadow-hover: var(--ts-shadow-md);
+
+  /* ---------- C: Input ---------- */
+  --ts-c-input-bg:          var(--ts-surface);
+  --ts-c-input-border:      var(--ts-border);
+  --ts-c-input-border-focus: var(--ts-color-primary-500);
+  --ts-c-input-text:        var(--ts-text);
+  --ts-c-input-placeholder: var(--ts-text-muted);
+  --ts-c-input-radius:      var(--ts-radius-md);
+
+  /* ---------- C: Header / Nav ---------- */
+  --ts-c-header-bg:   var(--ts-surface);
+  --ts-c-header-text: var(--ts-text);
+  --ts-c-nav-bg:          color-mix(in srgb, var(--ts-c-header-bg) 92%, transparent);
+  --ts-c-nav-border:      var(--ts-border);
+  --ts-c-nav-link:        var(--ts-text);
+  --ts-c-nav-link-hover:  var(--ts-color-primary-700);
+  --ts-c-nav-link-active: var(--ts-color-primary-800);
+  --ts-c-nav-height:      4rem; /* 64px */
+
+  /* ---------- C: Footer ---------- */
+  --ts-c-footer-bg:   var(--ts-surface-invert);
+  --ts-c-footer-text: var(--ts-text-invert);
+
+  /* ---------- C: Section Heading ---------- */
+  --ts-c-section-heading-color: var(--ts-text);
+  --ts-c-section-subheading-color: var(--ts-text-muted);
+}
+
+/* Kenar boşluğu viewport ile büyür: 16 → 32 → 40px (token ölçeğinden) */
+@media (min-width: 768px) {
+  :root { --ts-container-pad: var(--ts-space-8); }
+}
+@media (min-width: 1280px) {
+  :root { --ts-container-pad: var(--ts-space-10); }
+}
+
+/* Erişilebilirlik: hareket azaltma tercihi her zaman desteklenir */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

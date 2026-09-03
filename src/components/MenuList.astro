@@ -1,0 +1,191 @@
+---
+/**
+ * MenuList — kategorili menü listesi (ui-spec §4.6).
+ * Tablo değil liste: sol ad + açıklama, sağ fiyat + etiketler.
+ * Sezonluk öğeler accent rozetle işaretlenir (cafe kurulu: sezonluk döngü
+ * cafe'nin nabzıdır). Boş kategori sessizce kaybolmaz, boş durum metni gösterir.
+ */
+import type { CollectionEntry } from "astro:content";
+import { t } from "../lib/site";
+
+type MenuEntry = CollectionEntry<"menu">;
+
+interface Props {
+  items: MenuEntry[];
+  /** Gösterilecek kategori sırası; verilmezse içerikte geçen sıra kullanılır */
+  categories?: string[];
+  /** Kategori başlıklarına id ver (sticky kategori nav'ı için) */
+  withAnchors?: boolean;
+  headingLevel?: "h2" | "h3";
+  class?: string;
+}
+
+const CATEGORY_ORDER = ["espresso", "brew", "food", "seasonal"];
+const {
+  items,
+  categories = CATEGORY_ORDER,
+  withAnchors = false,
+  headingLevel: Heading = "h2",
+  class: className = "",
+} = Astro.props;
+
+const groups = categories.map((category) => ({
+  category,
+  label: t(`menu.categories.${category}`),
+  items: items
+    .filter((i) => i.data.category === category && i.data.available)
+    .sort((a, b) => a.data.order - b.data.order),
+}));
+
+const price = (value: number, currency: string) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+  }).format(value);
+---
+
+<div class:list={["menu-list", className]}>
+  {
+    groups.map((group) => (
+      <section class="menu-list__group" id={withAnchors ? group.category : undefined}>
+        <Heading class="menu-list__category">{group.label}</Heading>
+
+        {group.items.length === 0 ? (
+          <p class="menu-list__empty">{t("menu.empty")}</p>
+        ) : (
+          <ul class="menu-list__items">
+            {group.items.map((item) => (
+              <li class="menu-list__item">
+                <div class="menu-list__body">
+                  <p class="menu-list__name">
+                    {item.data.name}
+                    {item.data.seasonal && (
+                      <span class="menu-list__badge">{t("menu.seasonalBadge")}</span>
+                    )}
+                  </p>
+                  {item.data.description && (
+                    <p class="menu-list__desc">{item.data.description}</p>
+                  )}
+                  {item.data.tags.length > 0 && (
+                    <ul class="menu-list__tags">
+                      {item.data.tags.map((tag) => (
+                        <li class="menu-list__tag">{t(`menu.tags.${tag}`)}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <p class="menu-list__price">{price(item.data.price, item.data.currency)}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-12);
+  }
+  .menu-list__group {
+    scroll-margin-top: calc(var(--ts-c-nav-height, 64px) + var(--ts-space-16));
+  }
+  .menu-list__category {
+    margin: 0 0 var(--ts-space-5);
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-2xl);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: var(--ts-tracking-tight);
+    line-height: var(--ts-leading-snug);
+    color: var(--ts-color-primary-900);
+    padding-bottom: var(--ts-space-3);
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .menu-list__empty {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    font-style: italic;
+    color: var(--ts-text-muted);
+  }
+  .menu-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu-list__item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ts-space-6);
+    padding: var(--ts-space-4) var(--ts-space-3);
+    border-radius: var(--ts-radius-md);
+    border-bottom: 1px solid var(--ts-border);
+  }
+  .menu-list__item:last-child {
+    border-bottom: none;
+  }
+  @media (hover: hover) {
+    .menu-list__item:hover {
+      background: var(--ts-surface-alt);
+    }
+  }
+  .menu-list__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-1);
+  }
+  .menu-list__name {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-lg);
+    font-weight: var(--ts-weight-semibold);
+    color: var(--ts-color-primary-900);
+  }
+  .menu-list__badge {
+    font-size: var(--ts-text-xs);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: var(--ts-tracking-wide);
+    text-transform: uppercase;
+    background: var(--ts-color-accent-600);
+    color: var(--ts-color-on-accent);
+    padding: 2px var(--ts-space-2);
+    border-radius: var(--ts-radius-sm);
+  }
+  .menu-list__desc {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    color: var(--ts-text-muted);
+    max-width: 58ch;
+  }
+  .menu-list__tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ts-space-2);
+    margin: var(--ts-space-1) 0 0;
+    padding: 0;
+  }
+  .menu-list__tag {
+    font-size: var(--ts-text-xs);
+    color: var(--ts-color-primary-700);
+    background: var(--ts-surface-alt);
+    border: 1px solid var(--ts-border);
+    border-radius: var(--ts-radius-sm);
+    padding: 2px var(--ts-space-2);
+  }
+  .menu-list__price {
+    margin: 0;
+    flex-shrink: 0;
+    font-size: var(--ts-text-base);
+    font-weight: var(--ts-weight-medium);
+    font-variant-numeric: tabular-nums;
+    color: var(--ts-color-primary-700);
+  }
+</style>

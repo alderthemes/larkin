@@ -1,0 +1,153 @@
+---
+/**
+ * Hakkında — kısa hikaye + kavurma/kaynak anlatımı (G0: opsiyonel bölüm).
+ * "summary" paragrafı GEO yemi: alıntılanabilir tek cümlelik özet.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Container from "@studio/core/components/Container.astro";
+import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import { t, business } from "../lib/site";
+import { getPrimaryLocation, openingHours } from "../lib/locations";
+import { cafeSchema } from "@studio/core/utils/seo";
+
+const primary = await getPrimaryLocation();
+
+const images = import.meta.glob<{ default: ImageMetadata }>("../assets/images/*.jpg", {
+  eager: true,
+});
+const storyImage = images["../assets/images/02-bar.jpg"]?.default;
+
+const schema = cafeSchema({
+  name: business.name,
+  description: t("about.summary"),
+  url: new URL("/about/", Astro.site).toString(),
+  telephone: business.phone,
+  email: business.email,
+  priceRange: business.priceRange,
+  servesCuisine: business.servesCuisine,
+  acceptsReservations: false,
+  streetAddress: primary?.data.streetAddress,
+  addressLocality: primary?.data.addressLocality,
+  addressRegion: primary?.data.addressRegion,
+  postalCode: primary?.data.postalCode,
+  addressCountry: primary?.data.addressCountry,
+  openingHours: primary ? openingHours(primary) : [],
+});
+---
+
+<BaseLayout title={t("nav.about")} description={t("about.summary")} schema={schema}>
+  <section class="about">
+    <Container>
+      <div class="about__grid">
+        <div class="about__text">
+          <SectionHeading
+            eyebrow={t("about.eyebrow")}
+            title={t("about.title")}
+            level="h1"
+          />
+          <p class="about__lead">{t("about.lead")}</p>
+          <p class="about__summary">{t("about.summary")}</p>
+        </div>
+
+        {
+          storyImage && (
+            <div class="about__media">
+              <Image
+                src={storyImage}
+                alt={t("about.imageAlt")}
+                widths={[520, 780]}
+                sizes="(min-width: 1024px) 40rem, 100vw"
+                loading="eager"
+                class="about__img"
+              />
+            </div>
+          )
+        }
+      </div>
+
+      <div class="about__blocks">
+        <article class="about__block">
+          <h2 class="about__block-title">{t("about.sourcingTitle")}</h2>
+          <p class="about__block-body">{t("about.sourcingBody")}</p>
+        </article>
+        <article class="about__block">
+          <h2 class="about__block-title">{t("about.roastTitle")}</h2>
+          <p class="about__block-body">{t("about.roastBody")}</p>
+        </article>
+        <article class="about__block">
+          <h2 class="about__block-title">{t("about.nameTitle")}</h2>
+          <p class="about__block-body">{t("about.nameBody")}</p>
+        </article>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<style>
+  .about {
+    padding-block: var(--ts-space-16) var(--ts-section-y);
+  }
+  .about__grid {
+    display: grid;
+    gap: var(--ts-space-10);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .about__grid {
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--ts-space-16);
+    }
+  }
+  .about__lead {
+    margin: var(--ts-space-6) 0 0;
+    font-size: var(--ts-text-lg);
+    line-height: var(--ts-leading-body);
+    color: var(--ts-color-primary-700);
+    max-width: 52ch;
+  }
+  .about__summary {
+    margin: var(--ts-space-4) 0 0;
+    font-size: var(--ts-text-base);
+    line-height: var(--ts-leading-body);
+    color: var(--ts-text-muted);
+    max-width: 58ch;
+  }
+  .about__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--ts-radius-xl);
+  }
+  .about__blocks {
+    margin-top: var(--ts-space-16);
+    display: grid;
+    gap: var(--ts-space-8);
+  }
+  @media (min-width: 768px) {
+    .about__blocks {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .about__block {
+    padding-top: var(--ts-space-5);
+    border-top: 2px solid var(--ts-color-accent-400);
+  }
+  .about__block-title {
+    margin: 0 0 var(--ts-space-3);
+    font-family: var(--ts-font-display);
+    font-size: var(--ts-text-xl);
+    font-weight: var(--ts-weight-semibold);
+    line-height: var(--ts-leading-snug);
+    color: var(--ts-color-primary-900);
+  }
+  .about__block-body {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    line-height: var(--ts-leading-body);
+    color: var(--ts-text-muted);
+  }
+</style>
