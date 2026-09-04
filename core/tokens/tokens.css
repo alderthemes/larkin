@@ -210,6 +210,14 @@
   --ts-text-invert:        var(--ts-color-neutral-50);
   --ts-text-invert-muted:  var(--ts-color-neutral-300);
   --ts-text-invert-subtle: var(--ts-color-neutral-400);
+  /* Three weights of line, not two. There was `--ts-border` and
+     `--ts-border-strong` and nothing under them, so every hairline that only
+     needed to whisper reached for `--ts-border` and spoke at the same volume
+     as a section division. Counted on the storefront home page: 143 border
+     edges, of which 108 were collage tiles outlining themselves as loudly as
+     the rule under a heading. The quiet step is for a line that separates
+     without dividing — a tile edge, a thumbnail, a row inside a card. */
+  --ts-border-hair:    var(--ts-color-neutral-100);
   --ts-border:         var(--ts-color-neutral-200);
   --ts-border-strong:  var(--ts-color-neutral-300);
   /* The hairline on a dark surface. Without it a footer reaches for a raw
