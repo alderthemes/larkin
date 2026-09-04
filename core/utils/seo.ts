@@ -309,6 +309,18 @@ export interface ProductInput {
   image?: string;
   price: number;
   priceCurrency?: string;
+  /**
+   * Whether the item can actually be bought right now. This is not a detail:
+   * the offer block is a machine-readable commercial claim, and a page that
+   * reads "In production" to a person while telling a crawler the product is
+   * in stock at $59 is making two contradictory statements about the same
+   * thing. Search engines and answer engines read the second one.
+   *
+   * So availability follows the checkout, not the catalog entry. Defaults to
+   * false, because the honest answer before a payment provider is connected
+   * is "you cannot buy this yet".
+   */
+  sellable?: boolean;
 }
 
 export function productSchema(input: ProductInput) {
@@ -323,7 +335,9 @@ export function productSchema(input: ProductInput) {
       "@type": "Offer",
       price: input.price.toFixed(2),
       priceCurrency: input.priceCurrency ?? "USD",
-      availability: "https://schema.org/InStock",
+      availability: input.sellable
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
     },
   };
 }
