@@ -233,7 +233,12 @@ const hasMap = Astro.slots.has("map");
   .ts-field textarea {
     font: inherit;
     padding: var(--ts-space-3) var(--ts-space-4);
-    border: 1px solid var(--ts-border-strong);
+    /* The component token, not --ts-border-strong. That one also draws dashed
+       separators and card rules, so it cannot be darkened to meet the 3:1 that
+       WCAG 1.4.11 requires of a control boundary without darkening decoration
+       everywhere. larkin and wickmere already read the component token; core
+       was the odd one out, which is why bramley's inputs were the palest. */
+    border: 1px solid var(--ts-c-input-border);
     border-radius: var(--ts-radius-md);
     background: var(--ts-surface);
     color: var(--ts-text);

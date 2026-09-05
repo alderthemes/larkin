@@ -385,25 +385,32 @@
 
   /* ---------- C: Input ---------- */
   --ts-c-input-bg:          var(--ts-surface);
-  --ts-c-input-border:      var(--ts-border);
+  /* An input border is the boundary that identifies the control, so WCAG 1.4.11
+     asks for 3:1 against the field background. This derived from --ts-border
+     (neutral-200) and measured 1.26:1 -- a border almost nobody could see.
+     neutral-500 is 4.80:1 and stays on the scale; neutral-400 is 2.52 and does
+     not clear it. Each theme overrides this with its own tinted equivalent. */
+  --ts-c-input-border:      var(--ts-color-neutral-500);
   --ts-c-input-border-focus: var(--ts-color-primary-500);
   --ts-c-input-text:        var(--ts-text);
   --ts-c-input-placeholder: var(--ts-text-muted);
   --ts-c-input-radius:      var(--ts-radius-md);
 
   /* ---------- C: Header / Nav ---------- */
+  /* Two tokens were removed from this group, and the footer group entirely:
+     nothing read them. There is no footer or nav component here, so each
+     template writes its own and reads the semantic tokens. A component token
+     that no component reads is a promise the theme cannot keep -- you override
+     it and nothing changes. They come back when a component needs them. */
   --ts-c-header-bg:   var(--ts-surface);
-  --ts-c-header-text: var(--ts-text);
-  --ts-c-nav-bg:          color-mix(in srgb, var(--ts-c-header-bg) 92%, transparent);
+  /* Every template repeated this expression verbatim in its own header while
+     the token that existed for it went unread. One value written in three
+     places belongs in one place, so the headers now read this instead. */
+  --ts-c-nav-bg:      color-mix(in srgb, var(--ts-c-header-bg) 92%, transparent);
   --ts-c-nav-border:      var(--ts-border);
   --ts-c-nav-link:        var(--ts-text);
   --ts-c-nav-link-hover:  var(--ts-color-primary-700);
-  --ts-c-nav-link-active: var(--ts-color-primary-800);
   --ts-c-nav-height:      4rem; /* 64px */
-
-  /* ---------- C: Footer ---------- */
-  --ts-c-footer-bg:   var(--ts-surface-invert);
-  --ts-c-footer-text: var(--ts-text-invert);
 
   /* ---------- C: Section Heading ---------- */
   --ts-c-section-heading-color: var(--ts-text);

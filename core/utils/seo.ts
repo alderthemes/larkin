@@ -346,3 +346,121 @@ export function jsonLd(schema: unknown): string {
   // Serialize safely: an unescaped </script> inside JSON-LD closes the tag
   return JSON.stringify(schema).replace(/</g, "\\u003c");
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+   Site-level schema: who publishes this, and where the visitor is
+   ──────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Drops fields that carry nothing, so an absent value never becomes an empty
+ * one in the output.
+ *
+ * Structured data is a machine-readable statement, and a field present but
+ * blank reads as a claim about nothing. Whether a given value counts as real is
+ * the caller's judgment -- a studio may hold placeholders for details that do
+ * not exist yet, and it filters those before calling rather than teaching this
+ * helper its own conventions.
+ */
+function omitEmpty<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined || v === null) continue;
+    if (typeof v === "string" && v.trim() === "") continue;
+    out[k] = v;
+  }
+  return out as Partial<T>;
+}
+
+export interface OrganizationInput {
+  name: string;
+  url: string;
+  logo?: string;
+  email?: string;
+  telephone?: string;
+  address?: { line1?: string; line2?: string; country?: string };
+  sameAs?: string[];
+}
+
+/**
+ * The publisher behind the site.
+ *
+ * Only fields that are true today. Nothing here asserts a legal identity: trade
+ * name, tax number and register entries are deliberately absent until they
+ * exist, rather than present and empty.
+ */
+export function organizationSchema(input: OrganizationInput) {
+  const address = input.address
+    ? omitEmpty({
+        "@type": "PostalAddress",
+        streetAddress: input.address.line1,
+        addressLocality: input.address.line2,
+        addressCountry: input.address.country,
+      })
+    : undefined;
+
+  return {
+    "@type": "Organization",
+    ...omitEmpty({
+      name: input.name,
+      url: input.url,
+      logo: input.logo,
+      email: input.email,
+      telephone: input.telephone,
+      sameAs: input.sameAs && input.sameAs.length > 0 ? input.sameAs : undefined,
+      address: address && Object.keys(address).length > 1 ? address : undefined,
+    }),
+  };
+}
+
+/** The site itself, tied to its publisher. No SearchAction: there is no search. */
+export function websiteSchema(input: { name: string; url: string; publisherName: string }) {
+  return {
+    "@type": "WebSite",
+    name: input.name,
+    url: input.url,
+    publisher: { "@type": "Organization", name: input.publisherName },
+  };
+}
+
+/**
+ * Where the visitor is in the catalog.
+ *
+ * Positions are 1-based and the list includes the current page, which is what
+ * lets a result show the path rather than a bare title.
+ */
+export function breadcrumbSchema(items: { name: string; url: string }[]) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+/** An ordered set of pages, for a listing. The order is the one on the page. */
+export function itemListSchema(items: { name: string; url: string }[]) {
+  return {
+    "@type": "ItemList",
+    numberOfItems: items.length,
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      url: item.url,
+    })),
+  };
+}
+
+/**
+ * Several schemas on one page, as one graph.
+ *
+ * Emitting two separate script blocks works, but a graph lets the nodes
+ * reference each other and is what validators expect when a page is both a
+ * listing and a step in a breadcrumb.
+ */
+export function graph(...nodes: unknown[]) {
+  return { "@context": "https://schema.org", "@graph": nodes.filter(Boolean) };
+}

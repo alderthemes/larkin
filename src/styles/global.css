@@ -59,6 +59,13 @@
   --ts-text-subtle: #6c6961;
   --ts-border:        #e2dfd8;
   --ts-border-strong: #cbc7be;
+  /* The field border, in this theme's own hue but actually visible: 3.23:1
+     against the field background, where a control boundary needs 3:1. Only the
+     lightness moved; hue and saturation are unchanged, so nothing about the
+     palette shifts. It used to inherit from --ts-border and measured about
+     1.3:1 -- a border almost nobody could see, on the one element where the
+     border is what tells you the control is there. */
+  --ts-c-input-border: #94896f;
 
   --ts-text-invert:        #f4f3f0;
   --ts-text-invert-muted:  #c9c6bf;

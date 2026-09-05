@@ -62,7 +62,11 @@ const {
     margin: 0;
     font-size: var(--ts-text-lg);
     line-height: var(--ts-leading-snug);
-    color: var(--ts-text-muted);
+    /* The component token, matching --ts-c-section-heading-color which the
+       title already reads. The subtitle went straight to the semantic token,
+       so a theme overriding the component layer changed the title and not the
+       line under it. */
+    color: var(--ts-c-section-subheading-color);
   }
   @media (min-width: 768px) {
     .ts-heading__title { font-size: var(--ts-text-3xl); }
