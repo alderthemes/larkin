@@ -1,0 +1,155 @@
+{
+  "site": {
+    "name": "Fern & Filter",
+    "tagline": "Portland kuzeybatısında specialty kahve ve hafif atıştırmalıklar"
+  },
+  "nav": {
+    "home": "Ana sayfa",
+    "menu": "Menü",
+    "about": "Hakkında",
+    "contact": "İletişim",
+    "cta": "Yol tarifi al",
+    "menuToggle": "Menüyü aç"
+  },
+  "hero": {
+    "eyebrow": "Kahve barı ve kavurma atölyesi",
+    "title": "İyi kahve, acele yok",
+    "lead": "Portland'ın kuzeybatısında, güneş alan bir köşede specialty kahve ve hafif atıştırmalıklar. Gelin, yerinizi bulun.",
+    "primaryCta": "Yol tarifi al",
+    "secondaryCta": "Menüye göz at",
+    "imageAlt": "Aydınlık bir sabahta Fern & Filter'ın barı ve pencere kenarı oturma alanı"
+  },
+  "location": {
+    "eyebrow": "Bizi bulun",
+    "title": "Neredeyiz",
+    "todayLabel": "Bugün",
+    "openNow": "Şu an açık",
+    "closedNow": "Kapalı",
+    "hoursFallback": "Her gün 07:00'den itibaren açık",
+    "allHours": "Tüm saatleri göster",
+    "directions": "Yol tarifi al",
+    "viewAll": "Tüm şubeleri gör",
+    "amenities": "Bilmekte fayda var",
+    "walkInOnly": "Rezervasyon yok, doğrudan gelin"
+  },
+  "menu": {
+    "eyebrow": "Ne ikram ederiz",
+    "title": "Birkaç favori",
+    "subtitle": "Menümüz mevsimle değişir. Şu an bardakta olanlar:",
+    "pageTitle": "İkram listemiz",
+    "pageSubtitle": "Fiyatlar USD cinsindendir. Menü mevsimsel olarak değişir.",
+    "viewFull": "Menüye göz at",
+    "seasonalBadge": "Sezonluk",
+    "categoriesNav": "Menü kategorileri",
+    "empty": "Bu kategoride henüz ürün yok.",
+    "categories": {
+      "espresso": "Espresso barı",
+      "brew": "Filtre ve pour-over",
+      "food": "Yiyecek",
+      "seasonal": "Sezonluk"
+    },
+    "tags": {
+      "plant-based": "Bitkisel",
+      "vegetarian": "Vejetaryen",
+      "gluten-free": "Glutensiz",
+      "decaf": "Kafeinsizi var"
+    }
+  },
+  "workspace": {
+    "eyebrow": "Çalışma alanı",
+    "title": "Evet, laptopunuzu getirin",
+    "lead": "Bazen bir masa, bir priz ve iyi bir kahve yeter. Üçü de burada.",
+    "wifiTitle": "Wi-Fi",
+    "wifiBody": "Ücretsiz, şifresiz. Görüntülü görüşmeye yeter.",
+    "powerTitle": "Priz",
+    "powerBody": "Her masada ve bar boyunca priz var.",
+    "noiseTitle": "Ses seviyesi",
+    "noiseBody": "Hafif bir uğultu. Ne kütüphane, ne konser.",
+    "laptopTitle": "Laptop politikası",
+    "laptopBody": "Her gün buyrun. Hafta sonları 10:00 ile 13:00 arasında masa paylaşımı rica ediyoruz."
+  },
+  "gallery": {
+    "eyebrow": "İçeriden",
+    "title": "Mekan, bar ve fincanlar",
+    "alts": {
+      "bar": "Ahşap raflı bar tezgahı ve arkasında aydınlık bir pencere",
+      "latte": "Ahşap masada, tabağın üzerinde latte art'lı bir cappuccino",
+      "pourover": "Filtre koniden süzülen sıcak su ve yükselen buhar",
+      "food": "Bademli bir kruvasan ve küçük tabakta avokado toast",
+      "storefront": "Tabelasıyla dükkan cephesi ve kapının yanındaki kaldırım masası",
+      "detail": "Tezgahta saksıdaki eğreltiotunun yanında üst üste dizilmiş seramik fincanlar"
+    }
+  },
+  "about": {
+    "eyebrow": "Hikayemiz",
+    "title": "Kahve ve sakinlik için bir köşe",
+    "lead": "Fern & Filter 2019'da basit bir fikirle başladı: iyi kahve yap, işleri basit tut, insanlara alan bırak.",
+    "summary": "Fern & Filter, Portland, Oregon'da 123 NW 23rd Avenue'da bir specialty kahve barı. 2019'dan beri haftanın yedi günü açık ve çekirdeklerini küçük partiler halinde kendi kavuruyor.",
+    "sourcingTitle": "Çekirdekler nereden geliyor",
+    "sourcingBody": "Çekirdeklerimizi Portland'ın güneydoğusundaki atölyemizde küçük partiler halinde kavuruyoruz. Her paket, güvendiğimiz çiftliklerden geliyor: insanlara adil ödenen, toprağa saygı duyulan yerler. Bu konuda mükemmel değiliz ama bilerek davranıyoruz.",
+    "nameTitle": "İsim nereden geliyor",
+    "nameBody": "Eğreltiotu Portland'dır: her yerde yetişir, fazla bir şey istemez. Filtre ise yaptığımız iş: ham bir şeyi alıp uğruna yavaşlamaya değer bir şeye dönüştürmek.",
+    "roastTitle": "Nasıl kavuruyoruz",
+    "roastBody": "Açıktan ortaya. Kavurmayı değil, menşeyi tatmanızı istiyoruz. Tek menşe seçimimiz her ay değişir; tezgahta sorun ya da menüden taze olanı görün.",
+    "imageAlt": "Tezgahın ve kendi kavurduğumuz çekirdeklerin durduğu rafın üzerine düşen sabah ışığı"
+  },
+  "faq": {
+    "eyebrow": "Bilmekte fayda var",
+    "title": "Sık sorulan sorular",
+    "subtitle": "Oturma, kafeinsiz, köpekler ve çekirdek. Kısa cevaplar."
+  },
+  "contact": {
+    "eyebrow": "Merhaba deyin",
+    "title": "Bizi bulun",
+    "subtitle": "Soru, öneri ya da sadece kahve muhabbeti. Sizi dinlemeyi çok isteriz.",
+    "formTitle": "Bize mesaj gönderin",
+    "hoursTitle": "Haftalık saatler",
+    "form": {
+      "name": "Adınız",
+      "email": "E-posta",
+      "message": "Mesajınız",
+      "submit": "Mesaj gönder",
+      "emailPlaceholder": "you@example.com",
+      "messagePlaceholder": "Size nasıl yardımcı olabiliriz?"
+    },
+    "mapAlt": "Konumumuzu gösteren harita",
+    "mapPlaceholder": "Harita gömme alanı: Google Haritalar iframe kodunuzu buraya yapıştırın",
+    "info": {
+      "address": "Adres",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "hours": "Çalışma saatleri"
+    }
+  },
+  "hours": {
+    "monFri": "Pazartesi - Cuma",
+    "sat": "Cumartesi",
+    "sun": "Pazar",
+    "monFriValue": "07:00 - 18:00",
+    "satValue": "08:00 - 19:00",
+    "sunValue": "08:00 - 17:00"
+  },
+  "footer": {
+    "rights": "Tüm hakları saklıdır.",
+    "credit": "Specialty kahve şablonu",
+    "hoursTitle": "Saatler",
+    "findUs": "Bizi bulun",
+    "browse": "Gezinin",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Koşulları"
+  },
+  "notFound": {
+    "title": "Yanlış dönüş",
+    "body": "Bu sayfa yok, ama kahvemiz var. Sizi geri götürelim.",
+    "cta": "Ana sayfaya dön",
+    "ctaSecondary": "Menümüze göz at"
+  },
+  "legal": {
+    "updated": "Son güncelleme"
+  },
+  "a11y": {
+    "skipToContent": "İçeriğe atla",
+    "currentPage": "Mevcut sayfa",
+    "externalLink": "Yeni sekmede açılır"
+  }
+}

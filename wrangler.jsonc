@@ -1,0 +1,9 @@
+{
+  // Cloudflare deploy config — rename "name" to your project
+  "name": "larkin",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

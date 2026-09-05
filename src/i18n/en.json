@@ -1,0 +1,155 @@
+{
+  "site": {
+    "name": "Fern & Filter",
+    "tagline": "Specialty coffee and light bites in Northwest Portland"
+  },
+  "nav": {
+    "home": "Home",
+    "menu": "Menu",
+    "about": "About",
+    "contact": "Contact",
+    "cta": "Get directions",
+    "menuToggle": "Open menu"
+  },
+  "hero": {
+    "eyebrow": "Coffee bar & roastery",
+    "title": "Good coffee, no rush",
+    "lead": "Specialty coffee and light bites in a sunlit corner of Northwest Portland. Walk in, settle in.",
+    "primaryCta": "Get directions",
+    "secondaryCta": "View full menu",
+    "imageAlt": "The bar and window seating at Fern & Filter on a bright morning"
+  },
+  "location": {
+    "eyebrow": "Find us",
+    "title": "Where we are",
+    "todayLabel": "Today",
+    "openNow": "Open now",
+    "closedNow": "Closed",
+    "hoursFallback": "Open daily from 7:00",
+    "allHours": "Show all hours",
+    "directions": "Get directions",
+    "viewAll": "View all locations",
+    "amenities": "Good to know",
+    "walkInOnly": "Walk-ins only, no reservations"
+  },
+  "menu": {
+    "eyebrow": "What we serve",
+    "title": "A few favorites",
+    "subtitle": "Our full menu changes with the seasons. Here is what is pouring right now.",
+    "pageTitle": "What we serve",
+    "pageSubtitle": "Prices in USD. The menu changes seasonally.",
+    "viewFull": "View full menu",
+    "seasonalBadge": "Seasonal",
+    "categoriesNav": "Menu categories",
+    "empty": "No items in this category yet.",
+    "categories": {
+      "espresso": "Espresso bar",
+      "brew": "Drip & pour-over",
+      "food": "Food",
+      "seasonal": "Seasonal"
+    },
+    "tags": {
+      "plant-based": "Plant-based",
+      "vegetarian": "Vegetarian",
+      "gluten-free": "Gluten-free",
+      "decaf": "Decaf available"
+    }
+  },
+  "workspace": {
+    "eyebrow": "Workspace",
+    "title": "Yes, bring your laptop",
+    "lead": "Sometimes you need a table, an outlet and good coffee to get things done. We have all three.",
+    "wifiTitle": "Wi-Fi",
+    "wifiBody": "Free, no password. Fast enough for video calls.",
+    "powerTitle": "Power",
+    "powerBody": "Outlets at every table and along the bar.",
+    "noiseTitle": "Noise level",
+    "noiseBody": "A gentle hum. Not a library, not a concert.",
+    "laptopTitle": "Laptop policy",
+    "laptopBody": "Welcome all day. On weekends we ask you to share tables between 10:00 and 13:00."
+  },
+  "gallery": {
+    "eyebrow": "Inside",
+    "title": "The room, the bar, the cups",
+    "alts": {
+      "bar": "The bar counter with wooden shelving and a bright window behind it",
+      "latte": "A cappuccino with latte art on a saucer, set on a wooden table",
+      "pourover": "Hot water poured over a filter cone, steam rising from the brewer",
+      "food": "An almond croissant and a small plate of avocado toast",
+      "storefront": "The shopfront with its sign and a sidewalk table beside the door",
+      "detail": "A stack of ceramic cups next to a potted fern on the counter"
+    }
+  },
+  "about": {
+    "eyebrow": "Our story",
+    "title": "A corner for coffee and calm",
+    "lead": "Fern & Filter started in 2019 with a simple idea: make great coffee, keep things simple, and leave room for people to be.",
+    "summary": "Fern & Filter is a specialty coffee bar at 123 NW 23rd Avenue in Portland, Oregon, roasting its own beans in small batches and open seven days a week since 2019.",
+    "sourcingTitle": "Where the beans come from",
+    "sourcingBody": "We roast our own beans in small batches at our roastery in southeast Portland. Every bag is sourced from farms we trust, where people are paid fairly and the land is treated well. We are not perfect about it, but we are deliberate.",
+    "nameTitle": "About the name",
+    "nameBody": "The fern is Portland: it grows everywhere and asks for very little. The filter is the work: taking something raw and turning it into something worth slowing down for.",
+    "roastTitle": "How we roast",
+    "roastBody": "Light to medium. We want you to taste the origin, not the roast. Our single-origin rotates monthly, so ask at the counter or check the menu for what is fresh.",
+    "imageAlt": "Morning light across the counter and the shelf of house-roasted beans"
+  },
+  "faq": {
+    "eyebrow": "Good to know",
+    "title": "Frequently asked questions",
+    "subtitle": "Seating, decaf, dogs and beans. The short answers."
+  },
+  "contact": {
+    "eyebrow": "Say hello",
+    "title": "Come find us",
+    "subtitle": "Question, feedback, or you just want to talk coffee. We would love to hear from you.",
+    "formTitle": "Send us a message",
+    "hoursTitle": "Weekly hours",
+    "form": {
+      "name": "Your name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send message",
+      "emailPlaceholder": "you@example.com",
+      "messagePlaceholder": "How can we help?"
+    },
+    "mapAlt": "Map showing our location",
+    "mapPlaceholder": "Map embed slot: paste your Google Maps iframe here",
+    "info": {
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Opening hours"
+    }
+  },
+  "hours": {
+    "monFri": "Mon to Fri",
+    "sat": "Saturday",
+    "sun": "Sunday",
+    "monFriValue": "07:00 to 18:00",
+    "satValue": "08:00 to 19:00",
+    "sunValue": "08:00 to 17:00"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "credit": "Specialty coffee template",
+    "hoursTitle": "Hours",
+    "findUs": "Find us",
+    "browse": "Browse",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "notFound": {
+    "title": "Wrong turn",
+    "body": "This page does not exist, but our coffee does. Let us get you back.",
+    "cta": "Back to home",
+    "ctaSecondary": "View our menu"
+  },
+  "legal": {
+    "updated": "Last updated"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "currentPage": "Current page",
+    "externalLink": "Opens in a new tab"
+  }
+}

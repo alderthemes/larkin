@@ -1,0 +1,84 @@
+---
+/**
+ * OpenStatus — the "Today: 07:00 - 18:00 · Open now" line.
+ *
+ * This is the first thing a cafe visitor looks for, so it is rendered on
+ * the server with a real fallback: with JavaScript off the line still shows
+ * correct opening information. `/open-status.js` only narrows it to today's
+ * range and the open or closed state, and it has to run in the browser
+ * because "today" depends on the visitor's clock, not on the build's.
+ */
+import { t } from "../lib/site";
+import { weeklyRanges, weeklyMinutes, type Location } from "../lib/locations";
+
+interface Props {
+  location: Location;
+  class?: string;
+}
+const { location, class: className = "" } = Astro.props;
+
+const ranges = weeklyRanges(location);
+const minutes = weeklyMinutes(location);
+/* Fallback: the single range when every day matches, otherwise a general
+   opening sentence. */
+const distinct = [...new Set(ranges.filter(Boolean))];
+const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback");
+---
+
+<p
+  class:list={["open-status", className]}
+  data-ranges={JSON.stringify(ranges)}
+  data-minutes={JSON.stringify(minutes)}
+  data-open={t("location.openNow")}
+  data-closed={t("location.closedNow")}
+>
+  <span class="open-status__label">{t("location.todayLabel")}:</span>
+  <span class="open-status__value">{fallback}</span>
+  <span class="open-status__state" hidden>
+    <span class="open-status__dot" aria-hidden="true"></span>
+    <span class="open-status__state-text"></span>
+  </span>
+</p>
+
+{/* CSP: bu script inline OLAMAZ (public/_headers → script-src 'self') */}
+<script type="module" src="/open-status.js"></script>
+
+<style>
+  .open-status {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+    color: var(--ts-text-muted);
+  }
+  .open-status__label {
+    font-weight: var(--ts-weight-semibold);
+    color: var(--ts-color-primary-700);
+  }
+  .open-status__value {
+    font-variant-numeric: tabular-nums;
+    color: var(--ts-color-primary-700);
+  }
+  .open-status__state {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ts-space-2);
+    padding-left: var(--ts-space-2);
+    border-left: 1px solid var(--ts-border);
+    font-weight: var(--ts-weight-medium);
+  }
+  .open-status__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--ts-radius-full);
+    background: var(--ts-color-primary-400);
+  }
+  .open-status__state--open .open-status__dot {
+    background: var(--ts-color-success);
+  }
+  .open-status__state--open .open-status__state-text {
+    color: var(--ts-color-success);
+  }
+</style>

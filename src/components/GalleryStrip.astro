@@ -1,0 +1,111 @@
+---
+/**
+ * GalleryStrip — a horizontally scrolling strip showing the room.
+ *
+ * Images are found by convention in `src/assets/images/`. A missing file
+ * drops its card; if no image resolves at all the whole section stops
+ * rendering. That makes a broken image or a "photo goes here" box
+ * impossible, which matters for a template: the site has to look finished
+ * from the first minute, including before you have replaced the photography.
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Container from "@studio/core/components/Container.astro";
+import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import { t } from "../lib/site";
+
+const images = import.meta.glob<{ default: ImageMetadata }>("../assets/images/*.jpg", {
+  eager: true,
+});
+const pick = (file: string) => images[`../assets/images/${file}.jpg`]?.default;
+
+/* Order follows the art direction: room, bar, then detail */
+const SHOTS = [
+  { file: "02-bar", altKey: "bar" },
+  { file: "03-latte", altKey: "latte" },
+  { file: "04-pourover", altKey: "pourover" },
+  { file: "05-food", altKey: "food" },
+  { file: "06-storefront", altKey: "storefront" },
+  { file: "07-detail", altKey: "detail" },
+];
+
+const shots = SHOTS.map((s) => ({ ...s, img: pick(s.file) })).filter((s) => s.img);
+---
+
+{
+  shots.length > 0 && (
+    <section class="gallery">
+      <Container>
+        <SectionHeading eyebrow={t("gallery.eyebrow")} title={t("gallery.title")} />
+      </Container>
+      <div class="gallery__scroller">
+        <ul class="gallery__track">
+          {shots.map((shot) => (
+            <li class="gallery__item">
+              <Image
+                src={shot.img!}
+                alt={t(`gallery.alts.${shot.altKey}`)}
+                widths={[280, 560]}
+                sizes="(min-width: 768px) 280px, 240px"
+                loading="lazy"
+                decoding="async"
+                class="gallery__img"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .gallery {
+    padding-block: var(--ts-section-y);
+  }
+  .gallery__scroller {
+    margin-top: var(--ts-space-10);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    padding-inline: var(--ts-container-pad);
+    padding-bottom: var(--ts-space-3);
+  }
+  .gallery__track {
+    list-style: none;
+    display: flex;
+    gap: var(--ts-space-4);
+    margin: 0;
+    padding: 0;
+    width: max-content;
+  }
+  .gallery__item {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+  /* Portrait, and the ratio is declared rather than implied by a height in
+     pixels. Two things follow: the row of images reserves its space before
+     they load, so nothing below it jumps, and a strip of upright frames reads
+     as photography rather than as thumbnails. A room, a cup and a face all
+     sit better in a tall frame than a wide one. */
+  .gallery__img {
+    display: block;
+    width: 240px;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: cover;
+    /* Square, like the full-width band above. Surfaces in this theme are
+       rounded and photographs are not: one rounded image beside one squared
+       one is the difference that reads as an oversight. */
+    border-radius: 0;
+    background: var(--ts-surface-alt);
+  }
+  @media (min-width: 768px) {
+    .gallery__img {
+      width: 280px;
+    }
+    .gallery__scroller {
+      padding-inline: max(var(--ts-container-pad), calc((100vw - var(--ts-container-max)) / 2));
+    }
+  }
+</style>

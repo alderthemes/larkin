@@ -1,0 +1,41 @@
+---
+/**
+ * Card — a slot-based content card. The template decides how image and
+ * body are laid out; the card only supplies surface, border and shadow.
+ */
+interface Props {
+  as?: "div" | "article" | "li";
+  padding?: "none" | "md" | "lg";
+  hover?: boolean;
+  class?: string;
+}
+const { as: Tag = "div", padding = "md", hover = false, class: className = "" } = Astro.props;
+---
+
+<Tag class:list={["ts-card", `ts-card--pad-${padding}`, hover && "ts-card--hover", className]}>
+  <slot />
+</Tag>
+
+<style>
+  /* Reads the component layer rather than the semantic one. Those tokens
+     existed and nothing used them, so a theme that set --ts-c-card-* got no
+     effect and had to override the component instead — which is the failure
+     the three-layer system was built to prevent. */
+  .ts-card {
+    background: var(--ts-c-card-bg);
+    border: 1px solid var(--ts-c-card-border);
+    border-radius: var(--ts-c-card-radius);
+    box-shadow: var(--ts-c-card-shadow);
+    overflow: hidden;
+  }
+  .ts-card--pad-md { padding: var(--ts-space-6); }
+  .ts-card--pad-lg { padding: var(--ts-space-8); }
+  .ts-card--hover {
+    transition: box-shadow var(--ts-duration-base) var(--ts-ease-out),
+      transform var(--ts-duration-base) var(--ts-ease-out);
+  }
+  .ts-card--hover:hover {
+    box-shadow: var(--ts-c-card-shadow-hover);
+    transform: translateY(-2px);
+  }
+</style>

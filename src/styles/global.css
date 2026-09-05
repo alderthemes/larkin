@@ -1,0 +1,117 @@
+/* larkin — the global stylesheet entry point.
+   Order matters: Tailwind, then the core tokens, then the Tailwind bridge,
+   then this theme's overrides. Move one and the cascade stops working. */
+/* Self-hosted fonts: no third-party request, nothing to disclose in a
+   privacy policy, and one less connection before first paint.
+   The width axis is imported rather than the plain weight file: it is what
+   lets one family behave like two. */
+@import "@fontsource-variable/instrument-sans/wdth.css";
+@import "tailwindcss";
+@import "@studio/core/tokens.css";
+@import "@studio/core/theme.css";
+
+/* =====================================================
+   larkin theme overrides
+   This block writes the template's identity over the core tokens. It is the
+   only block that changes when the site is rethemed — if you find yourself
+   editing a component to change a color, the token is missing, not the rule.
+
+   The identity in three words: daylight, one voice, no colour. A cafe is read
+   standing up, in a hurry, usually in the sun, and the page is built for
+   that: one typeface, black type on near-white, and a single warm mark
+   reserved for the one thing regulars come back to check — what is on this
+   season.
+
+   Set deliberately against the restaurant theme in the catalog. That one is a
+   serif on warm paper with an ember accent and square corners; this one is a
+   grotesque on cool white, achromatic, with soft corners. Two templates that
+   share a look are two templates a buyer only buys one of.
+   ===================================================== */
+:root {
+  /* Near-black through to near-white, all in one hue family so nothing on the
+     page is a foreign grey. 16.4 / 7.2 / 5.1 against the ground. */
+  --ts-color-primary-50:  #f8f7f4;
+  --ts-color-primary-100: #efede8;
+  --ts-color-primary-200: #e2dfd8;
+  --ts-color-primary-300: #cbc7be;
+  --ts-color-primary-400: #a8a49b;
+  --ts-color-primary-500: #86827a;
+  --ts-color-primary-600: #6c6961;
+  --ts-color-primary-700: #55534e;
+  --ts-color-primary-800: #33322f;
+  --ts-color-primary-900: #1a1917;
+  --ts-color-primary-950: #0e0e0d;
+
+  /* Terracotta, and it appears once: on the seasonal mark in the menu. The
+     rotation is the thing a regular is actually scanning for, so it is the
+     thing that gets the colour. Everything else — buttons included — is ink.
+     5.1:1 on the ground. */
+  --ts-color-accent-400: #cf7a52;
+  --ts-color-accent-500: #b8623a;
+  --ts-color-accent-600: #a6522f;
+
+  --ts-surface:        #f8f7f4;
+  --ts-surface-alt:    #efede8;
+  --ts-surface-invert: #1a1917;
+
+  --ts-text:        #1a1917;
+  --ts-text-muted:  #55534e;
+  --ts-text-subtle: #6c6961;
+  --ts-border:        #e2dfd8;
+  --ts-border-strong: #cbc7be;
+  /* The field border, in this theme's own hue but actually visible: 3.23:1
+     against the field background, where a control boundary needs 3:1. Only the
+     lightness moved; hue and saturation are unchanged, so nothing about the
+     palette shifts. It used to inherit from --ts-border and measured about
+     1.3:1 -- a border almost nobody could see, on the one element where the
+     border is what tells you the control is there. */
+  --ts-c-input-border: #94896f;
+
+  --ts-text-invert:        #f4f3f0;
+  --ts-text-invert-muted:  #c9c6bf;
+  --ts-text-invert-subtle: #9d9a92;
+  --ts-border-invert:      #33322f;
+
+  /* One family, both roles. Contrast comes from the width axis, from case and
+     from size — not from a second typeface. Five of the fifteen best-set sites
+     measured in this sector use a single family, and none of the weakest do:
+     a page that needs two faces to build a hierarchy usually has not built
+     one. Instrument Sans also carries tabular figures, which the menu and the
+     opening hours both need. */
+  --ts-font-display: "Instrument Sans Variable", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ts-font-sans: var(--ts-font-display);
+
+  /* Buttons are ink. A cafe has one action — get here — and it does not need
+     a colour to say so when it is the only filled thing on the page. */
+  --ts-c-btn-bg:       var(--ts-color-primary-900);
+  --ts-c-btn-bg-hover: var(--ts-color-primary-950);
+
+  /* Tighter than the restaurant's rhythm. Short sections, read quickly. */
+  --ts-section-y: var(--ts-space-20); /* 80px */
+
+  /* The micro-label, set in the condensed width. That narrowing is the whole
+     reason one family is enough: at 11px with wide tracking a condensed
+     grotesque reads as a different voice without being a different face. */
+  --larkin-label-size: 0.6875rem;
+  --larkin-label-tracking: 0.14em;
+  --larkin-label-width: 82%;
+
+  --ts-c-section-eyebrow-color:    var(--ts-text-subtle);
+  --ts-c-section-eyebrow-size:     var(--larkin-label-size);
+  --ts-c-section-eyebrow-weight:   var(--ts-weight-medium);
+  --ts-c-section-eyebrow-tracking: var(--larkin-label-tracking);
+}
+
+/* Every uppercase label in the theme narrows. Applied here rather than in each
+   component so the voice cannot drift one section at a time. */
+.ts-heading__eyebrow {
+  font-stretch: var(--larkin-label-width);
+}
+
+/* Figures line up in columns: prices, opening hours, the week table. */
+[data-numeric],
+.menu-list__price,
+time {
+  font-variant-numeric: tabular-nums;
+}

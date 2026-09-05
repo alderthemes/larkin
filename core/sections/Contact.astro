@@ -1,0 +1,260 @@
+---
+/**
+ * Contact — an info column, a form, and an optional map slot.
+ * The template picks the form action (Netlify Forms, Formspree, and so on).
+ * Every input carries a real label. A placeholder is not a label: it
+ * disappears the moment someone starts typing, and a screen reader that
+ * reaches the field late gets nothing at all.
+ */
+import Container from "../components/Container.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import Button from "../components/Button.astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  /**
+   * Heading level for the section title. Defaults to h2, because most uses of
+   * this section sit inside a page that already has its own h1.
+   *
+   * Pass h1 when the section IS the page, as it is on a dedicated contact
+   * route. Leaving it out there produced a page whose headings began at h2 and
+   * jumped to h3 with no h1 at all -- an accessibility failure that shipped,
+   * because the gate measured the home route and the fault was on /contact/.
+   */
+  level?: "h1" | "h2" | "h3";
+  address?: string;
+  phone?: string;
+  email?: string;
+  hours?: { label: string; value: string }[];
+  formAction?: string;
+  submitLabel?: string;
+  /** i18n: labels for the form fields */
+  labels?: { name: string; email: string; message: string };
+  /** i18n: labels for the info block */
+  infoLabels?: { address: string; phone: string; email: string; hours: string };
+  class?: string;
+}
+const {
+  eyebrow,
+  title,
+  subtitle,
+  level = "h2",
+  address,
+  phone,
+  email,
+  hours = [],
+  formAction = "#",
+  submitLabel = "Send message",
+  labels = { name: "Name", email: "Email", message: "Message" },
+  infoLabels = { address: "Address", phone: "Phone", email: "Email", hours: "Opening hours" },
+  class: className = "",
+} = Astro.props;
+/* The info labels sit one level under whatever the section heading is, so the
+   hierarchy holds wherever the section is used. Hard-coding them at h3 put an
+   h1 -> h3 skip on every dedicated contact page and left them level with the
+   section title on a home page. One level down from the parent is the only
+   answer that is right in both places. */
+/* Capitalized on purpose: Astro renders a lowercase identifier as a literal
+   tag, so `<labelLevel>` shipped four <labelLevel> elements that were not
+   headings at all -- worse than the skip it was meant to fix. */
+const LabelLevel = ({ h1: "h2", h2: "h3", h3: "h4" })[level];
+const hasMap = Astro.slots.has("map");
+---
+
+<section class:list={["ts-contact", className]} id="contact">
+  <Container>
+    <SectionHeading {eyebrow} {title} {subtitle} {level} />
+    <div class="ts-contact__grid">
+      <div class="ts-contact__info">
+        {
+          address && (
+            <div class="ts-contact__block">
+              <LabelLevel class="ts-contact__label">{infoLabels.address}</LabelLevel>
+              <p class="ts-contact__value">{address}</p>
+            </div>
+          )
+        }
+        {
+          phone && (
+            <div class="ts-contact__block">
+              <LabelLevel class="ts-contact__label">{infoLabels.phone}</LabelLevel>
+              <p class="ts-contact__value">
+                <a href={`tel:${phone.replace(/\s/g, "")}`}>{phone}</a>
+              </p>
+            </div>
+          )
+        }
+        {
+          email && (
+            <div class="ts-contact__block">
+              <LabelLevel class="ts-contact__label">{infoLabels.email}</LabelLevel>
+              <p class="ts-contact__value">
+                <a href={`mailto:${email}`}>{email}</a>
+              </p>
+            </div>
+          )
+        }
+        {
+          hours.length > 0 && (
+            <div class="ts-contact__block">
+              <LabelLevel class="ts-contact__label">{infoLabels.hours}</LabelLevel>
+              <dl class="ts-contact__hours">
+                {hours.map((h) => (
+                  <div class="ts-contact__hours-row">
+                    <dt>{h.label}</dt>
+                    <dd>{h.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )
+        }
+      </div>
+
+      <form class="ts-contact__form" action={formAction} method="POST">
+        <div class="ts-contact__hp" aria-hidden="true">
+          <label for="hp-website">Website</label>
+          <input id="hp-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <div class="ts-field">
+          <label for="contact-name">{labels.name}</label>
+          <input id="contact-name" name="name" type="text" required autocomplete="name" />
+        </div>
+        <div class="ts-field">
+          <label for="contact-email">{labels.email}</label>
+          <input id="contact-email" name="email" type="email" required autocomplete="email" />
+        </div>
+        <div class="ts-field">
+          <label for="contact-message">{labels.message}</label>
+          <textarea id="contact-message" name="message" rows="5" required></textarea>
+        </div>
+        <Button type="submit" variant="primary">{submitLabel}</Button>
+      </form>
+    </div>
+    {
+      hasMap && (
+        <div class="ts-contact__map">
+          <slot name="map" />
+        </div>
+      )
+    }
+  </Container>
+</section>
+
+<style>
+  .ts-contact {
+    padding-block: var(--ts-section-y);
+  }
+  .ts-contact__grid {
+    display: grid;
+    gap: var(--ts-space-12);
+    margin-top: var(--ts-space-12);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 1024px) {
+    .ts-contact__grid {
+      grid-template-columns: 0.8fr 1.2fr;
+    }
+  }
+  .ts-contact__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-8);
+  }
+  .ts-contact__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-2);
+  }
+  .ts-contact__label {
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ts-text-muted);
+  }
+  .ts-contact__value {
+    margin: 0;
+    font-size: var(--ts-text-base);
+  }
+  .ts-contact__value a {
+    color: var(--ts-color-primary-700);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .ts-contact__hours {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-1);
+  }
+  .ts-contact__hours-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ts-space-4);
+    font-size: var(--ts-text-base);
+  }
+  .ts-contact__hours-row dt { color: var(--ts-text-muted); }
+  .ts-contact__hours-row dd { margin: 0; font-weight: var(--ts-weight-medium); }
+
+  .ts-contact__hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .ts-contact__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-5);
+    background: var(--ts-surface-alt);
+    border: 1px solid var(--ts-border);
+    border-radius: var(--ts-radius-lg);
+    padding: var(--ts-space-8);
+  }
+  .ts-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ts-space-2);
+  }
+  .ts-field label {
+    font-size: var(--ts-text-sm);
+    font-weight: var(--ts-weight-medium);
+  }
+  .ts-field input,
+  .ts-field textarea {
+    font: inherit;
+    padding: var(--ts-space-3) var(--ts-space-4);
+    /* The component token, not --ts-border-strong. That one also draws dashed
+       separators and card rules, so it cannot be darkened to meet the 3:1 that
+       WCAG 1.4.11 requires of a control boundary without darkening decoration
+       everywhere. larkin and wickmere already read the component token; core
+       was the odd one out, which is why bramley's inputs were the palest. */
+    border: 1px solid var(--ts-c-input-border);
+    border-radius: var(--ts-radius-md);
+    background: var(--ts-surface);
+    color: var(--ts-text);
+    min-height: 44px;
+  }
+  .ts-field textarea { min-height: auto; resize: vertical; }
+  .ts-field input:focus-visible,
+  .ts-field textarea:focus-visible {
+    outline: none;
+    border-color: var(--ts-color-primary-600);
+    box-shadow: var(--ts-focus-ring);
+  }
+  .ts-contact__map {
+    margin-top: var(--ts-space-12);
+    border-radius: var(--ts-radius-xl);
+    overflow: hidden;
+    border: 1px solid var(--ts-border);
+  }
+</style>

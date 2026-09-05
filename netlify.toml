@@ -1,0 +1,19 @@
+# Netlify — one-click deploy configuration.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Security headers. Kept identical to public/_headers so the site behaves the
+# same on either host. The two cloudflareinsights hosts are only needed when
+# you deploy to Cloudflare with Web Analytics on; delete them otherwise.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Content-Security-Policy = "default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https:; frame-ancestors 'self' https://alderthemes.com https://www.alderthemes.com https://*.ariftarkandilek.workers.dev; base-uri 'self'; form-action 'self'"
