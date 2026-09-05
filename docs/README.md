@@ -41,7 +41,7 @@ You only ever need to touch **four places**. Nothing is hardcoded in components.
 | Menu, locations, FAQ, legal pages | `src/content/` |
 | Colors, fonts, corner radius | the `:root` block in `src/styles/global.css` |
 
-### Step 1 — Business identity (`src/lib/site.ts`)
+### Step 1: Business identity (`src/lib/site.ts`)
 
 ```ts
 export const business = {
@@ -64,7 +64,7 @@ export const contactFormAction = "#";       // see section 6
 Addresses and opening hours are **not** here. They live in the locations
 collection, because a café can have more than one shop (section 4).
 
-### Step 2 — Wording (`src/i18n/en.json`)
+### Step 2: Wording (`src/i18n/en.json`)
 
 Every string on the site is in this one file, grouped by area:
 
@@ -79,7 +79,7 @@ Every string on the site is in this one file, grouped by area:
 Change `site.name` and the header, footer, page titles, schema.org data and
 `llms.txt` all follow. There is no second place to edit.
 
-### Step 3 — Content (`src/content/`)
+### Step 3: Content (`src/content/`)
 
 One markdown file per item. To add a drink, copy an existing file:
 
@@ -104,7 +104,7 @@ available: true          # false hides it without deleting the file
 Save; the dev server reloads. The menu page, the home page highlights and the
 `Menu`/`MenuItem` schema.org markup all update from this one file.
 
-### Step 4 — Colors & fonts (`src/styles/global.css`)
+### Step 4: Colors & fonts (`src/styles/global.css`)
 
 The whole visual identity is one `:root` block. Change the eleven primary
 values and the three accent values and the entire site re-themes:
@@ -139,7 +139,7 @@ npm install @fontsource-variable/figtree
 Fonts are self-hosted. There are no requests to Google Fonts, which keeps the
 site GDPR-friendly and removes a render-blocking round trip.
 
-### Step 5 — Images
+### Step 5: Images
 
 Replace the files in `src/assets/images/` keeping the same names:
 
@@ -357,7 +357,7 @@ npm run build
 # upload the contents of dist/ to your host
 ```
 
-### Before you go live — security checklist
+### Before you go live: security checklist
 
 - `public/_headers` (Cloudflare) and `netlify.toml` ship with a strict
   Content-Security-Policy, HSTS, `X-Content-Type-Options` and a restrictive
@@ -423,7 +423,7 @@ public/                  favicon, og.jpg, _headers
 | Port 4321 already in use | another dev server is running | Astro auto-picks the next port; or `npm run dev -- --port 4322` |
 | Fonts look wrong / fall back | font package not installed | `npm install` again; check the `@import` lines at the top of `global.css` |
 | A menu item does not appear | `available: false`, or an invalid `category` | check the frontmatter against the enum in `src/content.config.ts` |
-| Gallery section is missing | no images in `src/assets/images/` | add the files, or leave it — the section hides itself by design |
+| Gallery section is missing | no images in `src/assets/images/` | add the files, or leave it: the section hides itself by design |
 | "Open now" never appears | JavaScript disabled, or no `hours` on the primary location | the plain hours line is the intended fallback; add `hours` to the location file |
 | Map embed does not load | Content-Security-Policy blocks the origin | add the embed origin to `frame-src` in `public/_headers` and `netlify.toml` |
 | Build fails on `astro check` | a TypeScript error in your edits | run `npm run check` for the exact file and line |

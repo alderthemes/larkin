@@ -14,6 +14,16 @@ interface Props {
   eyebrow?: string;
   title: string;
   subtitle?: string;
+  /**
+   * Heading level for the section title. Defaults to h2, because most uses of
+   * this section sit inside a page that already has its own h1.
+   *
+   * Pass h1 when the section IS the page, as it is on a dedicated contact
+   * route. Leaving it out there produced a page whose headings began at h2 and
+   * jumped to h3 with no h1 at all -- an accessibility failure that shipped,
+   * because the gate measured the home route and the fault was on /contact/.
+   */
+  level?: "h1" | "h2" | "h3";
   address?: string;
   phone?: string;
   email?: string;
@@ -30,6 +40,7 @@ const {
   eyebrow,
   title,
   subtitle,
+  level = "h2",
   address,
   phone,
   email,
@@ -40,18 +51,27 @@ const {
   infoLabels = { address: "Address", phone: "Phone", email: "Email", hours: "Opening hours" },
   class: className = "",
 } = Astro.props;
+/* The info labels sit one level under whatever the section heading is, so the
+   hierarchy holds wherever the section is used. Hard-coding them at h3 put an
+   h1 -> h3 skip on every dedicated contact page and left them level with the
+   section title on a home page. One level down from the parent is the only
+   answer that is right in both places. */
+/* Capitalized on purpose: Astro renders a lowercase identifier as a literal
+   tag, so `<labelLevel>` shipped four <labelLevel> elements that were not
+   headings at all -- worse than the skip it was meant to fix. */
+const LabelLevel = ({ h1: "h2", h2: "h3", h3: "h4" })[level];
 const hasMap = Astro.slots.has("map");
 ---
 
 <section class:list={["ts-contact", className]} id="contact">
   <Container>
-    <SectionHeading {eyebrow} {title} {subtitle} />
+    <SectionHeading {eyebrow} {title} {subtitle} {level} />
     <div class="ts-contact__grid">
       <div class="ts-contact__info">
         {
           address && (
             <div class="ts-contact__block">
-              <h3 class="ts-contact__label">{infoLabels.address}</h3>
+              <LabelLevel class="ts-contact__label">{infoLabels.address}</LabelLevel>
               <p class="ts-contact__value">{address}</p>
             </div>
           )
@@ -59,7 +79,7 @@ const hasMap = Astro.slots.has("map");
         {
           phone && (
             <div class="ts-contact__block">
-              <h3 class="ts-contact__label">{infoLabels.phone}</h3>
+              <LabelLevel class="ts-contact__label">{infoLabels.phone}</LabelLevel>
               <p class="ts-contact__value">
                 <a href={`tel:${phone.replace(/\s/g, "")}`}>{phone}</a>
               </p>
@@ -69,7 +89,7 @@ const hasMap = Astro.slots.has("map");
         {
           email && (
             <div class="ts-contact__block">
-              <h3 class="ts-contact__label">{infoLabels.email}</h3>
+              <LabelLevel class="ts-contact__label">{infoLabels.email}</LabelLevel>
               <p class="ts-contact__value">
                 <a href={`mailto:${email}`}>{email}</a>
               </p>
@@ -79,7 +99,7 @@ const hasMap = Astro.slots.has("map");
         {
           hours.length > 0 && (
             <div class="ts-contact__block">
-              <h3 class="ts-contact__label">{infoLabels.hours}</h3>
+              <LabelLevel class="ts-contact__label">{infoLabels.hours}</LabelLevel>
               <dl class="ts-contact__hours">
                 {hours.map((h) => (
                   <div class="ts-contact__hours-row">
