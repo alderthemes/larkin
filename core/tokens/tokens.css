@@ -412,6 +412,17 @@
   --ts-c-nav-link-hover:  var(--ts-color-primary-700);
   --ts-c-nav-height:      4rem; /* 64px */
 
+  /* ---------- C: Footer ---------- */
+  /* The theme contract has listed these two as override points since it was
+     written, and nothing declared them. A footer reading `var(--ts-c-footer-bg)`
+     therefore got no value at all, which resolves to transparent: the light
+     page ground showed through and the inverted text on top of it dropped
+     below the contrast floor. Declaring them here makes the contract true
+     rather than aspirational. A theme that wants a light footer overrides
+     both, as the contract says. */
+  --ts-c-footer-bg:   var(--ts-surface-invert);
+  --ts-c-footer-text: var(--ts-text-invert);
+
   /* ---------- C: Section Heading ---------- */
   --ts-c-section-heading-color: var(--ts-text);
   --ts-c-section-subheading-color: var(--ts-text-muted);
