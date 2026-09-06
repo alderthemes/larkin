@@ -117,9 +117,118 @@ export function cafeSchema(input: RestaurantInput) {
   return foodEstablishment("CafeOrCoffeeShop", input);
 }
 
-/** Dental and aesthetic clinics — the sectors queued next */
+/** Aesthetic and general medical clinics. */
 export function medicalClinicSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("MedicalClinic", input);
+}
+
+export interface DentistInput extends LocalBusinessInput {
+  /** What the practice does, as plain service names. These become
+   *  `availableService`, which is what an answer engine reads when it is
+   *  asked whether somewhere does root canals. */
+  services?: { name: string; url?: string; description?: string }[];
+  /** Whether the practice is taking new patients. A practice with a closed
+   *  list that says nothing gets phone calls it cannot answer, so the state
+   *  is published rather than implied. */
+  acceptingNewPatients?: boolean;
+}
+
+/**
+ * A dental practice, and deliberately not MedicalClinic. Dentist is its own
+ * schema.org type and it is the one a local search resolves against; a
+ * practice described as a generic clinic competes in the wrong set.
+ *
+ * There is no price on this entity and none on the procedures below. A price
+ * band on a page is a guide a patient reads next to the sentence that says it
+ * is a guide. The same number inside structured data is a machine-readable
+ * offer with none of that sentence attached, and health pricing is regulated
+ * differently in every market the buyer might be in.
+ */
+export function dentistSchema(input: DentistInput) {
+  const schema = baseLocalBusiness("Dentist", input);
+  if (input.services?.length) {
+    schema.availableService = input.services.map((s) => ({
+      "@type": "MedicalProcedure",
+      name: s.name,
+      ...(s.url ? { url: s.url } : {}),
+      ...(s.description ? { description: s.description } : {}),
+    }));
+  }
+  if (input.acceptingNewPatients !== undefined) {
+    schema.isAcceptingNewPatients = input.acceptingNewPatients;
+  }
+  return schema;
+}
+
+export interface MedicalProcedureInput {
+  name: string;
+  description: string;
+  url?: string;
+  /** schema.org MedicalProcedureType. "NoninvasiveProcedure" covers a filling
+   *  or a clean; "SurgicalProcedure" covers an extraction. */
+  procedureType?: "NoninvasiveProcedure" | "SurgicalProcedure";
+  /** What happens during it, in the patient's words. */
+  howPerformed?: string;
+  /** What to do beforehand. */
+  preparation?: string;
+  /** What to expect afterward. This is the field most practice sites leave
+   *  empty and the one patients ask about first. */
+  followup?: string;
+  /** The practice that performs it, by name. */
+  providerName?: string;
+}
+
+export function medicalProcedureSchema(input: MedicalProcedureInput) {
+  const schema: Record<string, unknown> = {
+    "@type": "MedicalProcedure",
+    name: input.name,
+    description: input.description,
+  };
+  if (input.url) schema.url = input.url;
+  if (input.procedureType) {
+    schema.procedureType = `https://schema.org/${input.procedureType}`;
+  }
+  if (input.howPerformed) schema.howPerformed = input.howPerformed;
+  if (input.preparation) schema.preparation = input.preparation;
+  if (input.followup) schema.followup = input.followup;
+  if (input.providerName) {
+    schema.provider = { "@type": "Dentist", name: input.providerName };
+  }
+  return schema;
+}
+
+export interface PersonInput {
+  name: string;
+  jobTitle?: string;
+  /** The organization they work for, by name. */
+  worksForName?: string;
+  worksForType?: string;
+  /** Degree, diploma, or registration, as free text. */
+  qualification?: string;
+  languages?: string[];
+  image?: string;
+  url?: string;
+}
+
+/**
+ * A named practitioner. Used on team pages in the regulated verticals, where
+ * who is treating you is the first thing a visitor checks.
+ *
+ * `image` is optional and stays that way. A practice that has not photographed
+ * its team yet is better served by a card with no photograph than by a stock
+ * one, and structured data should not claim a picture that is not of them.
+ */
+export function personSchema(input: PersonInput) {
+  const schema: Record<string, unknown> = { "@type": "Person", name: input.name };
+  if (input.jobTitle) schema.jobTitle = input.jobTitle;
+  if (input.worksForName) {
+    schema.worksFor = { "@type": input.worksForType ?? "Organization", name: input.worksForName };
+  }
+  if (input.qualification) schema.hasCredential = input.qualification;
+  if (input.languages?.length) schema.knowsLanguage = input.languages;
+  if (input.image) schema.image = input.image;
+  if (input.url) schema.url = input.url;
+  return schema;
 }
 
 export interface HotelInput extends LocalBusinessInput {

@@ -23,8 +23,14 @@ export const LOCALES: Locale[] = ["en", "tr"];
  * list on a delimiter inside a JSON string is how those end up untranslatable.
  * `t()` still resolves strings only; a template reads the array off the
  * dictionary object, or addresses one entry by index ("about.notes.0").
+ *
+ * An array of objects is allowed for the same reason: a list of steps, each
+ * with a heading, a duration and a paragraph, is one translatable unit. Split
+ * across `steps.0.title`, `steps.0.body`, `steps.1.title` it stays translatable
+ * but stops being reorderable, and a translator can no longer see that the
+ * three strings belong to each other.
  */
-export type Dict = { [key: string]: string | string[] | Dict };
+export type Dict = { [key: string]: string | string[] | Dict | Dict[] };
 
 function lookup(dict: Dict, key: string): string | undefined {
   const parts = key.split(".");
