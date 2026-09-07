@@ -393,6 +393,73 @@ export function menuSchema(sections: MenuSectionInput[], url?: string) {
   };
 }
 
+export interface SoftwareApplicationInput {
+  name: string;
+  description: string;
+  url?: string;
+  image?: string;
+  /** schema.org applicationCategory: "BusinessApplication",
+   *  "DeveloperApplication", and so on. Matched against a query rather than
+   *  read as prose, so the accurate value beats the flattering one. */
+  applicationCategory?: string;
+  operatingSystem?: string;
+  /** The publisher, by name. */
+  providerName?: string;
+  /**
+   * The tier range, from the plan collection rather than typed in.
+   *
+   * A price written into a layout is a second copy of a number that already
+   * exists in content, and structured data is where that copy is least likely
+   * to be noticed when it goes stale: nothing on the page looks wrong, and the
+   * wrong figure is the one a search result shows. Pass `offerCount` so the
+   * range is not read as a single price.
+   *
+   * Tiers with no published price are excluded by the caller, which is why
+   * this takes numbers rather than the plan objects: "talk to us" is not a
+   * low price of zero.
+   */
+  offers?: {
+    lowPrice: number;
+    highPrice: number;
+    priceCurrency: string;
+    offerCount: number;
+  };
+}
+
+/**
+ * A software product.
+ *
+ * There is deliberately no `aggregateRating`. It is the most common piece of
+ * invented structured data in this category — a rating and a review count for
+ * reviews that do not exist anywhere on the page — and it is both a policy
+ * violation and a claim the buyer would be making about their own product. A
+ * template that ships one teaches the wrong habit on day one.
+ */
+export function softwareApplicationSchema(input: SoftwareApplicationInput) {
+  const schema: Record<string, unknown> = {
+    "@type": "SoftwareApplication",
+    name: input.name,
+    description: input.description,
+  };
+  if (input.url) schema.url = input.url;
+  if (input.image) schema.image = input.image;
+  if (input.applicationCategory) schema.applicationCategory = input.applicationCategory;
+  if (input.operatingSystem) schema.operatingSystem = input.operatingSystem;
+  if (input.providerName) {
+    schema.provider = { "@type": "Organization", name: input.providerName };
+  }
+  if (input.offers) {
+    schema.offers = {
+      "@type": "AggregateOffer",
+      lowPrice: input.offers.lowPrice.toFixed(2),
+      highPrice: input.offers.highPrice.toFixed(2),
+      priceCurrency: input.offers.priceCurrency,
+      offerCount: input.offers.offerCount,
+    };
+  }
+  return schema;
+}
+
 export interface FAQItem {
   question: string;
   answer: string;
