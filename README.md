@@ -14,7 +14,7 @@ npm run dev    # http://localhost:4321
 npm run build  # production build -> dist/
 ```
 
-Node 22 or newer (see `.node-version`).
+Node 22.12 or newer (see `.node-version`).
 
 ## Make it yours
 
