@@ -33,11 +33,16 @@ export const LOCALES: Locale[] = ["en", "tr"];
 export type Dict = { [key: string]: string | string[] | Dict | Dict[] };
 
 function lookup(dict: Dict, key: string): string | undefined {
-  const parts = key.split(".");
-  let node: string | Dict | undefined = dict;
-  for (const p of parts) {
+  /* The walker is `unknown` because a dictionary holds arrays as well as
+     strings and nested dictionaries — the `Dict` type above says so on
+     purpose, since a list is one translatable unit. The previous annotation
+     said `string | Dict | undefined` and could not see an array at all.
+     Nothing about the behaviour changes: reaching an array element by index
+     ("about.notDo.0") already worked, and now the type says so too. */
+  let node: unknown = dict;
+  for (const p of key.split(".")) {
     if (typeof node !== "object" || node === null) return undefined;
-    node = node[p];
+    node = (node as Record<string, unknown>)[p];
   }
   return typeof node === "string" ? node : undefined;
 }
