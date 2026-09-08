@@ -1,7 +1,7 @@
 {
   "name": "larkin",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cafe template — Astro + Tailwind CSS 4, built on @studio/core",
   "type": "module",
   "scripts": {
