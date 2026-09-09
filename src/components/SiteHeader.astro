@@ -62,14 +62,21 @@ const external = Boolean(primary?.data.mapUrl);
           rel={external ? "noopener noreferrer" : undefined}
         >
           {t("nav.cta")}
+          {external && <span class="ts-visually-hidden"> ({t("a11y.externalLink")})</span>}
         </Button>
       </span>
 
       <details class="site-header__mobile">
-        <summary class="site-header__toggle" aria-label={t("nav.menuToggle")}>
+        {/* No aria-label here. A label is a fixed string, and this control
+            has two states: after opening it, a screen reader still read
+            "Open menu" on the button that now closes it. A <summary> already
+            announces expanded/collapsed on its own — it only needed a name,
+            so the name is real text, hidden visually. */}
+        <summary class="site-header__toggle">
           <span class="site-header__bars" aria-hidden="true"
             ><span></span><span></span><span></span></span
           >
+          <span class="ts-visually-hidden">{t("nav.menu")}</span>
         </summary>
         <nav aria-label="Main" class="site-header__panel">
           <ul>
@@ -90,6 +97,7 @@ const external = Boolean(primary?.data.mapUrl);
                 rel={external ? "noopener noreferrer" : undefined}
               >
                 {t("nav.cta")}
+                {external && <span class="ts-visually-hidden"> ({t("a11y.externalLink")})</span>}
               </a>
             </li>
           </ul>
@@ -98,6 +106,8 @@ const external = Boolean(primary?.data.mapUrl);
     </div>
   </Container>
 </header>
+
+<script type="module" src="/menu-close.js"></script>
 
 <style>
   .site-header {
@@ -118,7 +128,11 @@ const external = Boolean(primary?.data.mapUrl);
     display: inline-flex;
     align-items: center;
     gap: var(--ts-space-2);
-    white-space: nowrap;
+    /* The brand may wrap and may shrink. `white-space: nowrap` plus the
+       default `min-width: auto` pushed the menu button off the screen with a
+       long business name, and again at 200% text size. */
+    min-width: 0;
+    overflow-wrap: anywhere;
     font-family: var(--ts-font-display);
     font-size: var(--ts-text-lg);
     font-weight: var(--ts-weight-bold);
@@ -146,12 +160,17 @@ const external = Boolean(primary?.data.mapUrl);
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: var(--ts-space-6);
+    /* Narrower than it was: the links carry their own horizontal padding now,
+       so the visual rhythm is unchanged while each target grows. */
+    gap: var(--ts-space-2);
   }
   .site-header__link {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    /* The tallest of these was 44px and the narrowest 37px wide. Padding is
+       what makes the box, not the word length. */
+    padding-inline: var(--ts-space-3);
     color: var(--ts-color-primary-700);
     text-decoration: none;
     font-weight: var(--ts-weight-medium);

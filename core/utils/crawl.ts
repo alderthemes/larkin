@@ -19,6 +19,13 @@
 export interface SitemapEntry {
   path: string;
   priority?: string;
+  /**
+   * ISO date (YYYY-MM-DD) this page last changed, when the site actually
+   * knows it. Omitted rather than guessed: `lastmod` filled with the build
+   * date says every page changed today, every day, which is worse than
+   * saying nothing.
+   */
+  lastmod?: string;
 }
 
 /**
@@ -53,7 +60,8 @@ export function sitemapXml(site: URL | undefined, entries: SitemapEntry[]): stri
   const urls = entries
     .map(
       (e) => `  <url>
-    <loc>${base}${e.path}</loc>
+    <loc>${base}${e.path}</loc>${e.lastmod ? `
+    <lastmod>${e.lastmod}</lastmod>` : ""}
     <priority>${e.priority ?? defaultPriority(e.path)}</priority>
   </url>`
     )

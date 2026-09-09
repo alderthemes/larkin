@@ -39,6 +39,9 @@ const { items, class: className = "" } = Astro.props;
   .faq__question {
     list-style: none;
     display: flex;
+    /* A long question, or text scaled to 200%, pushed the chevron outside
+       the box. Let the text shrink and wrap instead. */
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--ts-space-4);

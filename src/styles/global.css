@@ -3,9 +3,11 @@
    then this theme's overrides. Move one and the cascade stops working. */
 /* Self-hosted fonts: no third-party request, nothing to disclose in a
    privacy policy, and one less connection before first paint.
-   The width axis is imported rather than the plain weight file: it is what
-   lets one family behave like two. */
-@import "@fontsource-variable/instrument-sans/wdth.css";
+   The weight axis only. The width file is 57 KB against 30 KB for this one,
+   and the extra 27 KB bought a single effect - narrowed uppercase labels -
+   that wider letter-spacing reproduces closely enough. Every visitor
+   downloads it before first paint; a handful of labels are not worth that. */
+@import "@fontsource-variable/instrument-sans/wght.css";
 @import "tailwindcss";
 @import "@studio/core/tokens.css";
 @import "@studio/core/theme.css";
@@ -90,23 +92,28 @@
   /* Tighter than the restaurant's rhythm. Short sections, read quickly. */
   --ts-section-y: var(--ts-space-20); /* 80px */
 
-  /* The micro-label, set in the condensed width. That narrowing is the whole
-     reason one family is enough: at 11px with wide tracking a condensed
-     grotesque reads as a different voice without being a different face. */
-  --larkin-label-size: 0.6875rem;
-  --larkin-label-tracking: 0.14em;
-  --larkin-label-width: 82%;
+  /* The micro-label. At 11px, uppercase, with tracking this wide the label
+     reads as a second voice without being a second face - which is what lets
+     one family carry the whole theme. The tracking does that work alone now
+     that the width axis is gone; see the font import at the top of the file. */
+  /* 12px, not 11px. At 11px this is the smallest, thinnest, most tightly
+     tracked text on the page and it passed contrast by 0.19 (4.69:1 against
+     4.5:1 required) — a margin that any future colour change spends. One
+     pixel buys the margin back without touching the design intent. */
+  --larkin-label-size: 0.75rem;
+  --larkin-label-tracking: 0.16em;
+
+  /* The "Open now" green. It lives in core's palette, which the docs say may
+     be replaced wholesale on an update — so a buyer who rebrands by editing
+     this file changed everything except the most prominent status indicator
+     on the site, and a buyer who edited core instead loses it on the next
+     version. It belongs here, with the rest of the palette. */
+  --ts-color-success: #166534;
 
   --ts-c-section-eyebrow-color:    var(--ts-text-subtle);
   --ts-c-section-eyebrow-size:     var(--larkin-label-size);
   --ts-c-section-eyebrow-weight:   var(--ts-weight-medium);
   --ts-c-section-eyebrow-tracking: var(--larkin-label-tracking);
-}
-
-/* Every uppercase label in the theme narrows. Applied here rather than in each
-   component so the voice cannot drift one section at a time. */
-.ts-heading__eyebrow {
-  font-stretch: var(--larkin-label-width);
 }
 
 /* Figures line up in columns: prices, opening hours, the week table. */

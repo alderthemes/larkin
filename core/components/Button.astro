@@ -50,7 +50,14 @@ const Tag = href ? "a" : "button";
     border: 1px solid transparent;
     cursor: pointer;
     text-decoration: none;
-    white-space: nowrap;
+    /* No `white-space: nowrap`. It kept labels on one line and looked tidy at
+       the default text size, but it also gave every button an intrinsic
+       minimum width it refused to go below. At 200% text on a 320px screen
+       that minimum was 308px, the button pushed its grid column past the
+       viewport, and the whole page scrolled sideways — measured, not guessed
+       (WCAG 1.4.4). A label that wraps onto two lines is the smaller cost. */
+    min-width: 0;
+    overflow-wrap: anywhere;
     transition:
       background-color var(--ts-duration-fast) var(--ts-ease-out),
       border-color var(--ts-duration-fast) var(--ts-ease-out),

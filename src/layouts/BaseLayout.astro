@@ -5,6 +5,10 @@
  * prop.
  */
 import "../styles/global.css";
+// The Latin subset the demo content actually uses. Importing it here as a URL
+// gives the same hashed file the stylesheet's @font-face already points at -
+// Vite emits one asset, not a second copy - so the preload below can name it.
+import latinFontUrl from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
 import { buildTitle, jsonLd } from "@studio/core/utils/seo";
 import { LOCALE, t } from "../lib/site";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -22,6 +26,14 @@ const { title, description, image = "/og.jpg", schema, noindex = false } = Astro
 const siteName = t("site.name");
 const fullTitle = buildTitle(title, siteName);
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+/* Nobody deploys a site to example.com. If the canonical address is still the
+   placeholder, search engines are being handed a domain that is not ours: the
+   pages get indexed under it, or consolidated into it, and the effect is
+   invisible in the build output. noindex until SITE is set is the recoverable
+   failure - it shows up in Search Console as "excluded by noindex" and one
+   environment variable undoes it. See astro.config.mjs. */
+const placeholderSite = canonical.hostname.endsWith("example.com");
 ---
 
 <!doctype html>
@@ -31,8 +43,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {/* No canonical on a page that is not meant to be indexed. /404/ was
+        declaring itself canonical at an address the server answers with 404 —
+        a signal contradicting itself. */}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {(noindex || placeholderSite) && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     {/* Open Graph / Twitter */}
@@ -42,17 +57,45 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+    {/* The shipped og.jpg is exactly 1200x630. Declaring it lets a share
+        client draw the large card immediately instead of downloading the file
+        first to find out — the difference between a big card and a small one
+        on the first share of a link. Replace the numbers if you replace the
+        image with a different size. */}
+    {image === "/og.jpg" && (
+      <>
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={t("a11y.ogImageAlt")} />
+      </>
+    )}
+    <meta property="og:locale" content={LOCALE === "tr" ? "tr_TR" : "en_US"} />
     <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
 
     {/* Fonts are self-hosted through @fontsource, imported from global.css.
-        No request leaves the visitor's browser for a font file. */}
+        No request leaves the visitor's browser for a font file.
+
+        Without the preload the browser learns the font exists only after the
+        stylesheet has parsed, so the chain is HTML -> CSS -> font and the page
+        paints once in the fallback face and again in the real one. Only the
+        latin subset is preloaded: latin-ext is a further 11 KB that this
+        content never touches, and a preload nobody uses is pure waste.
+        `crossorigin` is required even for a same-origin font, because fonts
+        are fetched in CORS mode - without it the browser downloads the file
+        twice. */}
+    <link rel="preload" href={latinFontUrl} as="font" type="font/woff2" crossorigin />
 
     {schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}
   </head>
   <body>
     <a href="#main" class="skip-link">{t("a11y.skipToContent")}</a>
     <SiteHeader />
-    <main id="main">
+    {/* tabindex="-1" makes <main> focusable by script and by a fragment
+        link without putting it in the tab order. Without it the skip link
+        moves the sequential starting point but leaves focus on <body>:
+        Chrome papers over the difference, Safari and some screen readers
+        historically do not. */}
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <SiteFooter />

@@ -9,7 +9,7 @@
  *   import en from "../i18n/en.json";
  *   const t = createT(en);
  *   t("nav.menu")            → "Menu"
- *   t("hero.title", {name})  → parametreli string
+ *   t("hero.title", {name})  → the same string with {name} filled in
  */
 
 export type Locale = "en" | "tr";
@@ -66,14 +66,11 @@ export function createT(dict: Dict, fallback?: Dict) {
   };
 }
 
-/** Resolves the locale from a URL: /tr/menu -> "tr", /menu -> "en" */
-export function localeFromUrl(pathname: string): Locale {
-  const seg = pathname.split("/").filter(Boolean)[0];
-  return (LOCALES as string[]).includes(seg) ? (seg as Locale) : DEFAULT_LOCALE;
-}
-
-/** Adds the locale prefix: localizePath("tr", "/menu") -> "/tr/menu" */
-export function localizePath(locale: Locale, path: string): string {
-  const clean = path.startsWith("/") ? path : `/${path}`;
-  return locale === DEFAULT_LOCALE ? clean : `/${locale}${clean}`;
-}
+/* `localeFromUrl` and `localizePath` used to live here. They were removed:
+   nothing imported them, and between them they implied a capability the
+   templates do not have. A template runs in ONE language, chosen at build
+   time by `LOCALE` in src/lib/site.ts. Serving two at once would need
+   locale-prefixed routes, a per-page dictionary rather than the
+   module-level one, hreflang tags, a language switcher and a sitemap that
+   multiplies locales by paths — none of which exists. A helper that only
+   makes sense inside that architecture advertises it. */

@@ -4,8 +4,10 @@
  * updates itself when a shop is added and cannot fall behind the site.
  */
 import type { APIRoute } from "astro";
+import { getCollection } from "astro:content";
 import { t, business } from "../lib/site";
 import { getLocations, formatAddress } from "../lib/locations";
+import { availableByCategory, formatPrice } from "../lib/menu";
 
 export const GET: APIRoute = async ({ site }) => {
   const base = site?.toString().replace(/\/$/, "") ?? "";
@@ -17,9 +19,9 @@ export const GET: APIRoute = async ({ site }) => {
         .map((h) => `${h.dayOfWeek.join(", ")}: ${h.opens}-${h.closes}`)
         .join("; ");
       const amenities = [
-        loc.data.wifi ? "free Wi-Fi" : null,
-        loc.data.outlets ? "power outlets" : null,
-        loc.data.laptopFriendly ? "laptop-friendly" : null,
+        loc.data.wifi ? t("location.wifi") : null,
+        loc.data.outlets ? t("location.outlets") : null,
+        loc.data.laptopFriendly ? t("location.laptopFriendly") : null,
       ]
         .filter(Boolean)
         .join(", ");
@@ -29,6 +31,36 @@ export const GET: APIRoute = async ({ site }) => {
 - Hours: ${hours}
 - Amenities: ${amenities || "n/a"}`;
     })
+    .join("\n\n");
+
+  /* The menu and the questions, in full. An assistant asked "do they have
+     oat milk?" or "can I bring a laptop?" answers from this file or not at
+     all; a one-line pointer to /menu/ is the same as no answer. Both blocks
+     read the collections, so they cannot fall behind the site. */
+  const menuBlocks = availableByCategory(await getCollection("menu"))
+    .map(
+      (group) => `### ${t(`menu.categories.${group.category}`)}
+
+${group.items
+  .map((i) => {
+    const parts = [
+      `- ${i.data.name}`,
+      formatPrice(i.data.price, i.data.currency),
+      i.data.description,
+    ].filter(Boolean);
+    const marks = [
+      i.data.seasonal ? "seasonal" : null,
+      ...i.data.tags,
+    ].filter(Boolean);
+    return parts.join(" — ") + (marks.length ? ` (${marks.join(", ")})` : "");
+  })
+  .join("\n")}`
+    )
+    .join("\n\n");
+
+  const faqBlocks = (await getCollection("faq"))
+    .sort((a, b) => a.data.order - b.data.order)
+    .map((entry) => `**${entry.data.question}** ${entry.data.answer}`)
     .join("\n\n");
 
   const body = `# ${business.name}
@@ -46,6 +78,14 @@ export const GET: APIRoute = async ({ site }) => {
 ## Locations
 
 ${locationBlocks}
+
+## Menu
+
+${menuBlocks}
+
+## FAQ
+
+${faqBlocks}
 
 ## Pages
 

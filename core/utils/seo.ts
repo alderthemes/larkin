@@ -30,6 +30,16 @@ export interface OpeningHoursSpec {
 }
 
 export interface LocalBusinessInput {
+  /**
+   * A stable machine identity for the business, the SAME string on every
+   * page that describes it.
+   *
+   * Without it, three pages describing one shop are three nodes with the
+   * same name, the same address and the same phone but three different
+   * urls — and nothing says they are one business rather than three.
+   * Convention: the site origin plus `#business`.
+   */
+  id?: string;
   name: string;
   description?: string;
   url?: string;
@@ -44,6 +54,10 @@ export interface LocalBusinessInput {
   priceRange?: string;
   openingHours?: OpeningHoursSpec[];
   geo?: { latitude: number; longitude: number };
+  /** The year the business opened, as a schema.org date. */
+  foundingDate?: string;
+  /** For a branch: a reference back to the main business node. */
+  parentOrganization?: { "@id": string };
 }
 
 function baseLocalBusiness(type: string, input: LocalBusinessInput) {
@@ -52,11 +66,14 @@ function baseLocalBusiness(type: string, input: LocalBusinessInput) {
     "@type": type,
     name: input.name,
   };
+  if (input.id) schema["@id"] = input.id;
   if (input.description) schema.description = input.description;
   if (input.url) schema.url = input.url;
   if (input.telephone) schema.telephone = input.telephone;
   if (input.email) schema.email = input.email;
   if (input.image) schema.image = input.image;
+  if (input.foundingDate) schema.foundingDate = input.foundingDate;
+  if (input.parentOrganization) schema.parentOrganization = input.parentOrganization;
   if (input.priceRange) schema.priceRange = input.priceRange;
   if (input.streetAddress) {
     schema.address = {
@@ -339,11 +356,26 @@ export function hotelRoomSchema(input: HotelRoomInput) {
   return schema;
 }
 
-/* ---------------- Menu schema (Restaurant dikeyi) ---------------- */
+/* ---------------- Menu schema (restaurant vertical) ---------------- */
 
+/**
+ * Menu tags that carry a diet claim into structured data.
+ *
+ * A tag that is not here is not an error: "decaf" and "spicy" are real tags
+ * with no schema.org equivalent, and inventing one would be worse than
+ * leaving them out. What IS an error is a tag the page shows as a diet while
+ * the machine layer stays silent about it — which is what "plant-based" did.
+ * It was the label four cafe items used, the vocabulary the content schema
+ * documented, and the one word this map did not know; those four items said
+ * "Plant-based" on the page and carried no suitableForDiet at all.
+ *
+ * "vegan" stays as a synonym: both words describe the same claim and a
+ * template may use either.
+ */
 const DIET_MAP: Record<string, string> = {
   vegetarian: "https://schema.org/VegetarianDiet",
   vegan: "https://schema.org/VeganDiet",
+  "plant-based": "https://schema.org/VeganDiet",
   "gluten-free": "https://schema.org/GlutenFreeDiet",
 };
 
@@ -353,6 +385,15 @@ export interface MenuItemInput {
   price: number;
   currency: string;
   tags?: string[];
+  /**
+   * The item is on the menu for part of the year only.
+   *
+   * No `validFrom`/`validThrough` is emitted for it: those need real dates
+   * and the template does not know them, so writing them would be inventing
+   * facts. What it does instead is say so in words, in the field schema.org
+   * has for exactly that — telling two similar items apart.
+   */
+  seasonal?: boolean;
 }
 
 export interface MenuSectionInput {
@@ -381,6 +422,9 @@ export function menuSchema(sections: MenuSectionInput[], url?: string) {
           "@type": "MenuItem",
           name: item.name,
           description: item.description,
+          ...(item.seasonal
+            ? { disambiguatingDescription: "Seasonal item, available for part of the year" }
+            : {}),
           offers: {
             "@type": "Offer",
             price: item.price.toFixed(2),
@@ -638,5 +682,10 @@ export function itemListSchema(items: { name: string; url: string }[]) {
  * listing and a step in a breadcrumb.
  */
 export function graph(...nodes: unknown[]) {
-  return { "@context": "https://schema.org", "@graph": nodes.filter(Boolean) };
+  /* One level of flattening, because both call shapes exist in the wild:
+     graph(a, b) and graph([a, b]). The second produced an @graph holding a
+     single ARRAY rather than a list of nodes — structurally invalid, and
+     silent: the page rendered, the JSON parsed, and no gate looked inside.
+     Measured in a live paid template (2026-09-09). */
+  return { "@context": "https://schema.org", "@graph": nodes.flat().filter(Boolean) };
 }

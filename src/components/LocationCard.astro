@@ -10,7 +10,7 @@
 import Button from "@studio/core/components/Button.astro";
 import OpenStatus from "./OpenStatus.astro";
 import { t } from "../lib/site";
-import { formatAddress, weeklyRanges, type Location } from "../lib/locations";
+import { formatAddress, weeklyRanges, dayLabels, WEEK_ORDER, type Location } from "../lib/locations";
 
 interface Props {
   location: Location;
@@ -30,18 +30,18 @@ const d = location.data;
 const address = formatAddress(location);
 const ranges = weeklyRanges(location);
 const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAY_LABELS = dayLabels(t);
 /* Start on Monday, the order people expect to read a week in */
-const week = [1, 2, 3, 4, 5, 6, 0].map((i) => ({
+const week = WEEK_ORDER.map((i) => ({
   key: DAY_KEYS[i],
   label: DAY_LABELS[i],
   range: ranges[i],
 }));
 
 const amenities = [
-  d.wifi ? "Free Wi-Fi" : null,
-  d.outlets ? "Power outlets" : null,
-  d.laptopFriendly ? "Laptop-friendly" : null,
+  d.wifi ? t("location.wifi") : null,
+  d.outlets ? t("location.outlets") : null,
+  d.laptopFriendly ? t("location.laptopFriendly") : null,
 ].filter(Boolean) as string[];
 ---
 
@@ -162,6 +162,9 @@ const amenities = [
   }
   .loc-card__week-row {
     display: flex;
+    /* Let the day and the hours drop onto two lines when they no longer fit
+       side by side, which is what happens at 200% text. */
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--ts-space-4);
     padding-block: var(--ts-space-1);

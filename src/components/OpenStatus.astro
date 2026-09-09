@@ -40,7 +40,9 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
   </span>
 </p>
 
-{/* CSP: bu script inline OLAMAZ (public/_headers → script-src 'self') */}
+{/* This script cannot be inline: the Content-Security-Policy in
+    public/_headers allows script-src 'self' only, and an inline block has no
+    origin to match. Keeping it a file is what lets the policy stay strict. */}
 <script type="module" src="/open-status.js"></script>
 
 <style>

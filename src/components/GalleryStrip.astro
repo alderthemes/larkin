@@ -8,7 +8,7 @@
  * impossible, which matters for a template: the site has to look finished
  * from the first minute, including before you have replaced the photography.
  */
-import { Image } from "astro:assets";
+import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import Container from "@studio/core/components/Container.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
@@ -19,7 +19,8 @@ const images = import.meta.glob<{ default: ImageMetadata }>("../assets/images/*.
 });
 const pick = (file: string) => images[`../assets/images/${file}.jpg`]?.default;
 
-/* Order follows the art direction: room, bar, then detail */
+/* Order follows the art direction: room, bar, then detail. These six have
+   their own alt text in the dictionary. */
 const SHOTS = [
   { file: "02-bar", altKey: "bar" },
   { file: "03-latte", altKey: "latte" },
@@ -29,7 +30,52 @@ const SHOTS = [
   { file: "07-detail", altKey: "detail" },
 ];
 
-const shots = SHOTS.map((s) => ({ ...s, img: pick(s.file) })).filter((s) => s.img);
+const named = SHOTS.map((s) => ({ img: pick(s.file), alt: t(`gallery.alts.${s.altKey}`) }));
+
+/* Anything else in the folder, after the six. Dropping a seventh photo in
+   used to do nothing at all: the list above was the whole gallery and an
+   unlisted file was ignored in silence. The hero image is excluded because
+   it is already the largest thing on the page.
+
+   These extras share one generic alt. That is worse than a written
+   description and better than an invisible photo — replace it by adding the
+   file to SHOTS with its own key in gallery.alts. */
+const extras = Object.entries(images)
+  .filter(([path]) => {
+    const file = path.split("/").pop()!.replace(/\.jpg$/, "");
+    return !SHOTS.some((s) => s.file === file) && !file.startsWith("01-hero");
+  })
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, mod]) => ({ img: mod.default, alt: t("gallery.alts.generic") }));
+
+const shots = [...named, ...extras].filter((s) => s.img);
+
+/* Built by hand rather than with <Image>, for one reason: <Image> puts the
+   FULL-SIZE rendition in `src` and the small ones in `srcset`. Every browser
+   that understands srcset ignores `src`, so those large files were built and
+   deployed for nobody — 631.834 byte of the 1,79 MB dist, never served.
+   Pointing `src` at the smallest candidate keeps the fallback working for a
+   browser without srcset and stops shipping the rest. */
+const frames = await Promise.all(
+  shots.map(async (shot) => {
+    /* Cropped to the frame the CSS draws (3:4), not only scaled to its
+       width. The photographs are landscape and the strip is upright, so a
+       file cut to width alone arrives 280x188 and `object-fit: cover` blows
+       it up to 280x373 — a 2x upscale on every frame in the strip. Cutting
+       the crop at build time hands the browser the pixels it displays. */
+    const [small, large] = await Promise.all([
+      getImage({ src: shot.img!, width: 280, height: 373, fit: "cover", format: "webp" }),
+      getImage({ src: shot.img!, width: 560, height: 747, fit: "cover", format: "webp" }),
+    ]);
+    return {
+      alt: shot.alt,
+      src: small.src,
+      srcset: `${small.src} 280w, ${large.src} 560w`,
+      width: small.attributes.width,
+      height: small.attributes.height,
+    };
+  })
+);
 ---
 
 {
@@ -38,15 +84,26 @@ const shots = SHOTS.map((s) => ({ ...s, img: pick(s.file) })).filter((s) => s.im
       <Container>
         <SectionHeading eyebrow={t("gallery.eyebrow")} title={t("gallery.title")} />
       </Container>
-      <div class="gallery__scroller">
+      {/* A scrolling box is focusable in Chrome whether or not anyone asked
+          for it, and this one was a 2117x396 tab stop with an empty
+          accessible name. Naming it and declaring it a region turns an
+          accident into a deliberate, announced control. */}
+      <div
+        class="gallery__scroller"
+        role="region"
+        tabindex="0"
+        aria-label={t("gallery.title")}
+      >
         <ul class="gallery__track">
-          {shots.map((shot) => (
+          {frames.map((frame) => (
             <li class="gallery__item">
-              <Image
-                src={shot.img!}
-                alt={t(`gallery.alts.${shot.altKey}`)}
-                widths={[280, 560]}
+              <img
+                src={frame.src}
+                srcset={frame.srcset}
                 sizes="(min-width: 768px) 280px, 240px"
+                width={frame.width}
+                height={frame.height}
+                alt={frame.alt}
                 loading="lazy"
                 decoding="async"
                 class="gallery__img"

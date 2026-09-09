@@ -4,7 +4,7 @@
  * The "summary" paragraph is written to be quotable on its own: it is the
  * sentence an answer engine lifts when someone asks about the shop.
  */
-import { Image } from "astro:assets";
+import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
@@ -20,10 +20,39 @@ const images = import.meta.glob<{ default: ImageMetadata }>("../assets/images/*.
 });
 const storyImage = images["../assets/images/02-bar.jpg"]?.default;
 
+/* `src` is the smallest candidate, not the largest: srcset decides what a
+   modern browser fetches, and `src` is only the fallback for one that cannot
+   read srcset. */
+const story = storyImage
+  ? await (async () => {
+      const [small, large] = await Promise.all([
+        getImage({ src: storyImage, width: 520, format: "webp" }),
+        getImage({ src: storyImage, width: 780, format: "webp" }),
+      ]);
+      return {
+        src: small.src,
+        srcset: `${small.src} 520w, ${large.src} 780w`,
+        width: small.attributes.width,
+        height: small.attributes.height,
+      };
+    })()
+  : null;
+
 const schema = cafeSchema({
+  /* The same id on all three pages: one business, one node. Without it,
+     three pages describing one shop are three nodes with the same name,
+     address and phone but three different urls, and nothing says they
+     are the same place. */
+  id: new URL("/#business", Astro.site).toString(),
   name: business.name,
+  /* The description of the BUSINESS, not of this page. The contact page
+     passed its own subtitle here, so the machine answer to "what is this
+     place" was an invitation to fill in a form. */
   description: t("about.summary"),
-  url: new URL("/about/", Astro.site).toString(),
+  /* The canonical page for the business, not the page this markup is on. */
+  url: new URL("/", Astro.site).toString(),
+  image: new URL("/og.jpg", Astro.site).toString(),
+  foundingDate: business.foundingYear,
   telephone: business.phone,
   email: business.email,
   priceRange: business.priceRange,
@@ -53,14 +82,17 @@ const schema = cafeSchema({
         </div>
 
         {
-          storyImage && (
+          story && (
             <div class="about__media">
-              <Image
-                src={storyImage}
+              <img
+                src={story.src}
+                srcset={story.srcset}
+                sizes="(min-width: 1440px) 610px, (min-width: 1024px) calc((100vw - 144px) / 2.1), 100vw"
+                width={story.width}
+                height={story.height}
                 alt={t("about.imageAlt")}
-                widths={[520, 780]}
-                sizes="(min-width: 1024px) 40rem, 100vw"
                 loading="eager"
+                decoding="async"
                 class="about__img"
               />
             </div>

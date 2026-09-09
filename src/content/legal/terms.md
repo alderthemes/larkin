@@ -1,5 +1,6 @@
 ---
 title: "Terms of Service"
+description: "The terms for using this website, what the information on it does and does not promise, and who to contact."
 updated: "2026-09-02"
 ---
 

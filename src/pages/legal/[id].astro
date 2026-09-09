@@ -17,7 +17,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<BaseLayout title={entry.data.title} description={`${entry.data.title} — ${t("site.name")}`}>
+<BaseLayout title={entry.data.title} description={entry.data.description}>
   <section class="legal">
     <Container size="narrow">
       <h1 class="legal__title">{entry.data.title}</h1>

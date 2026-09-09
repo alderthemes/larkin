@@ -8,8 +8,7 @@
     "menu": "Menü",
     "about": "Hakkında",
     "contact": "İletişim",
-    "cta": "Yol tarifi al",
-    "menuToggle": "Menüyü aç"
+    "cta": "Yol tarifi al"
   },
   "hero": {
     "eyebrow": "Kahve barı ve kavurma atölyesi",
@@ -25,12 +24,15 @@
     "todayLabel": "Bugün",
     "openNow": "Şu an açık",
     "closedNow": "Kapalı",
-    "hoursFallback": "Her gün 07:00'den itibaren açık",
+    "hoursFallback": "Saatler güne göre değişir",
     "allHours": "Tüm saatleri göster",
     "directions": "Yol tarifi al",
     "viewAll": "Tüm şubeleri gör",
     "amenities": "Bilmekte fayda var",
-    "walkInOnly": "Rezervasyon yok, doğrudan gelin"
+    "walkInOnly": "Rezervasyon yok, doğrudan gelin",
+    "wifi": "Ücretsiz Wi-Fi",
+    "outlets": "Priz",
+    "laptopFriendly": "Dizüstüne uygun"
   },
   "menu": {
     "eyebrow": "Ne ikram ederiz",
@@ -51,6 +53,7 @@
     "tags": {
       "plant-based": "Bitkisel",
       "vegetarian": "Vejetaryen",
+      "vegan": "Vegan",
       "gluten-free": "Glutensiz",
       "decaf": "Kafeinsizi var"
     }
@@ -77,7 +80,8 @@
       "pourover": "Filtre koniden süzülen sıcak su ve yükselen buhar",
       "food": "Bademli bir kruvasan ve küçük tabakta avokado toast",
       "storefront": "Tabelasıyla dükkan cephesi ve kapının yanındaki kaldırım masası",
-      "detail": "Tezgahta saksıdaki eğreltiotunun yanında üst üste dizilmiş seramik fincanlar"
+      "detail": "Tezgahta saksıdaki eğreltiotunun yanında üst üste dizilmiş seramik fincanlar",
+      "generic": "Kafeden bir kare"
     }
   },
   "about": {
@@ -110,28 +114,22 @@
       "message": "Mesajınız",
       "submit": "Mesaj gönder",
       "emailPlaceholder": "you@example.com",
-      "messagePlaceholder": "Size nasıl yardımcı olabiliriz?"
+      "messagePlaceholder": "Size nasıl yardımcı olabiliriz?",
+      "required": "(zorunlu)",
+      "errName": "Adınızı yazın.",
+      "errEmail": "Size dönebileceğimiz bir e-posta adresi yazın.",
+      "errMessage": "Neye ihtiyacınız olduğunu yazın."
     },
     "mapAlt": "Konumumuzu gösteren harita",
-    "mapPlaceholder": "Harita gömme alanı: Google Haritalar iframe kodunuzu buraya yapıştırın",
     "info": {
       "address": "Adres",
       "phone": "Telefon",
-      "email": "E-posta",
-      "hours": "Çalışma saatleri"
-    }
-  },
-  "hours": {
-    "monFri": "Pazartesi - Cuma",
-    "sat": "Cumartesi",
-    "sun": "Pazar",
-    "monFriValue": "07:00 - 18:00",
-    "satValue": "08:00 - 19:00",
-    "sunValue": "08:00 - 17:00"
+      "email": "E-posta"
+    },
+    "honeypotLabel": "Şirket"
   },
   "footer": {
     "rights": "Tüm hakları saklıdır.",
-    "credit": "Specialty kahve şablonu",
     "hoursTitle": "Saatler",
     "findUs": "Bizi bulun",
     "browse": "Gezinin",
@@ -149,7 +147,17 @@
   },
   "a11y": {
     "skipToContent": "İçeriğe atla",
-    "currentPage": "Mevcut sayfa",
-    "externalLink": "Yeni sekmede açılır"
+    "externalLink": "Yeni sekmede açılır",
+    "ogImageAlt": "Kafenin içi: ahşap tezgah ve espresso makinesi, pencere önünde eğrelti otları ve sokak penceresi yanındaki masalar"
+  },
+  "days": {
+    "mon": "Pazartesi",
+    "tue": "Salı",
+    "wed": "Çarşamba",
+    "thu": "Perşembe",
+    "fri": "Cuma",
+    "sat": "Cumartesi",
+    "sun": "Pazar",
+    "range": "{from} - {to}"
   }
 }

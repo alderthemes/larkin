@@ -15,13 +15,33 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
 
+# One thing this policy will block until you edit it: a contact form that
+# posts to a form service. form-action is set to 'self', so add the service's
+# host there — otherwise the browser blocks the submission silently and the
+# visitor sees nothing happen, not even an error.
+#
+# Make the same change in netlify.toml, which carries a copy of this policy,
+# so the site behaves the same on either host.
+
 # Hashed build output never changes: the filename carries a content hash, so a
 # new build is a new URL. Without this the host serves it with a short default
 # lifetime, every repeat visit revalidates every asset, and Lighthouse flags
 # "use efficient cache lifetimes" on a site that has nothing to revalidate.
+# The fonts live here too — they are the largest thing a first visit pulls,
+# and they are hashed like everything else in this folder.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Fonts are hashed the same way and are the largest thing a first visit pulls.
-/fonts/*
-  Cache-Control: public, max-age=31536000, immutable
+# These two are NOT hashed: their names stay the same when their contents
+# change. So they get a lifetime, but never `immutable` — that would promise
+# the file can never change, and a visitor who cached it would keep the old
+# one until the promise expired. Without any rule at all they fall to the
+# host's default and cost a conditional request on every repeat page view.
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+/open-status.js
+  Cache-Control: public, max-age=3600
+
+/menu-close.js
+  Cache-Control: public, max-age=3600

@@ -4,11 +4,18 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "22.19.0"
+  # Your live address. Uncomment it, put your own domain in, and canonical
+  # tags, Open Graph URLs, robots.txt and sitemap.xml all follow. Leave it
+  # commented out and the build warns and ships noindex on every page.
+  # SITE = "https://your-domain.com"
 
-# Security headers. Kept identical to public/_headers so the site behaves the
-# same on either host. The two cloudflareinsights hosts are only needed when
-# you deploy to Cloudflare with Web Analytics on; delete them otherwise.
+# Security headers. The security block below is character-for-character the
+# same as the one in public/_headers, so the site is protected the same way on
+# either host. The caching rules are NOT here: public/_headers also carries
+# /* and /_astro/* Cache-Control blocks, and Netlify reads that file from the
+# published folder as well. The two cloudflareinsights hosts are only needed
+# when you deploy to Cloudflare with Web Analytics on; delete them otherwise.
 [[headers]]
   for = "/*"
   [headers.values]

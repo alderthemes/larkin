@@ -35,4 +35,4 @@ support obligation.
 
 ---
 
-Version 0.1 — 2026-09-03 · Alder Themes · support@alderthemes.com
+License text version 0.1 — 2026-09-03 · Alder Themes · support@alderthemes.com

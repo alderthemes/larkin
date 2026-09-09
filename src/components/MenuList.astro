@@ -1,4 +1,5 @@
 ---
+import { MENU_CATEGORIES } from "../content.config";
 /**
  * MenuList — the menu, grouped by category.
  * A list rather than a table: name and description on the left, price and
@@ -9,6 +10,7 @@
  */
 import type { CollectionEntry } from "astro:content";
 import { t } from "../lib/site";
+import { formatPrice } from "../lib/menu";
 
 type MenuEntry = CollectionEntry<"menu">;
 
@@ -22,10 +24,9 @@ interface Props {
   class?: string;
 }
 
-const CATEGORY_ORDER = ["espresso", "brew", "food", "seasonal"];
 const {
   items,
-  categories = CATEGORY_ORDER,
+  categories = MENU_CATEGORIES,
   withAnchors = false,
   headingLevel: Heading = "h2",
   class: className = "",
@@ -39,18 +40,19 @@ const groups = categories.map((category) => ({
     .sort((a, b) => a.data.order - b.data.order),
 }));
 
-const price = (value: number, currency: string) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-  }).format(value);
 ---
 
 <div class:list={["menu-list", className]}>
   {
+    /* tabindex="-1" only where the section is a link target: it makes the
+       category focusable by the sticky navigation without adding a stop to
+       the tab order. */
     groups.map((group) => (
-      <section class="menu-list__group" id={withAnchors ? group.category : undefined}>
+      <section
+        class="menu-list__group"
+        id={withAnchors ? group.category : undefined}
+        tabindex={withAnchors ? -1 : undefined}
+      >
         <Heading class="menu-list__category">{group.label}</Heading>
 
         {group.items.length === 0 ? (
@@ -77,7 +79,7 @@ const price = (value: number, currency: string) =>
                     </ul>
                   )}
                 </div>
-                <p class="menu-list__price">{price(item.data.price, item.data.currency)}</p>
+                <p class="menu-list__price">{formatPrice(item.data.price, item.data.currency)}</p>
               </li>
             ))}
           </ul>
@@ -103,7 +105,6 @@ const price = (value: number, currency: string) =>
     margin: 0 0 var(--ts-space-4);
     font-size: var(--larkin-label-size);
     font-weight: var(--ts-weight-medium);
-    font-stretch: var(--larkin-label-width);
     letter-spacing: var(--larkin-label-tracking);
     text-transform: uppercase;
     color: var(--ts-text-subtle);
@@ -127,6 +128,9 @@ const price = (value: number, currency: string) =>
      its prices against the name instead. Neither uses a leader of dots. */
   .menu-list__item {
     display: flex;
+    /* Let the name and the price drop onto two lines when they no longer fit
+       side by side: at 200% text the price row ran off the screen. */
+    flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
     gap: var(--ts-space-8);
@@ -159,7 +163,6 @@ const price = (value: number, currency: string) =>
   .menu-list__badge {
     font-size: var(--larkin-label-size);
     font-weight: var(--ts-weight-medium);
-    font-stretch: var(--larkin-label-width);
     letter-spacing: var(--larkin-label-tracking);
     text-transform: uppercase;
     color: var(--ts-color-accent-600);

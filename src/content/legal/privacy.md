@@ -1,5 +1,6 @@
 ---
 title: "Privacy Policy"
+description: "What personal data this cafe collects when you use the site or get in touch, why, and how long it is kept."
 updated: "2026-09-02"
 ---
 

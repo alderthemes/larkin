@@ -57,6 +57,12 @@ const {
     font-weight: var(--ts-weight-bold);
     color: var(--ts-c-section-heading-color);
     text-wrap: balance;
+    /* A single long word cannot break by default, so at 200% text on a 320px
+       screen one heading ("Frequently asked questions") was 30px wider than
+       the column and the whole page scrolled sideways. `break-word` only
+       applies when a word genuinely does not fit — normal headings are
+       untouched. */
+    overflow-wrap: break-word;
   }
   .ts-heading__subtitle {
     margin: 0;

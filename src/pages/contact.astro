@@ -3,29 +3,39 @@
  * Contact — location cards, the weekly hours, the form and a map slot.
  * With a second file in the locations collection the cards become a grid.
  */
-import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
 import Button from "@studio/core/components/Button.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
 import LocationCard from "../components/LocationCard.astro";
-import { t, business, contactFormAction } from "../lib/site";
-import { getLocations, openingHours } from "../lib/locations";
+import { t, business, contactFormAction, mapEmbedUrl } from "../lib/site";
+import { getLocations, openingHours, groupedHours, hoursRowLabel, formatAddress } from "../lib/locations";
 import { cafeSchema } from "@studio/core/utils/seo";
 
 const locations = await getLocations();
 const primary = locations.find((l) => l.data.primary) ?? locations[0];
 
-const weekly = [
-  { label: t("hours.monFri"), value: t("hours.monFriValue") },
-  { label: t("hours.sat"), value: t("hours.satValue") },
-  { label: t("hours.sun"), value: t("hours.sunValue") },
-];
+/* Hours come from one place: the location file. The fixed table that used to
+   sit here read a second, hand-typed set from the dictionary, so editing the
+   markdown — which is what the documentation tells you to do — left this table
+   showing the old times. */
+const weekly = groupedHours(primary, t);
 
 const schema = cafeSchema({
+  /* The same id on all three pages: one business, one node. Without it,
+     three pages describing one shop are three nodes with the same name,
+     address and phone but three different urls, and nothing says they
+     are the same place. */
+  id: new URL("/#business", Astro.site).toString(),
   name: business.name,
-  description: t("contact.subtitle"),
-  url: new URL("/contact/", Astro.site).toString(),
+  /* The description of the BUSINESS, not of this page. The contact page
+     passed its own subtitle here, so the machine answer to "what is this
+     place" was an invitation to fill in a form. */
+  description: t("about.summary"),
+  /* The canonical page for the business, not the page this markup is on. */
+  url: new URL("/", Astro.site).toString(),
+  image: new URL("/og.jpg", Astro.site).toString(),
+  foundingDate: business.foundingYear,
   telephone: business.phone,
   email: business.email,
   priceRange: business.priceRange,
@@ -70,7 +80,7 @@ const schema = cafeSchema({
               {
                 weekly.map((row) => (
                   <div class="contact__hours-row">
-                    <dt>{row.label}</dt>
+                    <dt>{hoursRowLabel(row, t)}</dt>
                     <dd>{row.value}</dd>
                   </div>
                 ))
@@ -78,50 +88,76 @@ const schema = cafeSchema({
             </dl>
           </div>
 
-          <div class="contact__direct">
-            <h2 class="contact__subtitle">{t("contact.info.email")}</h2>
-            <p><a href={`mailto:${business.email}`}>{business.email}</a></p>
+          {/* A definition list, not a heading plus two paragraphs. The
+              heading used to read "Email" above a block that also held the
+              phone number, so one of the two lines was filed under the wrong
+              label. */}
+          <dl class="contact__direct">
+            <dt>{t("contact.info.email")}</dt>
+            <dd><a href={`mailto:${business.email}`}>{business.email}</a></dd>
             {
               business.phone && (
-                <p>
-                  <a href={`tel:${business.phone.replace(/\s/g, "")}`}>{business.phone}</a>
-                </p>
+                <>
+                  <dt>{t("contact.info.phone")}</dt>
+                  <dd>
+                    <a href={`tel:${business.phone.replace(/\s/g, "")}`}>{business.phone}</a>
+                  </dd>
+                </>
               )
             }
-          </div>
+            {
+              primary && (
+                <>
+                  <dt>{t("contact.info.address")}</dt>
+                  <dd>{formatAddress(primary)}</dd>
+                </>
+              )
+            }
+          </dl>
         </div>
 
         <div class="contact__form-wrap">
           <h2 class="contact__subtitle">{t("contact.formTitle")}</h2>
           <form class="contact__form" action={contactFormAction} method="POST">
             <div class="contact__field">
-              <label for="contact-name">{t("contact.form.name")}</label>
-              <input id="contact-name" name="name" type="text" required autocomplete="name" />
+              <label for="contact-name">
+                {t("contact.form.name")} <span class="contact__req">{t("contact.form.required")}</span>
+              </label>
+              <input id="contact-name" name="name" type="text" required autocomplete="name" aria-describedby="contact-name-error" />
+              <p class="contact__error" id="contact-name-error">{t("contact.form.errName")}</p>
             </div>
             <div class="contact__field">
-              <label for="contact-email">{t("contact.form.email")}</label>
+              <label for="contact-email">
+                {t("contact.form.email")} <span class="contact__req">{t("contact.form.required")}</span>
+              </label>
               <input
                 id="contact-email"
                 name="email"
                 type="email"
                 required
                 autocomplete="email"
+                aria-describedby="contact-email-error"
                 placeholder={t("contact.form.emailPlaceholder")}
               />
+              <p class="contact__error" id="contact-email-error">{t("contact.form.errEmail")}</p>
             </div>
             <div class="contact__field">
-              <label for="contact-message">{t("contact.form.message")}</label>
+              <label for="contact-message">
+                {t("contact.form.message")} <span class="contact__req">{t("contact.form.required")}</span>
+              </label>
               <textarea
                 id="contact-message"
                 name="message"
                 rows="5"
                 required
+                aria-describedby="contact-message-error"
                 placeholder={t("contact.form.messagePlaceholder")}></textarea>
+              <p class="contact__error" id="contact-message-error">{t("contact.form.errMessage")}</p>
             </div>
 
             {/* Honeypot: a bot fills this in, a person never sees it */}
             <div class="contact__hp" aria-hidden="true">
-              <label for="contact-company">Company</label>
+              <label for="contact-company">{t("contact.honeypotLabel")}</label>
               <input id="contact-company" name="company" type="text" tabindex="-1" autocomplete="off" />
             </div>
 
@@ -130,9 +166,21 @@ const schema = cafeSchema({
         </div>
       </div>
 
-      {/* Map slot: drop your own embed in here. While it is empty the
-           section does not render, so the page never shows a grey box
-           where a map should be. */}
+      {/* The map. Set `mapEmbedUrl` in src/lib/site.ts and this section
+          appears; leave it empty and the page never shows a grey box where a
+          map should be. */}
+      {
+        mapEmbedUrl && (
+          <div class="contact__map">
+            <iframe
+              src={mapEmbedUrl}
+              title={t("contact.mapAlt")}
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        )
+      }
     </Container>
   </section>
 </BaseLayout>
@@ -144,11 +192,17 @@ const schema = cafeSchema({
   .contact__grid {
     margin-top: var(--ts-space-12);
     display: grid;
+    /* `minmax(0, 1fr)`, not the implicit `auto`. An auto track is sized by its
+       content and cannot go below it: at 200% text the single column measured
+       460px inside a 240px box and the page scrolled sideways. `min-width: 0`
+       on the children does not help — the track is the thing that will not
+       shrink. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--ts-space-12);
   }
   @media (min-width: 1024px) {
     .contact__grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: var(--ts-space-16);
       align-items: start;
     }
@@ -157,6 +211,7 @@ const schema = cafeSchema({
     display: flex;
     flex-direction: column;
     gap: var(--ts-space-10);
+    min-width: 0;
   }
   .contact__loc-list {
     list-style: none;
@@ -184,7 +239,7 @@ const schema = cafeSchema({
     flex-direction: column;
     gap: var(--ts-space-2);
     font-size: var(--ts-text-sm);
-    max-width: 24rem;
+    max-width: min(24rem, 100%);
   }
   .contact__hours-row {
     display: flex;
@@ -192,6 +247,7 @@ const schema = cafeSchema({
     gap: var(--ts-space-4);
     padding-bottom: var(--ts-space-2);
     border-bottom: 1px solid var(--ts-border);
+    flex-wrap: wrap;
   }
   .contact__hours-row dt {
     color: var(--ts-text-muted);
@@ -201,19 +257,51 @@ const schema = cafeSchema({
     font-variant-numeric: tabular-nums;
     color: var(--ts-color-primary-700);
   }
-  .contact__direct p {
-    margin: 0 0 var(--ts-space-2);
+  .contact__direct {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ts-space-1);
+    margin: 0;
     font-size: var(--ts-text-sm);
   }
+  .contact__direct dt {
+    color: var(--ts-text-muted);
+  }
+  .contact__direct dd {
+    margin: 0 0 var(--ts-space-2);
+  }
+  /* The aspect ratio is declared so the row reserves its height before the
+     embed loads, and the border keeps the frame from floating on the ground
+     colour. */
+  .contact__map {
+    margin-top: var(--ts-space-12);
+    border: 1px solid var(--ts-border);
+    border-radius: var(--ts-radius-lg);
+    overflow: hidden;
+  }
+  .contact__map iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+  }
   .contact__direct a {
+    /* An e-mail address has no spaces to break at, so it sets a minimum width
+       the box cannot go below. */
+    overflow-wrap: anywhere;
     color: var(--ts-color-accent-600);
+    /* 16.7px tall before this. inline-flex is what lets a link have a height
+       at all; the phone number is the one control a person taps while walking. */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   .contact__form {
     display: flex;
     flex-direction: column;
     gap: var(--ts-space-5);
-    max-width: 30rem;
+    max-width: min(30rem, 100%);
   }
   .contact__field {
     display: flex;
@@ -248,6 +336,31 @@ const schema = cafeSchema({
     outline: none;
     border-color: var(--ts-c-input-border-focus);
     box-shadow: var(--ts-focus-ring);
+  }
+  /* Error display. Measured: submitting the empty form left NO trace on the
+     page — no field was marked, no message stayed visible, and nothing was
+     announced to a screen reader. The only feedback was the browser's own
+     bubble, whose language follows the browser rather than the document.
+     The `:user-invalid` hook was already available and unused.
+     These rules come AFTER the focus rule on purpose: same specificity, so
+     the later one wins, and the focus rule was overriding the error colour. */
+  .contact__req {
+    font-weight: var(--ts-weight-regular);
+    color: var(--ts-text-muted);
+  }
+  .contact__error {
+    display: none;
+    margin: var(--ts-space-1) 0 0;
+    font-size: var(--ts-text-sm);
+    color: var(--ts-color-error);
+  }
+  .contact__field input:user-invalid,
+  .contact__field textarea:user-invalid {
+    border-color: var(--ts-color-error);
+  }
+  .contact__field input:user-invalid ~ .contact__error,
+  .contact__field textarea:user-invalid ~ .contact__error {
+    display: block;
   }
   .contact__hp {
     position: absolute;

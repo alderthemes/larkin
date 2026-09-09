@@ -1,5 +1,11 @@
 {
   // Cloudflare deploy config — rename "name" to your project
+  //
+  // SITE does not belong in this file: keys here configure the deployed
+  // worker, and SITE is needed while the site is being built. Set it as a
+  // build environment variable in the Cloudflare dashboard
+  // (Settings -> Build -> Variables), or in .env for local builds. Without it
+  // the build warns and every page ships noindex.
   "name": "larkin",
   "compatibility_date": "2026-09-01",
   "assets": {

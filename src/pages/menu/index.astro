@@ -1,4 +1,5 @@
 ---
+import { MENU_CATEGORIES } from "../../content.config";
 /**
  * Menu — one page with sticky category navigation.
  * The Menu/MenuSection/MenuItem structured data is built from the
@@ -12,12 +13,10 @@ import MenuList from "../../components/MenuList.astro";
 import { t } from "../../lib/site";
 import { menuSchema } from "@studio/core/utils/seo";
 
-const CATEGORY_ORDER = ["espresso", "brew", "food", "seasonal"] as const;
-
 const items = (await getCollection("menu")).filter((i) => i.data.available);
 
 /* An empty category takes no room in the sticky nav */
-const categories = CATEGORY_ORDER.filter((c) => items.some((i) => i.data.category === c));
+const categories = MENU_CATEGORIES.filter((c) => items.some((i) => i.data.category === c));
 
 const url = new URL("/menu/", Astro.site).toString();
 const schema = menuSchema(
@@ -32,6 +31,7 @@ const schema = menuSchema(
         price: i.data.price,
         currency: i.data.currency,
         tags: i.data.tags,
+        seasonal: i.data.seasonal,
       })),
   })),
   url
@@ -63,7 +63,14 @@ const schema = menuSchema(
       </nav>
 
       <div class="menu-page__list">
-        <MenuList items={items} categories={[...categories]} withAnchors />
+        {/* An empty menu folder used to build a page with a heading and
+            nothing under it. MenuList shows the empty state per category,
+            but with no items at all there is no category to show it in. */}
+        {items.length === 0 ? (
+          <p class="menu-page__empty">{t("menu.empty")}</p>
+        ) : (
+          <MenuList items={items} categories={[...categories]} withAnchors />
+        )}
       </div>
     </Container>
   </section>
@@ -72,6 +79,10 @@ const schema = menuSchema(
 <style>
   .menu-page {
     padding-block: var(--ts-space-16) var(--ts-section-y);
+  }
+  .menu-page__empty {
+    margin-top: var(--ts-space-10);
+    color: var(--ts-text-muted);
   }
   .menu-page__nav {
     position: sticky;

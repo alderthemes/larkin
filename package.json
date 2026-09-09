@@ -1,14 +1,18 @@
 {
   "name": "larkin",
   "private": true,
-  "version": "0.1.1",
-  "description": "Cafe template — Astro + Tailwind CSS 4, built on @studio/core",
+  "version": "0.2.0",
+  "description": "A café site built around the four things people actually check: where, when, what, and can I work here",
   "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "node -e \"require('fs').rmSync('node_modules/.astro', { recursive: true, force: true })\"",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "node -e \"try{require.resolve('@astrojs/check');require.resolve('typescript')}catch{console.error('astro check needs @astrojs/check and typescript. Run: npm install');process.exit(1)}\" && astro check"
   },
   "dependencies": {
     "@fontsource-variable/instrument-sans": "^5.3.0",
@@ -16,5 +20,23 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.1",
     "tailwindcss": "^4.3.3"
-  }
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": "Alder Themes",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alderthemes/larkin.git"
+  },
+  "homepage": "https://larkin.alderthemes.com",
+  "keywords": [
+    "astro",
+    "astro-template",
+    "tailwindcss",
+    "cafe",
+    "larkin"
+  ]
 }

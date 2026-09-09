@@ -2,33 +2,21 @@
 /**
  * SiteFooter — brand, navigation, hours and locations.
  * The location list comes from the collection, so adding a second shop
- * updates the footer as well as
- * kendini uyarlar (AK-5).
+ * updates the footer too: it lists both addresses, and the hours block says
+ * which shop it belongs to.
  */
 import Container from "@studio/core/components/Container.astro";
 import { t, business } from "../lib/site";
-import { getLocations, formatAddress, weeklyRanges } from "../lib/locations";
+import { getLocations, formatAddress, groupedHours, hoursRowLabel } from "../lib/locations";
 
 const year = new Date().getFullYear();
 const locations = await getLocations();
 const primary = locations.find((l) => l.data.primary) ?? locations[0];
 
-/* Consecutive days sharing a range collapse into one line, the way a shop
-   writes its hours on the door. */
-const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const ORDER = [1, 2, 3, 4, 5, 6, 0];
-const ranges = primary ? weeklyRanges(primary) : [];
-const grouped: { label: string; value: string }[] = [];
-for (const i of ORDER) {
-  const value = ranges[i] || t("location.closedNow");
-  const last = grouped[grouped.length - 1];
-  const day = DAY_LABELS[i];
-  if (last && last.value === value) {
-    last.label = `${last.label.split(" to ")[0]} to ${day}`;
-  } else {
-    grouped.push({ label: day, value });
-  }
-}
+/* With no `primary` the grouping writes "Closed" on all seven rows, and the
+   footer announces that a shop which does not exist is shut all week. A closed
+   day and an absence of data are different things. */
+const grouped = primary ? groupedHours(primary, t) : [];
 
 const navLinks = [
   { href: "/menu/", label: t("nav.menu") },
@@ -54,19 +42,29 @@ const navLinks = [
         </ul>
       </nav>
 
-      <div class="site-footer__col">
-        <h2 class="site-footer__heading">{t("footer.hoursTitle")}</h2>
-        <dl class="site-footer__hours">
-          {
-            grouped.map((row) => (
-              <div class="site-footer__hours-row">
-                <dt>{row.label}</dt>
-                <dd>{row.value}</dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
+      {grouped.length > 0 && (
+        <div class="site-footer__col">
+          {/* With more than one shop these are the primary shop's hours only.
+              Saying which shop is the difference between an incomplete answer
+              and a wrong one: the second branch can close at a different time,
+              and this block sits on every page of the site. */}
+          <h2 class="site-footer__heading">
+            {locations.length > 1 && primary
+              ? `${t("footer.hoursTitle")} — ${primary.data.name}`
+              : t("footer.hoursTitle")}
+          </h2>
+          <dl class="site-footer__hours">
+            {
+              grouped.map((row) => (
+                <div class="site-footer__hours-row">
+                  <dt>{hoursRowLabel(row, t)}</dt>
+                  <dd>{row.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      )}
 
       <div class="site-footer__col">
         <h2 class="site-footer__heading">{t("footer.findUs")}</h2>
@@ -129,6 +127,10 @@ const navLinks = [
     display: flex;
     flex-direction: column;
     gap: var(--ts-space-3);
+    /* Grid items default to their content width and refuse to shrink. At 200%
+       text on a 320px screen that pushed the footer past the viewport and the
+       whole page scrolled sideways (WCAG 1.4.4). */
+    min-width: 0;
   }
   .site-footer__brand {
     margin: 0;
@@ -164,6 +166,8 @@ const navLinks = [
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .site-footer__loc-name {
     font-weight: var(--ts-weight-medium);
@@ -172,6 +176,7 @@ const navLinks = [
     color: var(--ts-color-primary-300);
   }
   .site-footer a {
+    overflow-wrap: anywhere;
     color: var(--ts-color-primary-50);
     text-decoration: none;
     border-bottom: 1px solid transparent;
@@ -194,6 +199,7 @@ const navLinks = [
   }
   .site-footer__hours-row {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--ts-space-4);
   }
@@ -224,5 +230,12 @@ const navLinks = [
     gap: var(--ts-space-6);
     margin: 0;
     padding: 0;
+  }
+  /* These were 17px tall. Line height alone decides the height of an inline
+     link, and 11px text makes a target nobody can hit on the move. */
+  .site-footer__legal-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 </style>

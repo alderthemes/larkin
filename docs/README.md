@@ -50,7 +50,6 @@ export const business = {
   phone: "+1 503 555 0142",                 // your phone
   priceRange: "$",                          // $, $$, $$$
   servesCuisine: ["Coffee", "Light bites"],
-  instagramHandle: "",                      // leave empty to hide the section
   foundingYear: "2019",
 };
 ```
@@ -111,19 +110,27 @@ values and the three accent values and the entire site re-themes:
 
 ```css
 :root {
-  --ts-color-primary-900: #231e18;  /* headings, buttons */
-  --ts-color-accent-600:  #956048;  /* eyebrows, focus ring, seasonal badge */
-  --ts-surface:           #faf8f5;  /* page background */
-  --ts-surface-alt:       #f3efe8;  /* alternating sections, cards */
-  --ts-font-display: "Bricolage Grotesque Variable", ui-sans-serif, sans-serif;
-  --ts-font-sans:    "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --ts-color-primary-900: #1a1917;  /* headings, buttons */
+  --ts-color-accent-600:  #a6522f;  /* eyebrows, focus ring, seasonal badge */
+  --ts-surface:           #f8f7f4;  /* page background */
+  --ts-surface-alt:       #efede8;  /* alternating sections, cards */
+  --ts-color-success:     #166534;  /* the "Open now" dot and its label */
+  --ts-font-display: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --ts-font-sans: var(--ts-font-display);  /* an alias, not a second font */
 }
 ```
+
+One file keeps its own copy of two of these: `public/favicon.svg` is a
+standalone image, so its two colors are written into it as hex. Open it in any
+text editor and change them to match if you re-theme.
 
 **Check contrast after changing colors.** Body text on the background must be
 at least 4.5:1, and `--ts-color-accent-600` is used for small text, so it needs
 4.5:1 too. Use any contrast checker; the shipped palette passes with room to
-spare (16.5:1 for body text, 4.9:1 for the accent).
+spare (16.4:1 for body text, 5.1:1 for the accent).
+
+`--ts-font-sans` is an alias of `--ts-font-display`, not a second family: this
+template sets one typeface. Point it at another variable to run two.
 
 To change fonts, install the family and swap the import at the top of the file:
 
@@ -149,6 +156,7 @@ Replace the files in `src/assets/images/` keeping the same names:
 | `02-bar.jpg` | Gallery + About page | 1400px wide, 3:2 |
 | `03-latte.jpg` … `07-detail.jpg` | Gallery strip | 1400px wide, 3:2 |
 | `public/og.jpg` | Social sharing preview | exactly 1200×630 |
+| `public/favicon.svg` | Browser tab icon | any square SVG; its colors are written in the file |
 
 Astro converts them to WebP at several widths during build, so ship the
 originals at the sizes above and let the build do the rest.
@@ -171,15 +179,39 @@ site, change one line in `src/lib/site.ts`:
 export const LOCALE: Locale = "tr";   // "en" | "tr"
 ```
 
-To add a language, copy `en.json` to e.g. `de.json`, translate the values
-(never the keys), then register it:
+To add a language, copy `en.json` to e.g. `de.json` and translate the values
+(never the keys). Registering it takes **two** files, not one — this is the
+single exception to the "four places" rule in section 2.
+
+First widen the language list in `core/utils/i18n.ts`:
+
+```ts
+export type Locale = "en" | "tr" | "de";
+export const LOCALES: Locale[] = ["en", "tr", "de"];
+```
+
+Then register the dictionary in `src/lib/site.ts`:
 
 ```ts
 import de from "../i18n/de.json";
 const dicts: Record<Locale, typeof en> = { en, tr, de };
+export const LOCALE: Locale = "de";
 ```
 
+Skip the first file and the second one does not compile: `Locale` is a fixed
+list of the languages the theme knows about, so `"de"` is not one of them yet.
+`astro build` does not type-check, so it stays green and publishes English
+text under `<html lang="de">` — run `npm run check` after this change and you
+will see the two errors instead.
+
 Any key you leave out falls back to English rather than rendering blank.
+
+One number worth knowing before you choose: the shipped font is split by
+character range, and Turkish reaches into the second file. Four of its
+letters (U+011F, U+0130, U+015E, U+015F) sit outside the Latin range, so a
+Turkish page downloads the latin-ext file as
+well — 11 KB on top of the 30 KB the Latin file costs. English pages never
+fetch it. Nothing to fix; it is the price of the alphabet.
 
 ---
 
@@ -187,13 +219,16 @@ Any key you leave out falls back to English rather than rendering blank.
 
 ### Menu (`src/content/menu/`)
 
-Categories are fixed to `espresso`, `brew`, `food`, `seasonal`. To rename or
-add one, edit the enum in `src/content.config.ts` and add the matching label
-under `menu.categories` in each i18n file:
+Categories are fixed to `espresso`, `brew`, `food`, `seasonal`. They are
+declared once, at the top of `src/content.config.ts`, and everything else —
+the schema, the menu page, the sticky navigation — reads that list:
 
 ```ts
-category: z.enum(["espresso", "brew", "food", "seasonal", "bottles"]),
+export const MENU_CATEGORIES = ["espresso", "brew", "food", "seasonal", "bottles"] as const;
 ```
+
+Add the matching label under `menu.categories` in each i18n file at the same
+time; a category with no label renders its own key.
 
 Empty categories show a short "nothing here yet" line instead of an empty gap,
 and disappear from the sticky category navigation.
@@ -278,6 +313,16 @@ adding it later; nothing here blocks it.
 
 ---
 
+### Lockfiles and reproducible installs
+
+`package-lock.json` ships with the template and pins every dependency to the
+version this template was built and tested against. Keep it in version
+control, and on a build server run `npm ci` rather than `npm install` — it
+installs exactly what the lockfile says and fails instead of silently
+resolving something newer.
+
+---
+
 ## 6. The contact form
 
 The form posts to whatever you set in `contactFormAction`. It ships as `"#"`,
@@ -294,6 +339,18 @@ Example with Formspree:
 ```ts
 export const contactFormAction = "https://formspree.io/f/your-form-id";
 ```
+
+**Then add the service's origin to the Content-Security-Policy.** The policy
+ships with `form-action 'self'`, which means the browser blocks a submission to
+any other origin — **silently**. The page stays put, no error is shown, and the
+message goes nowhere. Edit the `form-action` directive in both `public/_headers`
+and `netlify.toml`:
+
+```
+form-action 'self' https://formspree.io
+```
+
+(Netlify Forms needs no change: the post stays on your own origin.)
 
 The form already includes a hidden honeypot field named `company`. Most form
 services can be configured to reject submissions where it is filled in — that
@@ -317,17 +374,29 @@ locations, hours and amenities for AI assistants that cite local businesses.
 
 ### Site URL
 
-Set your real domain before launch, in `astro.config.mjs`:
+**This is the one setting you cannot skip.** Canonical tags, Open Graph URLs,
+`robots.txt`, `sitemap.xml` and `llms.txt` are all built from it.
 
-```js
-export default defineConfig({
-  site: "https://your-cafe.com",
-});
+Copy `.env.example` to `.env` and put your domain in:
+
+```bash
+SITE=https://your-cafe.com
 ```
 
-This is what canonical URLs, Open Graph URLs and `llms.txt` are built from. It
-ships as `https://example.com` on purpose so that a forgotten value is obvious
-rather than silently wrong.
+On a host, set the same thing as a build environment variable — Netlify under
+`[build.environment]` in `netlify.toml`, Cloudflare under Settings → Build →
+Variables. Either way the build reads it; you do not have to edit
+`astro.config.mjs`.
+
+Leave it unset and two things happen, both on purpose:
+
+- the build prints a warning naming the file and the variable;
+- every page ships `<meta name="robots" content="noindex">`.
+
+The second one looks drastic and is the safer failure. A site indexed under
+`example.com` hands its pages to a domain that is not yours, and undoing that
+takes weeks. `noindex` shows up in Search Console as "excluded by noindex" and
+one environment variable reverses it.
 
 ---
 
@@ -410,7 +479,13 @@ src/
   pages/                 routes; add a .astro file to add a page
   styles/global.css      YOUR COLORS AND FONTS (the :root block)
 core/                    shared design tokens and components
-public/                  favicon, og.jpg, _headers
+public/
+  favicon.svg            browser tab icon (colors are written in the file)
+  og.jpg                 social sharing preview, 1200×630
+  _headers               security headers + cache rules (Cloudflare, Netlify)
+  open-status.js         puts today's hours on the badge, in the visitor's clock
+  menu-close.js          closes the mobile menu on Escape
+.env.example             copy to .env and set SITE before your first deploy
 ```
 
 ---
@@ -426,7 +501,12 @@ public/                  favicon, og.jpg, _headers
 | Gallery section is missing | no images in `src/assets/images/` | add the files, or leave it: the section hides itself by design |
 | "Open now" never appears | JavaScript disabled, or no `hours` on the primary location | the plain hours line is the intended fallback; add `hours` to the location file |
 | Map embed does not load | Content-Security-Policy blocks the origin | add the embed origin to `frame-src` in `public/_headers` and `netlify.toml` |
-| Build fails on `astro check` | a TypeScript error in your edits | run `npm run check` for the exact file and line |
+| Form submits but nothing happens, and there is no error | Content-Security-Policy `form-action` does not list the form service | add its origin to `form-action` in `public/_headers` and `netlify.toml` |
+| Build fails after renaming the project folder | the link npm made to `./core` still points at the old path | `npm install` (the build itself no longer needs it; `npm run check` does) |
+| `npm run check` reports a type error | a TypeScript error in your edits | the file and line are in the output; `npm run build` does not run this check, so a type error never blocks a build |
+| `npm ls` says "extraneous" for `@emnapi/*`, `tslib` or `@img/sharp-wasm32` | a known friction between npm and the image library's optional WASM packages | nothing to fix — the install is not broken, and `npm ci` reports the same |
+| A build error on Windows ends with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` | a Node crash artifact printed after the real error | read the error ABOVE that line; that one is the actionable message. The build still exits non-zero, so automated deploys still fail correctly |
+| Pages say `noindex` and canonical URLs read `example.com` | `SITE` is not set | see section 7, "Site URL" — set it in `.env` or in your host's build variables |
 
 ---
 

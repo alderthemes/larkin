@@ -31,7 +31,25 @@ interface Props {
   formAction?: string;
   submitLabel?: string;
   /** i18n: labels for the form fields */
-  labels?: { name: string; email: string; message: string };
+  labels?: {
+    name: string;
+    email: string;
+    message: string;
+    /** Marks a required field, e.g. "(required)". */
+    required?: string;
+  };
+  /**
+   * i18n: what to say when a field is left empty or filled in wrongly.
+   *
+   * The messages are rendered on the page and hidden with CSS, not injected
+   * by script: no JavaScript, and a screen reader can reach the text through
+   * `aria-describedby` whether or not it is visible. Without them the only
+   * feedback is the browser's own bubble, and that bubble speaks the
+   * BROWSER's language, not the document's: an English page in a browser set
+   * to another language asks for the field in that other language, and the
+   * visitor gets a sentence the rest of the page never uses.
+   */
+  errors?: { name: string; email: string; message: string };
   /** i18n: labels for the info block */
   infoLabels?: { address: string; phone: string; email: string; hours: string };
   class?: string;
@@ -47,7 +65,12 @@ const {
   hours = [],
   formAction = "#",
   submitLabel = "Send message",
-  labels = { name: "Name", email: "Email", message: "Message" },
+  labels = { name: "Name", email: "Email", message: "Message", required: "(required)" },
+  errors = {
+    name: "Please tell us your name.",
+    email: "Please give us an email address we can reply to.",
+    message: "Please tell us what you need.",
+  },
   infoLabels = { address: "Address", phone: "Phone", email: "Email", hours: "Opening hours" },
   class: className = "",
 } = Astro.props;
@@ -118,17 +141,54 @@ const hasMap = Astro.slots.has("map");
           <label for="hp-website">Website</label>
           <input id="hp-website" name="website" type="text" tabindex="-1" autocomplete="off" />
         </div>
+        {/* Every required field says so, and carries its own message. The
+            message is always in the DOM and always tied to the field with
+            `aria-describedby`; CSS decides whether it is visible, using
+            `:user-invalid` — which only matches AFTER the visitor has
+            interacted, so an untouched form is not painted red. */}
         <div class="ts-field">
-          <label for="contact-name">{labels.name}</label>
-          <input id="contact-name" name="name" type="text" required autocomplete="name" />
+          <label for="contact-name">
+            {labels.name}{" "}
+            <span class="ts-field__req">{labels.required}</span>
+          </label>
+          <input
+            id="contact-name"
+            name="name"
+            type="text"
+            required
+            autocomplete="name"
+            aria-describedby="contact-name-error"
+          />
+          <p class="ts-field__error" id="contact-name-error">{errors.name}</p>
         </div>
         <div class="ts-field">
-          <label for="contact-email">{labels.email}</label>
-          <input id="contact-email" name="email" type="email" required autocomplete="email" />
+          <label for="contact-email">
+            {labels.email}{" "}
+            <span class="ts-field__req">{labels.required}</span>
+          </label>
+          <input
+            id="contact-email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            aria-describedby="contact-email-error"
+          />
+          <p class="ts-field__error" id="contact-email-error">{errors.email}</p>
         </div>
         <div class="ts-field">
-          <label for="contact-message">{labels.message}</label>
-          <textarea id="contact-message" name="message" rows="5" required></textarea>
+          <label for="contact-message">
+            {labels.message}{" "}
+            <span class="ts-field__req">{labels.required}</span>
+          </label>
+          <textarea
+            id="contact-message"
+            name="message"
+            rows="5"
+            required
+            aria-describedby="contact-message-error"
+          ></textarea>
+          <p class="ts-field__error" id="contact-message-error">{errors.message}</p>
         </div>
         <Button type="submit" variant="primary">{submitLabel}</Button>
       </form>
@@ -236,8 +296,8 @@ const hasMap = Astro.slots.has("map");
     /* The component token, not --ts-border-strong. That one also draws dashed
        separators and card rules, so it cannot be darkened to meet the 3:1 that
        WCAG 1.4.11 requires of a control boundary without darkening decoration
-       everywhere. larkin and wickmere already read the component token; core
-       was the odd one out, which is why bramley's inputs were the palest. */
+       everywhere. A control's edge and a decorative rule are two different
+       jobs and need two different tokens. */
     border: 1px solid var(--ts-c-input-border);
     border-radius: var(--ts-radius-md);
     background: var(--ts-surface);
@@ -250,6 +310,30 @@ const hasMap = Astro.slots.has("map");
     outline: none;
     border-color: var(--ts-color-primary-600);
     box-shadow: var(--ts-focus-ring);
+  }
+  .ts-field__req {
+    font-weight: var(--ts-weight-regular);
+    color: var(--ts-text-muted);
+  }
+  /* Hidden until the field is invalid, and hidden by `display` rather than
+     by height so it takes no space in the resting layout. */
+  .ts-field__error {
+    display: none;
+    margin: 0;
+    font-size: var(--ts-text-sm);
+    color: var(--ts-color-error);
+  }
+  /* AFTER the focus rule on purpose. These two selectors have the same
+     specificity, so the later one wins when both apply — with the order
+     reversed, a field that is both focused and invalid drew the focus
+     border and looked correct. */
+  .ts-field input:user-invalid,
+  .ts-field textarea:user-invalid {
+    border-color: var(--ts-color-error);
+  }
+  .ts-field input:user-invalid ~ .ts-field__error,
+  .ts-field textarea:user-invalid ~ .ts-field__error {
+    display: block;
   }
   .ts-contact__map {
     margin-top: var(--ts-space-12);
