@@ -139,6 +139,38 @@ export function medicalClinicSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("MedicalClinic", input);
 }
 
+export interface SportsActivityLocationInput extends LocalBusinessInput {
+  /** The classes this place runs, as plain names. These become
+   *  `availableService`, which is what an answer engine reads when it is
+   *  asked whether somewhere teaches reformer pilates or beginners' yoga. */
+  services?: { name: string; url?: string; description?: string }[];
+}
+
+/**
+ * A yoga, pilates or movement studio, and deliberately not a generic
+ * LocalBusiness. SportsActivityLocation is the type a local search resolves
+ * against for "yoga near me"; a studio described as a generic business
+ * competes in the wrong set.
+ *
+ * There is no price on this entity. A membership figure on a page sits beside
+ * the sentence listing what it does not cover; the same number inside
+ * structured data is a machine-readable offer with none of that attached.
+ * Prices belong on the pricing page's own Offer nodes, where the limits
+ * travel with them.
+ */
+export function sportsActivityLocationSchema(input: SportsActivityLocationInput) {
+  const schema = baseLocalBusiness("SportsActivityLocation", input);
+  if (input.services?.length) {
+    schema.availableService = input.services.map((s) => ({
+      "@type": "Service",
+      name: s.name,
+      ...(s.url ? { url: s.url } : {}),
+      ...(s.description ? { description: s.description } : {}),
+    }));
+  }
+  return schema;
+}
+
 export interface DentistInput extends LocalBusinessInput {
   /** What the practice does, as plain service names. These become
    *  `availableService`, which is what an answer engine reads when it is
