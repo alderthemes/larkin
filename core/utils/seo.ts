@@ -134,6 +134,23 @@ export function cafeSchema(input: RestaurantInput) {
   return foodEstablishment("CafeOrCoffeeShop", input);
 }
 
+/**
+ * The bakery type, and deliberately not Restaurant.
+ *
+ * A bakery and a restaurant answer different questions. Somebody asking an
+ * answer engine "where can I get a loaf near here on a Thursday" is not
+ * asking where to eat, and Bakery is a separate entity type in the
+ * vocabulary — flattening it to Restaurant loses the distinction at exactly
+ * the moment it matters.
+ *
+ * `acceptsReservations` is left to the caller rather than defaulted like it
+ * is for cafes: some bakeries take orders ahead and some do not, and that is
+ * a fact about the shop rather than about the category.
+ */
+export function bakerySchema(input: RestaurantInput) {
+  return foodEstablishment("Bakery", input);
+}
+
 /** Aesthetic and general medical clinics. */
 export function medicalClinicSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("MedicalClinic", input);

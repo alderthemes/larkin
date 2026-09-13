@@ -31,8 +31,9 @@ Full documentation: [`docs/README.md`](docs/README.md).
 
 ## Deploying
 
-Set `site` in `astro.config.mjs` to your own domain, then deploy `dist/`.
-Cloudflare and Netlify configs are included (`wrangler.jsonc`, `netlify.toml`).
+Set `SITE` to your own domain (see `.env.example`) and deploy `dist/`.
+You do not need to edit `astro.config.mjs`.
+Cloudflare and Netlify configs are included (`wrangler.jsonc` and `netlify.toml`).
 
 ## Licence
 
