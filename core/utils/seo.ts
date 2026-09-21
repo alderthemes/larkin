@@ -156,6 +156,26 @@ export function medicalClinicSchema(input: LocalBusinessInput) {
   return baseLocalBusiness("MedicalClinic", input);
 }
 
+/**
+ * A gallery or exhibition space.
+ *
+ * ArtGallery rather than Museum, and the difference is not cosmetic. In the
+ * vocabulary ArtGallery sits under EntertainmentBusiness, which is a
+ * LocalBusiness: it has opening hours, an address and a phone number, and an
+ * answer engine asked "is there a gallery open near here on a Sunday" reads
+ * exactly those. Museum sits under CivicStructure instead and carries none of
+ * that commercial shape. An independent gallery that trades is the first, not
+ * the second, and flattening the two loses the opening hours at the moment
+ * somebody is asking about them.
+ *
+ * What is on the walls is a separate entity and stays out of here: an
+ * exhibition is an ExhibitionEvent with its own start and end dates, composed
+ * alongside this one on the page that shows it.
+ */
+export function artGallerySchema(input: LocalBusinessInput) {
+  return baseLocalBusiness("ArtGallery", input);
+}
+
 export interface SportsActivityLocationInput extends LocalBusinessInput {
   /** The classes this place runs, as plain names. These become
    *  `availableService`, which is what an answer engine reads when it is
