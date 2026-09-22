@@ -573,6 +573,86 @@ export function softwareApplicationSchema(input: SoftwareApplicationInput) {
   return schema;
 }
 
+export interface MobileApplicationInput {
+  name: string;
+  description: string;
+  url?: string;
+  /** The app icon. Stores show one; a page that omits it looks unfinished in a rich result. */
+  image?: string;
+  /** e.g. "Productivity", "Utilities" — the store's own category word. */
+  applicationCategory?: string;
+  /**
+   * Supported systems, written the way the store writes them: "iOS 16.0",
+   * "Android 10". Derived from the newest release rather than typed here, so
+   * the page and the markup cannot disagree.
+   */
+  operatingSystem?: string | string[];
+  softwareVersion?: string;
+  /** What changed in the current version — one line, from the release record. */
+  releaseNotes?: string;
+  /** The rating a board actually gave: "4+", "PEGI 3". Not a guess. */
+  contentRating?: string;
+  /**
+   * Permissions the app asks for. schema.org takes these as text, and the
+   * text that belongs here is the platform's own key (`NSCameraUsageDescription`,
+   * `android.permission.CAMERA`) — a friendly label cannot be compared to a
+   * store listing, and comparison is the whole point.
+   */
+  permissions?: string[];
+  /** Store links. Both platforms when both exist; a single string is fine. */
+  downloadUrl?: string | string[];
+  screenshot?: string[];
+  featureList?: string[];
+  /** The developer, which is the "Developer" line a store listing shows. */
+  providerName?: string;
+}
+
+/**
+ * An app that is already in the stores.
+ *
+ * `MobileApplication` rather than `SoftwareApplication`: the parent type is
+ * what a desktop tool or a web platform uses, and a search engine resolving
+ * "app" queries reads the child. Same reasoning as CafeOrCoffeeShop against
+ * Restaurant — the narrower type is the honest one.
+ *
+ * The fields that make this worth having are `permissions`, `releaseNotes`
+ * and `contentRating`. All three are part of the standard vocabulary and all
+ * three are routinely left out, which is the opportunity: they are the
+ * machine-readable half of what an app site has to say. The page states what
+ * the app collects and asks for, and the markup says the same thing in a form
+ * a crawler can compare against the store listing.
+ *
+ * There is deliberately no `aggregateRating` and no `offers`. The rating is
+ * the most commonly invented piece of structured data in this category — a
+ * score and a review count for reviews that appear nowhere on the page — and
+ * it is both a policy violation and a claim the buyer would be making about
+ * their own product. Offers are left out for a different reason: in-app
+ * purchase prices live in the store and change there, so a copy in the
+ * markup goes stale silently.
+ */
+export function mobileApplicationSchema(input: MobileApplicationInput) {
+  const schema: Record<string, unknown> = {
+    "@type": "MobileApplication",
+    name: input.name,
+    description: input.description,
+  };
+  if (input.url) schema.url = input.url;
+  if (input.image) schema.image = input.image;
+  if (input.applicationCategory) schema.applicationCategory = input.applicationCategory;
+  if (input.operatingSystem) schema.operatingSystem = input.operatingSystem;
+  if (input.softwareVersion) schema.softwareVersion = input.softwareVersion;
+  if (input.releaseNotes) schema.releaseNotes = input.releaseNotes;
+  if (input.contentRating) schema.contentRating = input.contentRating;
+  if (input.permissions?.length) schema.permissions = input.permissions;
+  if (input.downloadUrl) schema.downloadUrl = input.downloadUrl;
+  if (input.screenshot?.length) schema.screenshot = input.screenshot;
+  if (input.featureList?.length) schema.featureList = input.featureList;
+  if (input.providerName) {
+    schema.provider = { "@type": "Organization", name: input.providerName };
+  }
+  return schema;
+}
+
 export interface FAQItem {
   question: string;
   answer: string;
