@@ -670,47 +670,6 @@ export function faqSchema(items: FAQItem[]) {
   };
 }
 
-/** For the store's product pages */
-export interface ProductInput {
-  name: string;
-  description: string;
-  url?: string;
-  image?: string;
-  price: number;
-  priceCurrency?: string;
-  /**
-   * Whether the item can actually be bought right now. This is not a detail:
-   * the offer block is a machine-readable commercial claim, and a page that
-   * reads "In production" to a person while telling a crawler the product is
-   * in stock at $59 is making two contradictory statements about the same
-   * thing. Search engines and answer engines read the second one.
-   *
-   * So availability follows the checkout, not the catalog entry. Defaults to
-   * false, because the honest answer before a payment provider is connected
-   * is "you cannot buy this yet".
-   */
-  sellable?: boolean;
-}
-
-export function productSchema(input: ProductInput) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: input.name,
-    description: input.description,
-    ...(input.url ? { url: input.url } : {}),
-    ...(input.image ? { image: input.image } : {}),
-    offers: {
-      "@type": "Offer",
-      price: input.price.toFixed(2),
-      priceCurrency: input.priceCurrency ?? "USD",
-      availability: input.sellable
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-    },
-  };
-}
-
 export function jsonLd(schema: unknown): string {
   // Serialize safely: an unescaped </script> inside JSON-LD closes the tag
   return JSON.stringify(schema).replace(/</g, "\\u003c");
@@ -778,16 +737,6 @@ export function organizationSchema(input: OrganizationInput) {
       sameAs: input.sameAs && input.sameAs.length > 0 ? input.sameAs : undefined,
       address: address && Object.keys(address).length > 1 ? address : undefined,
     }),
-  };
-}
-
-/** The site itself, tied to its publisher. No SearchAction: there is no search. */
-export function websiteSchema(input: { name: string; url: string; publisherName: string }) {
-  return {
-    "@type": "WebSite",
-    name: input.name,
-    url: input.url,
-    publisher: { "@type": "Organization", name: input.publisherName },
   };
 }
 

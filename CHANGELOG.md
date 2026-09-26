@@ -1,5 +1,10 @@
 # Changelog — Larkin
 
+## 0.2.1 — 2026-09-26
+
+- The minimum Astro version is now 7.3.4 (was 7.3.1), a patch release. Run `npm install` after updating; nothing in the template's own code changes.
+- `core/` no longer ships four pieces that only the alderthemes.com site used: `components/Card.astro`, `sections/Hero.astro`, and `productSchema` / `websiteSchema` (with the `ProductInput` type) in `utils/seo.ts`. No template imports any of them, so your site builds exactly as before. If you imported one of them yourself, keep the file from your current version before you update.
+
 ## 0.2.0 — 2026-09-09
 
 - **Set `SITE` before you deploy, or the site ships `noindex`.** The theme has always defaulted to `example.com` so a forgotten domain is obvious. It was not obvious enough: 37 addresses went into the build, one of them the canonical tag. Now the build prints a warning naming the file and the variable, every page carries `noindex` while the placeholder is still there, and `.env.example` documents the one line you need. Being indexed under the wrong domain is harder to notice, and much harder to undo, than not being indexed.

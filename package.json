@@ -1,7 +1,7 @@
 {
   "name": "larkin",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A café site built around the four things people actually check: where, when, what, and can I work here",
   "type": "module",
   "engines": {
@@ -18,7 +18,7 @@
     "@fontsource-variable/instrument-sans": "^5.3.0",
     "@studio/core": "file:./core",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.1",
+    "astro": "^7.3.4",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
