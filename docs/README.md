@@ -10,6 +10,280 @@ multi-course menu, that is Bramley.
 
 ---
 
+## Launch guide (do these in order)
+
+From the zip to a live site that your client edits in a web form. Ten steps.
+Each one needs something the step before it made, so keep the order. Each one
+ends with what you should see when it worked.
+
+Steps marked **You do this (needs your account)** need a sign-in, a permission
+screen or a secret key. An AI coding tool cannot do them for you. `AGENTS.md`
+tells it to stop at those steps and tell you what to click.
+
+1. [Install it and run it on your computer](#launch-1)
+2. [Make it yours](#launch-2)
+3. [Put it in a private GitHub repository](#launch-3)
+4. [Put the site live, with `SITE` set](#launch-4)
+5. [Deploy the login service](#launch-5)
+6. [Create the GitHub OAuth app](#launch-6)
+7. [Give the login service its keys](#launch-7)
+8. [Turn the editor on and push](#launch-8)
+9. [Sign in at `/admin` and change one menu item](#launch-9)
+10. [Give your client a login](#launch-10)
+
+The editor is turned on at step 8, after the login service works. The enable
+command needs the login service's address, and doing it last means `/admin`
+never goes live pointing at a login service that is not ready.
+
+<a id="launch-1"></a>
+
+### Step 1. Install it and run it on your computer
+
+```bash
+npm install
+npm run dev
+```
+
+**You should see:** the site at http://localhost:4321. A "SITE is not set" box
+in the terminal is normal on your computer. If something fails, see the
+[troubleshooting table](#12-troubleshooting).
+
+<a id="launch-2"></a>
+
+### Step 2. Make it yours
+
+Put in the café's own details and words. [Section 2](#2-make-it-yours-the-15-minute-pass)
+walks through the files: `src/lib/site.ts` (e-mail, phone),
+`src/i18n/en.json` (the name and every visible sentence),
+`src/content/locations/` (addresses and opening hours, one file per shop) and
+`src/content/menu/` (one file per item). Menu items, questions and shops
+(addresses, opening hours) can also wait until the editor works (step 9). The
+e-mail and phone in `src/lib/site.ts` cannot: they stay in that file.
+
+```bash
+npm run build
+```
+
+**You should see:** your name, shop and menu on http://localhost:4321, and
+`npm run build` ends without an error.
+
+<a id="launch-3"></a>
+
+### Step 3. Put it in a private GitHub repository
+
+**You do this (needs your account).** On GitHub, create an empty **Private**
+repository (no README, no license, no `.gitignore`). Then run the commands in
+[From the zip to your own GitHub repository](#zip-to-repo) in the project
+folder.
+
+**You should see:** your project's files on the repository's page on GitHub.
+Write down its name as `owner/name`, for example `your-name/your-repo`. Step 8
+needs it.
+
+<a id="launch-4"></a>
+
+### Step 4. Put the site live, with `SITE` set
+
+**You do this (needs your account).** Connect the repository to a host that
+rebuilds the site on every push. The editor saves by pushing, so a host where
+you upload files by hand will not work. Pick one:
+
+**Cloudflare (the package's `wrangler.jsonc`).** In Cloudflare, open
+Workers & Pages and press **Create**. Under "Make something new" choose
+**Continue with GitHub**, pick your account in the account list, then
+**Select a repository** and **Next**. On **Set up your application**
+(screen names as seen on 2026-09-30):
+
+- **Project name** is filled in with the repository's name. It must be the
+  same as `"name"` in `wrangler.jsonc` (it ships as `larkin`), or the build
+  fails ([Cloudflare's Workers Builds guide](https://developers.cloudflare.com/workers/ci-cd/builds/), read 2026-09-30).
+  Change one of the two so they match.
+- **Build command**: `npm run build` (the field starts empty).
+- **Deploy command**: `npx wrangler deploy` (already filled in).
+- Open **Advanced settings** and add a variable: **Variable name** `SITE`,
+  **Variable value** your live address, for example
+  `https://your-domain.com`. Set here, before the first deploy, the very first
+  build already uses it.
+- Node version: Cloudflare reads the `.node-version` file
+  ([build image](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/), read 2026-09-30).
+
+Then deploy. A build can wait in a queue for several minutes when your
+account has other builds waiting. If you push again while one waits, the
+older build is listed as **Skipped** ("This build was skipped") and the
+newest one runs. That is normal.
+
+On Cloudflare, delete `netlify.toml` from the project, then commit and push
+(`git rm netlify.toml`, `git commit -m "Remove netlify.toml"`, `git push`).
+In step 8, `npm run cms -- check` looks at `netlify.toml` on every host and
+fails while the file is there without the editor's block.
+
+**Netlify (the package's `netlify.toml`).** Import the repository as in
+[section 9](#netlify). The build command and output folder are already in
+`netlify.toml`. Set `SITE` there: remove the `#` in front of the `SITE` line
+under `[build.environment]`, put your address in, then commit and push. You
+can delete `wrangler.jsonc`; Netlify does not use it.
+
+Other hosts are in [section 9](#9-deploying).
+
+If the first build ran before `SITE` was set, push any new commit to build
+again. Without `SITE` every page ships `noindex` ([section 7](#site-url)).
+
+**You should see:** the build finishes and the site opens at its live address.
+In the page source of the home page, the `canonical` link starts with your
+address and there is no `noindex` line.
+
+<a id="launch-5"></a>
+
+### Step 5. Deploy the login service
+
+**You do this (needs your account).** The editor signs people in with GitHub
+through a small login service,
+[sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth), which runs
+on Cloudflare Workers. One login service can serve
+every site you build. If you already have one, skip to step 7 and add this
+site's address to `ALLOWED_DOMAINS`.
+
+1. Open the "Deploy to Cloudflare" link:
+   https://deploy.workers.cloudflare.com/?url=https://github.com/sveltia/sveltia-cms-auth
+2. On **Set up your application**: choose your Git account, tick
+   **Create private Git repository**, keep the Project name
+   `sveltia-cms-auth`, leave **Build command** empty, and set
+   **Deploy command** to `pnpm run deploy`. Then deploy.
+3. If it says **Your GitHub authorization has expired**, open the Git account
+   dropdown, choose **New GitHub connection**, reconnect, and try again.
+4. The build can sit in **Initializing** for several minutes when your account
+   has other builds waiting. It is not stuck.
+
+**You should see:** the deployment finishes. The login service's address is
+`https://sveltia-cms-auth.<your-account-subdomain>.workers.dev`. Your
+subdomain is shown in Cloudflare, Workers & Pages. Write the full address
+down. The steps below call it `<worker-url>`.
+
+<a id="launch-6"></a>
+
+### Step 6. Create the GitHub OAuth app
+
+**You do this (needs your account).** On GitHub: Settings, Developer settings,
+OAuth Apps, **New OAuth App**
+([GitHub's steps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app), read 2026-09-30).
+
+- **Application name**: a name your client will recognize, for example
+  "Your Café website editor". GitHub shows it on the sign-in screen.
+- **Homepage URL**: your live address.
+- **Redirect URI**: `<worker-url>/callback`. (GitHub's documentation calls
+  this field "Authorization callback URL".)
+- **Enable Device Flow**: leave it off.
+- **Expire user access tokens**: on by default. The login service does not
+  renew tokens, so with it on, editors are asked to sign in again after some
+  hours. You can leave it on.
+
+Press **Register application**. Copy the **Client ID**. Press
+**Generate a new client secret** and copy the secret now: GitHub shows it only
+once.
+
+**You should see:** the app's page with a Client ID and one client secret.
+
+<a id="launch-7"></a>
+
+### Step 7. Give the login service its keys
+
+**You do this (needs your account).** In Cloudflare, open Workers & Pages,
+then the `sveltia-cms-auth` Worker, then Settings, then
+**Runtime variables and secrets**, then **Add variable**.
+
+This is not the **Variables and secrets** box in the Build section. That box
+is for the build only, and the running login service cannot read it
+([Cloudflare's build settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), read 2026-09-30).
+
+| Name | Type | Value |
+|------|------|-------|
+| `GITHUB_CLIENT_ID` | Text | the Client ID from step 6 |
+| `GITHUB_CLIENT_SECRET` | tick **Secret** | the client secret from step 6 |
+| `ALLOWED_DOMAINS` | Text | your live hostname, without `https://`, for example `your-domain.com`. Several are separated by commas: `your-domain.com,www.your-domain.com`. Add `127.0.0.1,localhost` only if you want to sign in from your own computer. |
+
+Press **Add variable and deploy**.
+
+**You should see:** the three names listed under Runtime variables and
+secrets.
+
+<a id="launch-8"></a>
+
+### Step 8. Turn the editor on and push
+
+In the project folder, with `owner/name` from step 3 and `<worker-url>` from
+step 5:
+
+```bash
+npm run cms -- enable sveltia --repo owner/name --auth-url <worker-url>
+npm run cms -- check
+npm run build
+```
+
+Add `--branch <name>` if your branch is not `main`. The command writes
+`public/admin/` and adds a marked block to `public/_headers`
+([details](#sveltia-cms-setup-on-your-own-address)). `check` also reads
+`netlify.toml`, on any host: if the file is there without the editor's block,
+`check` fails. On Cloudflare you deleted it in step 4. On Netlify, paste the
+block that `enable` prints into `netlify.toml`, then run `check` again.
+
+Then save and push (the push needs your GitHub sign-in):
+
+```bash
+git add .
+git commit -m "Turn on the content editor"
+git push
+```
+
+**You should see:** `check` prints "Editor config up to date", the build
+passes, and your host rebuilds after the push. Then
+`https://your-domain.com/admin` shows a **Sign In with GitHub** button.
+
+<a id="launch-9"></a>
+
+### Step 9. Sign in at `/admin` and change one menu item
+
+**You do this (needs your account).** Open `https://your-domain.com/admin` and
+choose **Sign In with GitHub**. GitHub shows **Authorize** and your app's
+name. It asks for access to repositories (public and private) and to personal
+user data. Under **Organization access** there are **Grant** buttons: do not
+press them, unless the site's repository belongs to that organization.
+Authorize the app. If you authorized this app before, GitHub does not ask
+again and the editor opens straight away.
+
+**You should see:** the editor with **Menu**, **Locations** and **Questions**.
+Open **Menu**, then **Almond Croissant** (or any item you kept), change its price,
+and save. The save appears in your repository as a commit named
+`Update Menu “almond-croissant”` (the item's file name), and your host starts
+a new build. After a few minutes, reload the live `/menu/` page: the new price
+is there.
+
+If it says **You don't have access to the “owner/name” repository**, the
+repository was renamed or deleted, or your GitHub account cannot write to it.
+Check the name and run step 8 again with the right `--repo`.
+
+If the price has not changed after ten minutes, open your host's build log.
+A build that stops keeps the old site live ([A bad save](#a-bad-save),
+section 8).
+
+<a id="launch-10"></a>
+
+### Step 10. Give your client a login
+
+**You do this (needs your account).** Your client creates a free GitHub
+account and sends you the username. You add it to the repository as a
+collaborator with write access (Settings, Collaborators, Add people; the full
+steps are in [Sveltia CMS setup](#sveltia-cms-setup-on-your-own-address),
+step 6). GitHub emails your client an invitation.
+
+Tell your client what the editor covers and what it does not (the two lists
+in [section 8](#8-let-your-client-edit-the-menu)), and who to message if a
+change does not appear after ten minutes.
+
+**You should see:** your client listed as a collaborator once they accept,
+and able to sign in at `/admin` and see the menu.
+
+---
+
 ## 1. Quick start
 
 ```bash
@@ -143,8 +417,8 @@ npm install @fontsource-variable/figtree
 /* then set --ts-font-display: "Figtree Variable", …; */
 ```
 
-Fonts are self-hosted. There are no requests to Google Fonts, which keeps the
-site GDPR-friendly and removes a render-blocking round trip.
+Fonts are self-hosted: the font files are served from your own site, and no
+request goes to Google Fonts or any other font server.
 
 ### Step 5: Images
 
@@ -268,6 +542,10 @@ order: 20
 The `primary` location supplies the address and hours used in the home page
 card and in the schema.org markup.
 
+Once the editor is on, the café can change all of this in the form
+([section 8](#8-let-your-client-edit-the-menu)). Day names must be the English
+ones above, spelled out in full: the form offers exactly those.
+
 Opening hours drive the "Today: 07:00 – 18:00 · Open now" line. That status is
 computed in the visitor's browser from their own clock, and falls back to the
 plain hours line when JavaScript is off, so it is never wrong or blank.
@@ -291,17 +569,18 @@ assistants and search engines quote when someone asks about your café.
 Adding `cookies.md` creates `/legal/cookies/` automatically and it appears
 nowhere in the navigation until you link it.
 
-> **The supplied legal text is a template, not legal advice.** Adapt it to your
-> business and to the law that applies to you (GDPR, CCPA, KVKK or equivalent),
-> and have a lawyer review it before you publish.
+> **The supplied legal text is a short, neutral starting text, not legal
+> advice.** Read [`docs/legal-templates.md`](legal-templates.md) before you
+> publish: it holds the fuller structure of both pages and says which setting
+> each shipped sentence depends on.
 
 ---
 
 ## 5. What this theme deliberately does not do
 
-**No reservation system.** Cafés take walk-ins. Bolting restaurant booking
-logic onto a café site is the most common mistake in this vertical: it adds a
-funnel nobody uses and makes the "just come in" promise ambiguous. The site
+**No reservation system.** Cafés take walk-ins. Restaurant booking logic on a
+café site adds a step a walk-in visitor does not need and makes the "just come
+in" promise ambiguous. The site
 says "walk-ins only, no reservations" out loud, because that answer is what the
 visitor is actually looking for.
 
@@ -400,15 +679,232 @@ one environment variable reverses it.
 
 ---
 
-## 8. Deploying
+## 8. Let your client edit the menu
+
+The café can change menu items, prices, tags, availability, shops with their
+opening hours, and the FAQ in a web form instead of in files. The form reads and writes the same files as
+this guide describes. Nothing about the site changes: there is still no
+database, and every save is a change to a file in your repository.
+
+**The editor is Sveltia CMS.** Your client signs in with a free GitHub account
+at `your-site/admin`. You, the person setting it up, also need a GitHub
+account. The editor ships turned off: `npm run cms -- status` says
+`sveltia: off` until you run the enable command in
+[Launch guide, step 8](#launch-8).
+
+What you set up, once (the [Launch guide](#launch-guide-do-these-in-order)
+has the steps, in order):
+
+- A GitHub repository connected to your host.
+- A small login service (deployed once, it can serve every site you build) and
+  a GitHub OAuth app.
+- The editor and its `/admin` security headers (`npm run cms -- enable sveltia`).
+- Your client's GitHub account, added to the repository as a collaborator.
+
+**Before you start.** The editor saves by committing to a Git repository, and
+your host rebuilds the site from it. So the site must live in a Git repository
+that is connected to the host. If you have the zip, put it in your own
+repository first (next box), then continue. Run `npm install` in the project
+once before using `npm run cms`.
+
+<a id="zip-to-repo"></a>
+
+**From the zip to your own GitHub repository.** First create an empty
+repository on GitHub (no README, no license, no `.gitignore`) and copy its URL.
+Then run this in the project folder:
+
+```bash
+git init
+git add .
+git commit -m "Larkin kit"
+git branch -M main
+git remote add origin <your repo URL>
+git push -u origin main
+```
+
+Replace `<your repo URL>` with the address you copied, for example
+`https://github.com/your-name/your-repo.git`. If git asks who you are, run
+`git config --global user.name "Your Name"` and
+`git config --global user.email you@example.com` once, then commit again. The zip includes a `.gitignore`
+that keeps `node_modules` and `dist` out of the commit.
+
+Three things you may see. On Windows, git may print "LF will be replaced by
+CRLF". That is a line-ending notice, not an error. The first `git push` may
+open a browser window so you can sign in to GitHub. And create the repository
+as **Private**: it holds your client's content.
+
+**Who does what.** You (the agency or developer) set the editor up, once. The
+café owner accepts an invitation and opens the editor.
+
+**What the owner can edit:**
+
+- **Menu items**: name, short description, price, menu section, tags,
+  seasonal badge, position in the section, shown on the menu or hidden, shown
+  on the home page. They can also add an item or delete one.
+- **Locations** (one per shop): name, address, country code, directions
+  link, opening hours, the Wi-Fi, power and laptop facts, which shop is the
+  main one, position, and private notes. They can also add a shop or delete
+  one.
+- **Questions** (the FAQ): question, answer, position.
+
+The form is in English; to change its labels edit `cms/fields.json`, then run
+`npm run cms -- generate`. The menu sections and tags in the form come from
+`src/i18n/en.json` (`menu.categories`, `menu.tags`), so the form uses the same
+names as the site.
+
+What to tell the owner about locations:
+
+- **Opening hours** are rows: pick the days that share the same hours, then
+  type the opening and closing time as 24-hour time with a colon, for example
+  `07:00` and `18:00`. A day that is in no row has no hours on the site.
+  Removing every row leaves the shop without opening hours. The day names in
+  the form are the English ones the site reads; the site still prints the
+  days in its own language.
+- **Directions link** is required: it is where the "Get directions" button
+  goes. It must be a full web address starting with `https://`, or the
+  build stops.
+- **Main shop**: switch it on for one shop only. The home page card and the
+  details search engines read come from it.
+- **Shop phone** and **Notes** are kept in the shop's file, but the site does
+  not show them: the phone number on the site is the one in
+  `src/lib/site.ts`.
+- **Keep at least one shop.** The address and opening hours on the site come
+  from the shops.
+
+**What the owner cannot edit, on purpose:**
+
+- **Wording and business details** (`src/i18n/en.json`, `src/lib/site.ts`).
+- **Privacy and terms** (`src/content/legal/`). These are legal text.
+- **Currency.** It is not in the form. Every item uses the default in
+  `src/content.config.ts` (`USD`) unless its file says otherwise. If the café
+  prices in another currency, change that default before you hand the site
+  over.
+- **Photographs.** The editor has no image field in this kit; photographs
+  stay in `src/assets/images/` ([section 2](#step-5-images)).
+
+<a id="a-bad-save"></a>
+
+**A bad save.** The editor does not run the build, and it does not tell the
+owner if the build fails. A save that breaks the build (a value the schema
+rejects) is committed anyway, and the build stops. A host normally keeps
+serving the previous version when a build fails, so the live site keeps what
+it had before, but check that in your host's own documentation. The owner
+will see no error, and the change will not appear. Tell them to message you
+if nothing changes after ten minutes. Turn on your host's notification for
+failed builds and send it to yourself, so you hear about it before the café
+does. In Netlify it is under Project configuration, Notifications, Deploy
+notifications (email notifications are listed for Pro and Enterprise plans;
+other types may be available on yours, see [Netlify's notifications page](https://docs.netlify.com/site-deploys/notifications/), read 2026-09-29). In
+Cloudflare it is the "Project updates" notification, which can alert on a
+failed deployment (see [Cloudflare's notification list](https://developers.cloudflare.com/notifications/notification-available/), read 2026-09-29). It is set
+in the Notifications section of your Cloudflare account.
+
+### Sveltia CMS setup (on your own address)
+
+Sveltia CMS runs inside your site at `/admin`. It signs editors in through
+GitHub, so each editor needs a GitHub account with access to the repository.
+It is off until you run the enable command, because it needs the repository
+name and your login service address. GitHub sign-in goes through a small
+login service that you deploy once; the same service can serve every site
+you build.
+
+The [Launch guide](#launch-guide-do-these-in-order) at the top of this file
+walks through these steps in a safe order, with the screen names you will see
+(steps 5 to 10). The list below is the short reference.
+
+1. Deploy [sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth) to
+   Cloudflare Workers, following its README (read 2026-09-29). Note the Worker
+   URL.
+2. In GitHub, go to Settings, Developer settings, OAuth apps, New OAuth App
+   ([GitHub's steps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)).
+   Its authorization callback URL is `<YOUR_WORKER_URL>/callback` (per the
+   sveltia-cms-auth README). Copy the Client ID and Client Secret.
+3. In the Worker's settings, under **Runtime variables and secrets** (not the
+   Build section), add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` (tick
+   **Secret** for the secret). The README also describes an optional
+   `ALLOWED_DOMAINS` variable for your site's hostname, which it recommends.
+4. In the project, turn the editor on:
+
+   ```bash
+   npm run cms -- enable sveltia --repo owner/name --auth-url https://your-worker-url
+   ```
+
+   Add `--branch <name>` if your branch is not `main`. This writes
+   `public/admin/config.yml` and `public/admin/index.html`, and adds a marked
+   block to `public/_headers` (see below).
+5. Build and deploy. The editor is at `/admin`.
+6. Give the owner access. The owner creates a free GitHub account. You add
+   that account to the site's repository as a collaborator. For a repository
+   in a personal account, GitHub's steps are: open the repository, Settings,
+   then Collaborators in the Access section, Add people, pick the person, and
+   confirm ([GitHub docs](https://docs.github.com/en/account-and-profile/how-tos/setting-up-and-managing-your-personal-account-on-github/managing-access-to-your-personal-repositories/inviting-collaborators-to-a-personal-repository),
+   read 2026-09-29). GitHub emails the owner an invitation, and access starts
+   once they accept. The editor saves by committing, so the owner needs
+   permission to write to the repository. For a repository owned by an
+   organization, pick a role that can write; see GitHub's repository roles
+   page.
+7. The owner opens `https://your-site/admin` and signs in with GitHub.
+
+**Test it on the live site.** `npm run dev` does not serve the editor at
+`/admin` in this kit (only at `/admin/index.html`), and sign-in needs the
+login service and a GitHub account with access to the repository either way.
+
+**The site's security policy blocks the editor unless `/admin` gets its own.**
+The site-wide Content-Security-Policy allows nothing the editor needs (it loads
+from unpkg and talks to api.github.com). `enable sveltia` therefore adds a
+block between `# BEGIN content editor` and `# END content editor` to
+`public/_headers`, for `/admin` only. It uses Cloudflare's `!` line to
+replace the policy on that path; Cloudflare documents that a request matching
+several rules gets all their headers and that a line made of an exclamation mark and a header name removes an earlier
+one (read 2026-09-29). The rest of the site keeps its policy, and
+`X-Frame-Options` is unchanged.
+
+**Netlify.** Netlify also reads `public/_headers`, and `netlify.toml` carries a
+copy of the policy. This tool never adds the block to `netlify.toml` (it only
+updates or removes a block you pasted), because how Netlify
+combines two rules for the same header is not documented (checked 2026-09-29),
+and the `!` line is Cloudflare syntax. `enable sveltia` prints the block to add
+to `netlify.toml`, and `npm run cms -- check` fails until it is there. It
+checks `netlify.toml` whatever your host is, so delete the file if you do not
+deploy to Netlify. This part is untested on a live Netlify site: after
+deploying, open `/admin` and confirm it loads.
+
+`npm run cms -- disable sveltia` removes the marked blocks and the `/admin`
+files.
+
+### Commands
+
+```bash
+npm run cms -- status              # whether Sveltia is on, and what "on" means
+npm run cms -- enable sveltia --repo owner/name --auth-url URL
+npm run cms -- disable sveltia     # remove public/admin/ and the /admin header blocks
+npm run cms -- generate            # rewrite the editor config after a schema change
+npm run cms -- check               # exit 1 if a config is out of date
+```
+
+The editor config is generated from `src/content.config.ts` and
+`cms/fields.json` (labels and hints). If you change a collection's fields, run
+`npm run cms -- generate`; do not edit `public/admin/config.yml` by hand.
+`generate`, `check` and `enable` run Astro's own sync themselves first, so a
+new category or field is always picked up; if that sync fails they stop with
+exit 2.
+
+---
+
+## 9. Deploying
 
 The build output is a plain static `dist/` folder. It works anywhere.
+
+**If the owner will use the content editor, pick a host that connects to your
+Git repository** (Cloudflare, Netlify or Vercel below). A host where you only
+upload `dist/` by hand cannot rebuild the site when the owner saves.
 
 ### Cloudflare Pages / Workers
 
 Framework preset **Astro**, build command `npm run build`, output `dist`.
 Node version comes from the included `.node-version`. A `wrangler.jsonc` is
-included; change `name` to your project.
+included; change `name` to your project. For a Worker built from your GitHub
+repository, the screens are in [Launch guide, step 4](#launch-4).
 
 ### Netlify
 
@@ -434,29 +930,55 @@ npm run build
   feed, analytics), you must widen the CSP for that origin** or the browser
   will block it.
 - Any `<iframe>` you paste in should keep `sandbox` and `referrerpolicy`.
-- Set `astro.config.mjs` `site` to your real domain.
-- Replace the legal template text.
+- Set `SITE` to your real domain ([section 7](#site-url)).
+- Adapt the legal pages (`docs/legal-templates.md`).
 
 ---
 
-## 9. Updating
+## 10. Updating
 
-Your customizations live in four places (section 2). Everything else can be
-replaced wholesale when a new version ships.
+Each new version is a new zip at the same download link you used the first
+time. The files you changed to make the site yours stay yours; the rest of
+the kit is ours, and an update replaces it.
 
-```bash
-# if you cloned the repo:
-git fetch origin
-git merge origin/main
-# resolve conflicts in your four customization files only
-```
+Your files (an update never overwrites these):
 
-Check `CHANGELOG.md` before updating; breaking changes are listed with a
-migration note.
+- `src/content/`: every content file (section 4)
+- `src/i18n/*.json`: your wording, in every language file
+- `src/lib/site.ts`: your site details and switches
+- `src/styles/global.css`: the `:root` block is yours; if a release changes this
+  file, carry your `:root` values into the new copy
+- `cms/fields.json`: the content editor's labels and hints
+- `src/assets/images/`: your photographs
+- `public/og.jpg`: your social sharing image
+- `public/favicon.svg`: your browser tab icon
+- `public/_headers`: your security headers, including any host you allowed
+- `netlify.toml`: the same headers for Netlify, including any host you allowed
+
+Everything else is our files: components, layouts, pages, scripts and
+configuration.
+
+1. Read `CHANGELOG.md` in the new zip. Each release lists "Your files" (the
+   files above that changed in that release) and "Our files" (everything
+   else that changed).
+2. Download the new zip from the same link and extract it to a fresh folder.
+   Do not extract it over your site.
+3. Copy our files from the new folder over your site, and keep your files.
+   Merge one of your files by hand only if the release lists it under "Your
+   files": open your copy and the new one side by side and carry the change
+   across.
+4. Run `npm install`, then `npm run cms -- generate` so the content editor
+   matches the new files (it says so and does nothing if the editor is off),
+   `npm run cms -- check` to confirm, and `npm run build`. A build that passes
+   is the sign the update is done.
+
+If you asked for access to the delivery repository, you can pull instead of
+downloading the zip. The same two lists tell you where to expect a
+conflict: in a file the release lists under "Your files".
 
 ---
 
-## 10. File reference
+## 11. File reference
 
 ```
 src/
@@ -490,7 +1012,7 @@ public/
 
 ---
 
-## 11. Troubleshooting
+## 12. Troubleshooting
 
 | Symptom | Cause | Fix |
 |---|---|---|
@@ -510,7 +1032,7 @@ public/
 
 ---
 
-## 12. Support
+## 13. Support
 
 Email support is included with this theme. Please send: what you were doing,
 what you expected, what happened, and your Node version (`node -v`).

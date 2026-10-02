@@ -179,7 +179,8 @@ const external = Boolean(primary?.data.mapUrl);
   }
   .site-header__link:hover {
     color: var(--ts-color-primary-900);
-    border-bottom-color: var(--ts-color-accent-500);
+    /* Neutral on hover; the terracotta underline means "you are here". */
+    border-bottom-color: var(--ts-border-strong);
   }
   .site-header__link[aria-current="page"] {
     color: var(--ts-color-primary-900);

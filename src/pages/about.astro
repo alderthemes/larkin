@@ -153,7 +153,8 @@ const schema = cafeSchema({
     height: auto;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-radius: var(--ts-radius-xl);
+    /* Square, like the hero and gallery photographs. */
+    border-radius: 0;
   }
   .about__blocks {
     margin-top: var(--ts-space-16);
@@ -167,7 +168,7 @@ const schema = cafeSchema({
   }
   .about__block {
     padding-top: var(--ts-space-5);
-    border-top: 2px solid var(--ts-color-accent-400);
+    border-top: 1px solid var(--ts-border-strong);
   }
   .about__block-title {
     margin: 0 0 var(--ts-space-3);

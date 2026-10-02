@@ -126,6 +126,9 @@ const frames = await Promise.all(
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
     padding-inline: var(--ts-container-pad);
+    /* Snap to the gutter, not to the box edge. Without it the first frame
+       was pulled to x=0 on load and the row started left of the heading. */
+    scroll-padding-inline: var(--ts-container-pad);
     padding-bottom: var(--ts-space-3);
   }
   .gallery__track {
@@ -161,8 +164,35 @@ const frames = await Promise.all(
     .gallery__img {
       width: 280px;
     }
+  }
+  /* From 1024px the frames stop scrolling and share the container, so the
+     row starts under the heading and ends under the header's last button.
+     As a strip it ran from the page edge to the window edge with a padding
+     one gutter short of the container, and the snap pulled the first frame
+     to x=0: at 1440 the row started 128px left of the heading above it, at
+     2560 it ended 640px short of the right edge. Clipping the strip to the
+     container instead would hide the frames past the fourth with nothing to
+     say they are there. */
+  @media (min-width: 1024px) {
     .gallery__scroller {
-      padding-inline: max(var(--ts-container-pad), calc((100vw - var(--ts-container-max)) / 2));
+      overflow-x: visible;
+      scroll-snap-type: none;
+      padding-inline: 0;
+      scroll-padding-inline: 0;
+      width: min(
+        100% - 2 * var(--ts-container-pad),
+        var(--ts-container-max) - 2 * var(--ts-container-pad)
+      );
+      margin-inline: auto;
+    }
+    .gallery__track {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      width: auto;
+    }
+    .gallery__img {
+      width: 100%;
     }
   }
 </style>

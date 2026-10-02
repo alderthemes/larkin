@@ -1,41 +1,26 @@
 ---
 title: "Privacy Policy"
-description: "What personal data this cafe collects when you use the site or get in touch, why, and how long it is kept."
-updated: "2026-09-02"
+description: "What this website collects when you get in touch, and where it goes."
+updated: "2026-10-01"
 ---
 
-Fern & Filter ("we", "us") respects your privacy. This policy explains what we
-collect through this website and why.
+This page explains what this website collects and what happens to it.
 
-## What we collect
+## What this site collects
 
-**Contact form.** When you write to us we collect the details you enter: your
-name, email address and message. We use them only to reply to you.
+The contact form asks for your name, your email address and a message. That
+is all the website asks for.
 
-**No tracking by default.** This site does not set advertising cookies and does
-not profile visitors. If we add analytics, it will be privacy-respecting and
-aggregate-only, and this policy will be updated.
+## Where it goes
 
-**No in-store data.** Our Wi-Fi is open and unauthenticated. We do not log
-who connects to it or what they do while connected.
+The form sends your message to us, either directly or through a form service,
+so that we can reply. This website does not keep a copy.
 
-## How long we keep it
+## Cookies and analytics
 
-Messages sent through the contact form are kept as long as needed to resolve
-your request, and no longer than 12 months.
+This site runs no analytics and sets no cookies.
 
-## Sharing
+## Your questions
 
-We do not sell or share your personal data with third parties, except the
-service providers that technically process our forms and email, bound by their
-own data-processing agreements.
-
-## Your rights
-
-You can ask us at any time what data we hold about you, and ask us to correct
-or delete it. Write to us using the contact details on this site and we will
-respond within 30 days.
-
-*This is a template text provided with the theme. Adapt it to your business and
-the privacy laws that apply to you (GDPR, CCPA, KVKK or equivalent), and have a
-lawyer review it before publishing.*
+To ask what we hold about you, or to have it corrected or deleted, use the
+contact details on this site.

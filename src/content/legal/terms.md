@@ -1,38 +1,26 @@
 ---
 title: "Terms of Service"
-description: "The terms for using this website, what the information on it does and does not promise, and who to contact."
-updated: "2026-09-02"
+description: "The terms for using this website, and what the information on it does and does not promise."
+updated: "2026-10-01"
 ---
 
-By using the Fern & Filter website you agree to these terms. If you do not
-agree, please do not use the site.
+These terms cover the use of this website.
 
 ## What this site is
 
-An information site for our coffee bar: menu, prices, opening hours, location
-and a contact form. Prices and opening hours shown here can change without
-notice, and the menu rotates with the season. What is on the board in the shop
-is the current version.
+An information site for a coffee bar: menu, prices, opening hours, location
+and a contact form. Prices, opening hours and the menu can change.
 
-## Seating and service
+## Reservations
 
-We are walk-in only and do not accept reservations through this site. Seating
-is first come, first served.
+This site does not take reservations.
 
 ## Contact form
 
-Use the form for questions about the shop. Do not send confidential or
+Use the form for questions about the shop. Please do not send confidential or
 sensitive personal information through it.
 
 ## Content
 
-The text, photographs and layout on this site belong to us or to our licensors
-and may not be reused without permission.
-
-## Liability
-
-We keep this site accurate and available as far as we reasonably can, but it may
-at times contain errors or be unreachable.
-
-*This is a template text provided with the theme. Adapt it to your business and
-local consumer law, and have a lawyer review it before publishing.*
+The text, photographs and layout on this site belong to us or to our
+licensors and may not be reused without permission.

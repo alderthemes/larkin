@@ -289,7 +289,12 @@ const schema = cafeSchema({
     /* An e-mail address has no spaces to break at, so it sets a minimum width
        the box cannot go below. */
     overflow-wrap: anywhere;
-    color: var(--ts-color-accent-600);
+    /* The site's one link treatment: ink with a muted underline. */
+    color: var(--ts-text);
+    text-decoration: underline;
+    text-decoration-color: var(--ts-text-muted);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
     /* 16.7px tall before this. inline-flex is what lets a link have a height
        at all; the phone number is the one control a person taps while walking. */
     display: inline-flex;

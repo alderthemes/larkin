@@ -134,7 +134,7 @@ const amenities = [
     height: 18px;
     margin-top: 1px;
     fill: none;
-    stroke: var(--ts-color-accent-600);
+    stroke: var(--ts-text-subtle);
     stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -147,7 +147,12 @@ const amenities = [
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    color: var(--ts-color-accent-600);
+    /* The site's one link treatment: ink with a muted underline. */
+    color: var(--ts-text);
+    text-decoration: underline;
+    text-decoration-color: var(--ts-text-muted);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
     font-weight: var(--ts-weight-medium);
   }
   .loc-card__all-hours summary:focus-visible {

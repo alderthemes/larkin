@@ -41,12 +41,27 @@ const facts = [
 </section>
 
 <style>
+  /* The ground color, not the alternate: next to the featured menu the two
+     alternate blocks read as one gray slab and hid where one ended. */
   .workspace {
     padding-block: var(--ts-section-y);
-    background: var(--ts-surface-alt);
+    background: var(--ts-surface);
   }
   .workspace__inner {
     max-width: 46rem;
+  }
+  /* Heading left, facts right: the section uses the full frame. */
+  @media (min-width: 1024px) {
+    .workspace__inner {
+      max-width: none;
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--ts-space-16);
+      align-items: start;
+    }
+    .workspace__grid {
+      margin-top: 0;
+    }
   }
   .workspace__grid {
     margin: var(--ts-space-10) 0 0;
@@ -64,7 +79,9 @@ const facts = [
     flex-direction: column;
     gap: var(--ts-space-1);
     padding-left: var(--ts-space-4);
-    border-left: 2px solid var(--ts-color-accent-400);
+    /* A neutral hairline. The layout does the grouping; the accent is kept
+       for the seasonal mark and the current page. */
+    border-left: 1px solid var(--ts-border-strong);
   }
   .workspace__term {
     font-size: var(--ts-text-base);

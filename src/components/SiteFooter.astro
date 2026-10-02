@@ -102,11 +102,16 @@ const navLinks = [
 </footer>
 
 <style>
+  /* The two footer tokens are the ones the theme contract hands a buyer for
+     exactly this block. Reading the palette directly here meant a buyer who
+     set --ts-c-footer-bg saw nothing change. No top margin: every page's last
+     section carries its own padding, and the margin only left a light strip
+     between that section and the footer. */
   .site-footer {
-    background: var(--ts-color-primary-900);
-    color: var(--ts-color-primary-50);
+    background: var(--ts-c-footer-bg);
+    color: var(--ts-c-footer-text);
     padding-block: var(--ts-space-16) var(--ts-space-8);
-    margin-top: var(--ts-space-24);
+    margin-top: 0;
   }
   .site-footer__grid {
     display: grid;
@@ -142,7 +147,7 @@ const navLinks = [
   .site-footer__tagline {
     margin: 0;
     font-size: var(--ts-text-sm);
-    color: var(--ts-color-primary-300);
+    color: var(--ts-text-invert-muted);
     max-width: 32ch;
   }
   .site-footer__heading {
@@ -151,7 +156,12 @@ const navLinks = [
     font-weight: var(--ts-weight-semibold);
     letter-spacing: var(--ts-tracking-wide);
     text-transform: uppercase;
-    color: var(--ts-color-accent-400);
+    /* Quiet, not terracotta: these headings label the least important block
+       on the page, and the accent is kept for "seasonal" and "you are here".
+       The muted ink, not a third one: the dark block already carries the
+       button white, the footer text and this, and case and tracking are what
+       make it a heading. */
+    color: var(--ts-text-invert-muted);
   }
   .site-footer__list {
     list-style: none;
@@ -173,16 +183,15 @@ const navLinks = [
     font-weight: var(--ts-weight-medium);
   }
   .site-footer__loc-address {
-    color: var(--ts-color-primary-300);
+    color: var(--ts-text-invert-muted);
   }
   .site-footer a {
     overflow-wrap: anywhere;
-    color: var(--ts-color-primary-50);
+    color: var(--ts-c-footer-text);
     text-decoration: none;
     border-bottom: 1px solid transparent;
   }
   .site-footer a:hover {
-    color: var(--ts-color-accent-400);
     border-bottom-color: currentColor;
   }
   .site-footer a:focus-visible {
@@ -204,7 +213,7 @@ const navLinks = [
     gap: var(--ts-space-4);
   }
   .site-footer__hours dt {
-    color: var(--ts-color-primary-300);
+    color: var(--ts-text-invert-muted);
   }
   .site-footer__hours dd {
     margin: 0;
@@ -213,13 +222,16 @@ const navLinks = [
   .site-footer__legal {
     margin-top: var(--ts-space-12);
     padding-top: var(--ts-space-6);
-    border-top: 1px solid var(--ts-color-primary-700);
+    border-top: 1px solid var(--ts-border-invert);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    /* The legal links are 44px tall targets; centering the row keeps the
+       copyright line level with them instead of 11px above. */
+    align-items: center;
     gap: var(--ts-space-4);
     font-size: var(--ts-text-xs);
-    color: var(--ts-color-primary-300);
+    color: var(--ts-text-invert-muted);
   }
   .site-footer__legal p {
     margin: 0;

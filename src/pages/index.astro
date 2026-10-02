@@ -171,7 +171,7 @@ const schema = [
   {
     featured.length > 0 && (
       <section class="featured">
-        <Container>
+        <Container class="featured__grid">
           <SectionHeading
             eyebrow={t("menu.eyebrow")}
             title={t("menu.title")}
@@ -270,7 +270,9 @@ const schema = [
     margin: 0;
     font-family: var(--ts-font-display);
     font-size: var(--ts-text-display);
-    font-weight: var(--ts-weight-medium);
+    /* Bold, like every h2 and the about page's h1. At 500 the largest heading
+       on the site was the lightest one. */
+    font-weight: var(--ts-weight-bold);
     line-height: var(--ts-leading-display);
     letter-spacing: var(--ts-tracking-tight);
     color: var(--ts-text);
@@ -335,8 +337,14 @@ const schema = [
     margin-top: var(--ts-space-16);
   }
   /* The shape is cut into the file at build time — one crop for each screen,
-     one download. The CSS only has to stop it stretching. */
-  .hero__img {
+     one download. The CSS only has to stop it stretching.
+     Reached through the band with :global, because the img is rendered by
+     CroppedImage and never carries this page's scope attribute: the old
+     `.hero__img` rule matched nothing, the photograph fell back to its
+     1920px file width and, on a 2560px screen, sat against the left edge
+     with 640px of empty page to its right. */
+  .hero__band :global(picture),
+  .hero__band :global(img) {
     display: block;
     width: 100%;
     height: auto;
@@ -366,8 +374,14 @@ const schema = [
     margin: 0;
     font-size: var(--ts-text-sm);
   }
+  /* One link treatment across the site: ink with a muted underline. The
+     accent is kept for the seasonal mark and the current page. */
   .hero__all-locations a {
-    color: var(--ts-color-accent-600);
+    color: var(--ts-text);
+    text-decoration: underline;
+    text-decoration-color: var(--ts-text-muted);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
   }
 
   .featured {
@@ -380,6 +394,29 @@ const schema = [
   }
   .featured__cta {
     margin: var(--ts-space-10) 0 0;
+  }
+  /* Heading on the left, the list on the right, so the section uses the
+     whole frame instead of a column on the left with the right half empty.
+     The Container is a core component, so its class is reached with
+     :global() from inside this section. */
+  @media (min-width: 1024px) {
+    .featured :global(.featured__grid) {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--ts-space-16);
+      align-items: start;
+    }
+    .featured :global(.featured__grid > :first-child) {
+      grid-row: 1 / span 2;
+    }
+    .featured__list,
+    .featured__cta {
+      grid-column: 2;
+    }
+    .featured__list {
+      margin-top: 0;
+      max-width: none;
+    }
   }
 
   .faq-section {

@@ -133,7 +133,9 @@ const groups = categories.map((category) => ({
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: var(--ts-space-8);
+    /* Row gap small, column gap wide. When the price wraps under the name on
+       a narrow screen it stays with its item instead of floating 32px below. */
+    gap: var(--ts-space-1) var(--ts-space-8);
     padding: var(--ts-space-4) 0;
     border-bottom: 1px solid var(--ts-border);
   }
@@ -156,10 +158,10 @@ const groups = categories.map((category) => ({
     font-weight: var(--ts-weight-medium);
     color: var(--ts-text);
   }
-  /* The one place the terracotta appears. The seasonal rotation is what a
-     regular is scanning the menu for, so it is what earns the colour — and it
-     works as a mark rather than as a filled chip precisely because nothing
-     else on the page is coloured. */
+  /* One of the two places the terracotta appears (the other is the current
+     page in the header). The seasonal rotation is what a regular is scanning
+     the menu for, so it earns the color, and it works as a mark rather than
+     as a filled chip because almost nothing else on the page is colored. */
   .menu-list__badge {
     font-size: var(--larkin-label-size);
     font-weight: var(--ts-weight-medium);

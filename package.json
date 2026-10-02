@@ -1,8 +1,8 @@
 {
   "name": "larkin",
   "private": true,
-  "version": "0.2.1",
-  "description": "A café site built around the four things people actually check: where, when, what, and can I work here",
+  "version": "0.3.0",
+  "description": "A café site built around the four things people check: where, when, what, and can I work here",
   "type": "module",
   "engines": {
     "node": ">=22.19.0"
@@ -12,6 +12,7 @@
     "prebuild": "node -e \"require('fs').rmSync('node_modules/.astro', { recursive: true, force: true })\"",
     "build": "astro build",
     "preview": "astro preview",
+    "cms": "node scripts/cms.mjs",
     "check": "node -e \"try{require.resolve('@astrojs/check');require.resolve('typescript')}catch{console.error('astro check needs @astrojs/check and typescript. Run: npm install');process.exit(1)}\" && astro check"
   },
   "dependencies": {
@@ -24,6 +25,20 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "typescript": "^6.0.3"
+  },
+  "alderthemes": {
+    "yourFiles": [
+      "src/content/",
+      "src/i18n/*.json",
+      "src/lib/site.ts",
+      "src/styles/global.css",
+      "cms/fields.json",
+      "src/assets/images/",
+      "public/og.jpg",
+      "public/favicon.svg",
+      "public/_headers",
+      "netlify.toml"
+    ]
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "author": "Alder Themes",

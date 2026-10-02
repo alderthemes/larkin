@@ -1,0 +1,80 @@
+{
+  "options": { "weekdays": "cms/weekdays.yaml" },
+  "collections": {
+    "menu": {
+      "label": "Menu",
+      "folder": "src/content/menu",
+      "slugField": "name",
+      "body": false,
+      "fields": {
+        "name": { "label": "Item name", "hint": "As it reads on the board, e.g. Flat White." },
+        "description": { "label": "Short description", "kind": "text", "hint": "One line under the name. Optional." },
+        "price": { "label": "Price", "hint": "Numbers only, e.g. 4.50" },
+        "currency": { "hidden": true },
+        "category": { "label": "Menu section", "optionsFrom": "i18n:menu.categories" },
+        "tags": { "label": "Tags", "optionsFrom": "i18n:menu.tags" },
+        "seasonal": { "label": "Seasonal", "hint": "Adds a Seasonal badge next to the item." },
+        "order": { "label": "Position in section", "hint": "Lower numbers show first, e.g. 10, 20, 30." },
+        "available": {
+          "label": "Show on the menu",
+          "hint": "Switch off to hide the item for now. To remove it for good, delete the item."
+        },
+        "featured": { "label": "Show on the home page", "hint": "Also show this item on the home page." }
+      }
+    },
+    "locations": {
+      "label": "Locations",
+      "folder": "src/content/locations",
+      "slugField": "name",
+      "body": true,
+      "bodyLabel": "Notes",
+      "bodyHint": "For your own reference. The site does not show this text.",
+      "fields": {
+        "name": { "label": "Shop name", "hint": "As it reads on the site, e.g. NW 23rd Avenue." },
+        "streetAddress": { "label": "Street address", "hint": "e.g. 123 NW 23rd Ave" },
+        "addressLocality": { "label": "City" },
+        "addressRegion": { "label": "State or region", "hint": "e.g. OR" },
+        "postalCode": { "label": "Postal code" },
+        "addressCountry": { "label": "Country code", "required": true, "hint": "Two letters, e.g. US, GB, DE." },
+        "phone": {
+          "label": "Shop phone",
+          "hint": "Optional. Kept with this shop's details; the site shows the main phone number your developer set, not this one."
+        },
+        "mapUrl": {
+          "label": "Directions link",
+          "required": true,
+          "hint": "Where the Get directions button goes. Paste the share link from your map app: the full address, starting with https://"
+        },
+        "hours": {
+          "label": "Opening hours",
+          "summary": "{{opens}} to {{closes}}",
+          "hint": "One row per group of days with the same hours. A day that is in no row shows as closed.",
+          "fields": {
+            "dayOfWeek": { "label": "Days", "optionsFrom": "weekdays", "hint": "Every day these hours apply to." },
+            "opens": { "label": "Opens at", "hint": "24-hour time with a colon, e.g. 07:00" },
+            "closes": { "label": "Closes at", "hint": "24-hour time with a colon, e.g. 18:00" }
+          }
+        },
+        "wifi": { "label": "Free Wi-Fi", "hint": "Shows a Free Wi-Fi line on the shop card." },
+        "outlets": { "label": "Power outlets", "hint": "Shows a Power outlets line on the shop card." },
+        "laptopFriendly": { "label": "Laptop-friendly", "hint": "Shows a Laptop-friendly line on the shop card." },
+        "primary": {
+          "label": "Main shop",
+          "hint": "The home page card and the details search engines read come from the main shop. Switch it on for one shop only."
+        },
+        "order": { "label": "Position", "hint": "Lower numbers show first, e.g. 10, 20, 30." }
+      }
+    },
+    "faq": {
+      "label": "Questions",
+      "folder": "src/content/faq",
+      "slugField": "question",
+      "body": false,
+      "fields": {
+        "question": { "label": "Question" },
+        "answer": { "label": "Answer", "kind": "text" },
+        "order": { "label": "Position", "hint": "Lower numbers come first." }
+      }
+    }
+  }
+}

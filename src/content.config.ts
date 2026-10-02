@@ -110,7 +110,7 @@ const faq = defineCollection({
 /**
  * legal — the privacy and terms pages. The body is markdown and is meant to
  * be replaced with your own text; the shipped copy is a starting structure,
- * not legal advice. See docs/README.md before publishing it.
+ * not legal advice. See docs/legal-templates.md before publishing it.
  */
 const legal = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/legal" }),

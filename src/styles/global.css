@@ -18,23 +18,25 @@
    only block that changes when the site is rethemed — if you find yourself
    editing a component to change a color, the token is missing, not the rule.
 
-   The identity in three words: daylight, one voice, no colour. A cafe is read
-   standing up, in a hurry, usually in the sun, and the page is built for
-   that: one typeface, black type on near-white, and a single warm mark
-   reserved for the one thing regulars come back to check — what is on this
-   season.
+   The identity in three words: cream ground, espresso ink, one mark for
+   what changes. A cafe is read standing up, in a hurry, usually in the sun,
+   and the page is built for that: one typeface, near-black type on warm
+   cream, an espresso footer, and a single terracotta mark kept for the two
+   things a visitor scans for: what is on this season, and which page they
+   are on.
 
    Set deliberately against the restaurant theme in the catalog. That one is a
    serif on warm paper with an ember accent and square corners; this one is a
-   grotesque on cool white, achromatic, with soft corners. Two templates that
-   share a look are two templates a buyer only buys one of.
+   grotesque on a lighter cream with soft corners, where the warmth comes from
+   the ground and the footer rather than from color on the page. Two
+   templates that share a look are two templates a buyer only buys one of.
    ===================================================== */
 :root {
-  /* Near-black through to near-white, all in one hue family so nothing on the
-     page is a foreign grey. 16.4 / 7.2 / 5.1 against the ground. */
-  --ts-color-primary-50:  #f8f7f4;
-  --ts-color-primary-100: #efede8;
-  --ts-color-primary-200: #e2dfd8;
+  /* Near-black through to cream, all in one warm hue family so nothing on the
+     page is a foreign gray. 16.3 / 7.1 / 5.1 against the ground. */
+  --ts-color-primary-50:  #f9f6f0;
+  --ts-color-primary-100: #f1ece3;
+  --ts-color-primary-200: #e5dfd4;
   --ts-color-primary-300: #cbc7be;
   --ts-color-primary-400: #a8a49b;
   --ts-color-primary-500: #86827a;
@@ -44,24 +46,27 @@
   --ts-color-primary-900: #1a1917;
   --ts-color-primary-950: #0e0e0d;
 
-  /* Terracotta, and it appears once: on the seasonal mark in the menu. The
-     rotation is the thing a regular is actually scanning for, so it is the
-     thing that gets the colour. Everything else — buttons included — is ink.
-     5.1:1 on the ground. */
+  /* Terracotta, and it has two uses: the seasonal mark in the menu and the
+     underline under the current page in the header. "This changes" and "you
+     are here" are the two things a visitor scans for, so they get the color.
+     Everything else, buttons and links included, is ink. 5.0:1 on the ground. */
   --ts-color-accent-400: #cf7a52;
   --ts-color-accent-500: #b8623a;
   --ts-color-accent-600: #a6522f;
 
-  --ts-surface:        #f8f7f4;
-  --ts-surface-alt:    #efede8;
-  --ts-surface-invert: #1a1917;
+  --ts-surface:        #f9f6f0;
+  --ts-surface-alt:    #f1ece3;
+  /* Espresso, a shade warmer than the ink. The footer is the largest field of
+     color on the page, so it carries the warmth the accent is not spent on.
+     Body text and buttons stay #1a1917. */
+  --ts-surface-invert: #221c16;
 
   --ts-text:        #1a1917;
   --ts-text-muted:  #55534e;
   --ts-text-subtle: #6c6961;
-  --ts-border:        #e2dfd8;
+  --ts-border:        #e5dfd4;
   --ts-border-strong: #cbc7be;
-  /* The field border, in this theme's own hue but actually visible: 3.23:1
+  /* The field border, in this theme's own hue but actually visible: 3.21:1
      against the field background, where a control boundary needs 3:1. Only the
      lightness moved; hue and saturation are unchanged, so nothing about the
      palette shifts. It used to inherit from --ts-border and measured about
@@ -72,7 +77,7 @@
   --ts-text-invert:        #f4f3f0;
   --ts-text-invert-muted:  #c9c6bf;
   --ts-text-invert-subtle: #9d9a92;
-  --ts-border-invert:      #33322f;
+  --ts-border-invert:      #3a332b;
 
   /* One family, both roles. Contrast comes from the width axis, from case and
      from size — not from a second typeface. Five of the fifteen best-set sites
@@ -92,6 +97,12 @@
   /* Tighter than the restaurant's rhythm. Short sections, read quickly. */
   --ts-section-y: var(--ts-space-20); /* 80px */
 
+  /* The page frame. Core's 100rem is a storefront width: at 1440 the frame
+     is the whole screen, the left-aligned sections hug the left edge and the
+     right half stays empty. 80rem gives the page real margins. The hero
+     photograph and the gallery sit outside the frame and stay full width. */
+  --ts-container-max: 80rem;
+
   /* The micro-label. At 11px, uppercase, with tracking this wide the label
      reads as a second voice without being a second face - which is what lets
      one family carry the whole theme. The tracking does that work alone now
@@ -99,7 +110,9 @@
   /* 12px, not 11px. At 11px this is the smallest, thinnest, most tightly
      tracked text on the page and it passed contrast by 0.19 (4.69:1 against
      4.5:1 required) — a margin that any future colour change spends. One
-     pixel buys the margin back without touching the design intent. */
+     pixel buys the margin back without touching the design intent. After the
+     cream shift the tightest pair (this color on the alternate ground) is
+     4.66:1; do not warm or darken --ts-surface-alt further. */
   --larkin-label-size: 0.75rem;
   --larkin-label-tracking: 0.16em;
 

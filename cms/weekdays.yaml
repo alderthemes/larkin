@@ -1,0 +1,18 @@
+# The day names the content editor offers for opening hours.
+# They must be the English day names below: src/lib/locations.ts reads
+# exactly these, and a day spelled any other way would show as closed.
+# The site prints its own translated day names from src/i18n/*.json.
+- id: Monday
+  label: Monday
+- id: Tuesday
+  label: Tuesday
+- id: Wednesday
+  label: Wednesday
+- id: Thursday
+  label: Thursday
+- id: Friday
+  label: Friday
+- id: Saturday
+  label: Saturday
+- id: Sunday
+  label: Sunday

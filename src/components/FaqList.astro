@@ -51,6 +51,10 @@ const { items, class: className = "" } = Astro.props;
     font-size: var(--ts-text-lg);
     font-weight: var(--ts-weight-semibold);
     color: var(--ts-color-primary-900);
+    /* Tabbing backwards scrolls the question to the top edge of the screen,
+       under the sticky header, and the focused question disappears behind it
+       (WCAG 2.4.11). The margin keeps it below the header. */
+    scroll-margin-top: calc(var(--ts-c-nav-height, 64px) + var(--ts-space-4));
   }
   .faq__question::-webkit-details-marker {
     display: none;
