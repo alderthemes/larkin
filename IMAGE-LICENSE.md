@@ -25,8 +25,10 @@ similar output for other users. No exclusivity is claimed or granted.
 
 ## AI disclosure notice
 
-These images are AI-generated (Google Gemini / Nano Banana 2, via Higgsfield) and
-carry an invisible SynthID watermark that survives cropping and re-encoding.
+These images are AI-generated (Google Gemini / Nano Banana 2, via Higgsfield).
+The generation service may embed an invisible synthetic-content signal
+(such as SynthID). We do not promise that such a signal is present in every
+file or that it survives editing, cropping or re-encoding.
 
 If you deploy them to represent a REAL business, product, place or event — rather
 than as placeholder or illustrative content — you may become a "deployer" under

@@ -1,5 +1,14 @@
 # Changelog — Larkin
 
+## 1.0.1 — 2026-10-02
+
+- Changed: the AI disclosure notice in `IMAGE-LICENSE.md` describes the
+  images' built-in synthetic-content signal more carefully. See that file.
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions)
+
+Our files (copy over): `IMAGE-LICENSE.md`
+
 ## 1.0.0 — 2026-10-02
 
 - The minimum Astro version is now 7.3.5 (was 7.3.4), a patch release. Run
