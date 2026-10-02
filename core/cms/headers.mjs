@@ -1,7 +1,7 @@
 /**
  * headers.mjs - the managed block that lets /admin load the Sveltia editor.
  *
- * The site's Content-Security-Policy (public/_headers, netlify.toml) blocks
+ * The site's Content-Security-Policy (public/_headers) blocks
  * everything the editor needs: its script comes from unpkg, it talks to
  * api.github.com, and the protection against framing stays as it is.
  * The block below gives /admin alone a policy that allows exactly that.
@@ -13,11 +13,8 @@
  *    for /admin only.
  *  - Sveltia CMS security page: base policy (script-src unpkg, style-src,
  *    font-src, img-src blob:/data:, frame-src blob:, connect-src) as below.
- * NOT verified: how Netlify combines a _headers rule with a netlify.toml rule
- * for the same header, and whether Netlify reads the `!` line. Therefore
- * this tool never adds the block to netlify.toml (it updates or removes a block
- * you pasted): the block is printed for the developer to paste, and `check`
- * fails until it is there.
+ * Cloudflare is the only supported host, so the block lives in
+ * public/_headers alone.
  */
 import { SVELTIA_VERSION } from "./emit.mjs";
 
@@ -53,17 +50,6 @@ export function headersBlock(authUrl) {
     "/admin/*",
     "  ! Content-Security-Policy",
     `  Content-Security-Policy: ${csp}`,
-    END,
-  ].join("\n");
-}
-
-export function tomlBlock(authUrl) {
-  return [
-    BEGIN,
-    "[[headers]]",
-    '  for = "/admin/*"',
-    "  [headers.values]",
-    `    Content-Security-Policy = "${adminCsp(authUrl)}"`,
     END,
   ].join("\n");
 }

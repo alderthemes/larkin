@@ -50,7 +50,6 @@ import { toYaml } from "./yaml.mjs";
 import { buildRecords, readLocale, orderPlan, siteReader, siteLister } from "./record.mjs";
 import {
   headersBlock,
-  tomlBlock,
   findBlock,
   putBlock,
   removeBlock,
@@ -67,50 +66,29 @@ const root = resolve(opt("root") ?? process.cwd());
 const SV_CFG = join(root, "public/admin/config.yml");
 const SV_HTML = join(root, "public/admin/index.html");
 const HDR = join(root, "public/_headers");
-const TOML = join(root, "netlify.toml");
 const rd = (p) => (existsSync(p) ? readFileSync(p, "utf8") : null);
 
 /**
  * Sveltia needs its own policy on /admin. public/_headers is edited (Cloudflare
- * Pages semantics verified, see cms/headers.mjs). this tool never adds the
- * block to netlify.toml (it prints it to paste); it updates or removes a block you pasted.
+ * semantics verified, see cms/headers.mjs). Cloudflare is the only supported
+ * host, so this is the only file that carries the block.
  */
 function syncHeaders(authUrl) {
   const h = rd(HDR) ?? "";
   write(HDR, putBlock(h, headersBlock(authUrl)));
-  const t = rd(TOML);
-  if (t !== null && findBlock(t) !== null)
-    write(TOML, putBlock(t, tomlBlock(authUrl)));
-}
-
-/** What to tell the developer about netlify.toml, or null when nothing. */
-function tomlAdvice(authUrl) {
-  const t = rd(TOML);
-  if (t === null || findBlock(t) !== null) return null;
-  return (
-    "netlify.toml was NOT changed. If you deploy to Netlify, add this block to it (how Netlify combines it with the site-wide policy is unverified; test /admin on the live host):\n\n" +
-    tomlBlock(authUrl) +
-    "\n"
-  );
 }
 
 function staleHeaders(sv) {
   const out = [];
   const h = rd(HDR);
   const hb = h === null ? null : findBlock(h);
-  const t = rd(TOML);
-  const tb = t === null ? null : findBlock(t);
   if (hb !== headersBlock(sv.authUrl)) out.push("public/_headers");
-  if (t !== null && tb !== tomlBlock(sv.authUrl)) out.push("netlify.toml");
   return out;
 }
 
 /** Files that still carry a managed /admin block while Sveltia is off (public/admin deleted by hand). */
 function leftoverBlocks() {
-  return [
-    ["public/_headers", HDR],
-    ["netlify.toml", TOML],
-  ]
+  return [["public/_headers", HDR]]
     .filter(([, p]) => {
       const t = rd(p);
       return t !== null && findBlock(t) !== null;
@@ -331,15 +309,11 @@ if (cmd === "status") {
   console.log(
     "Sveltia: on (public/admin/). The editor opens at /admin after the next deploy.",
   );
-  const advice = tomlAdvice(sv.authUrl);
-  if (advice) console.log("\n" + advice);
 } else if (cmd === "disable" && args[1] === "sveltia") {
   rmSync(SV_CFG, { force: true });
   rmSync(SV_HTML, { force: true });
-  for (const f of [HDR, TOML]) {
-    const t = rd(f);
-    if (t !== null && findBlock(t) !== null) write(f, removeBlock(t));
-  }
+  const ht = rd(HDR);
+  if (ht !== null && findBlock(ht) !== null) write(HDR, removeBlock(ht));
   console.log("sveltia: off. Content files were not touched.");
 } else if (cmd === "generate" || cmd === "check") {
   if (!on.sveltia) {
@@ -380,8 +354,6 @@ if (cmd === "status") {
     for (const [p, t] of targets) write(p, t);
     syncHeaders(sv.authUrl);
     console.log(`Generated (${scope}).`);
-    const advice = tomlAdvice(sv.authUrl);
-    if (advice) console.log("\n" + advice);
   } else {
     const stale = targets
       .filter(
@@ -391,25 +363,11 @@ if (cmd === "status") {
       )
       .map(([p]) => relative(root, p).split(sep).join("/"));
     for (const f of staleHeaders(sv)) stale.push(f);
-    // This tool never adds the block to netlify.toml, so "generate" is not its fix.
-    // A block that exists but differs is refreshed by generate; a missing or
-    // leftover one needs a hand.
-    const tomlText = rd(TOML);
-    const tomlByHand = tomlText !== null && findBlock(tomlText) === null;
-    if (tomlByHand) stale.splice(stale.indexOf("netlify.toml"), 1);
-    if (stale.length || tomlByHand) {
-      const lines = [];
-      if (stale.length)
-        lines.push(
-          "Out of date: " + stale.join(", ") + ". Run `npm run cms -- generate`. (" + scope + ")",
-        );
-      if (tomlByHand)
-        lines.push(
-          "netlify.toml needs the /admin block (this tool never adds the block to netlify.toml; it updates or removes a block you pasted): paste the block printed by `npm run cms -- generate`, or delete netlify.toml if you don't deploy to Netlify.\n\n" +
-            tomlBlock(sv.authUrl),
-        );
-      die(1, lines.join("\n"));
-    }
+    if (stale.length)
+      die(
+        1,
+        "Out of date: " + stale.join(", ") + ". Run `npm run cms -- generate`. (" + scope + ")",
+      );
     console.log(`Editor config up to date (${scope}).`);
   }
 } else if (cmd === "order") {

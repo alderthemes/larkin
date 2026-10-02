@@ -1,5 +1,30 @@
 # Changelog — Larkin
 
+## 1.0.0 — 2026-10-02
+
+- The minimum Astro version is now 7.3.5 (was 7.3.4), a patch release. Run
+  `npm install` after updating; nothing in the template's own code changes.
+- Changed: Cloudflare is the one supported host. `netlify.toml` is no longer
+  in the kit, `docs/README.md` no longer has Netlify steps, and the comments
+  in `public/_headers` no longer mention Netlify. `public/_headers` is one of
+  your files, so an update does not replace your copy. The site is
+  plain static files and also runs on other static hosts, but the security
+  headers (`public/_headers`), the content editor setup and the guide's steps
+  are written for Cloudflare.
+- Migration: if you deploy to Netlify, your own `netlify.toml` stays where it
+  is when you update. `npm run cms` no longer reads or changes it, so if you
+  pasted the editor's `/admin` block into it, keep that block up to date
+  yourself.
+- Fixed: the setup notes no longer say Cloudflare handles form posts on its
+  own. It does not. Put a form service endpoint (Formspree, Basin, or similar)
+  in the form's address in `src/lib/site.ts`, then add that service's host to
+  `form-action` in `public/_headers`. Until you set the address, the form
+  goes nowhere.
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions), `public/_headers`, `src/lib/site.ts`
+
+Our files (copy over): `AGENTS.md`, `core/cms/cli.mjs`, `core/cms/headers.mjs`, `core/sections/Contact.astro`, `docs/README.md`, `docs/legal-templates.md`, `netlify.toml` (removed)
+
 ## 0.3.0 — 2026-10-01
 
 - Changed: refined color, typography and spacing. Content, pages and

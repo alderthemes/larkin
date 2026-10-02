@@ -49,11 +49,7 @@ value you need back.
    `npm run build`, **Deploy command** `npx wrangler deploy`, and under
    **Advanced settings** a variable `SITE` with the live address, before the
    first deploy. A build listed as **Skipped** is an older one replaced by a
-   newer push. On Cloudflare you may then run `git rm netlify.toml` and
-   commit (the user pushes): `npm run cms -- check` fails while that file is
-   there without the editor's block. Netlify: `netlify.toml` already holds
-   the build settings; you may uncomment its `SITE` line with the user's
-   address and commit, and the user pushes. **Get back:** the live address.
+   newer push. **Get back:** the live address.
    Confirm the home page's `canonical` link uses it and that there is no
    `noindex` line.
 5. **STOP.** The user deploys the login service (sveltia-cms-auth) with the
@@ -79,9 +75,7 @@ value you need back.
 8. **You run:**
    `npm run cms -- enable sveltia --repo owner/name --auth-url <worker-url>`,
    then `npm run cms -- check` (must print "Editor config up to date") and
-   `npm run build`. `check` reads `netlify.toml` on any host: on Netlify,
-   paste the block `enable` prints into it first; on Cloudflare it should
-   already be deleted (step 4). Commit. **STOP** for the push: the user runs
+   `npm run build`. Commit. **STOP** for the push: the user runs
    `git push`.
 9. **STOP.** The user opens `https://<live address>/admin`, chooses **Sign In
    with GitHub** and authorizes the app. Tell them: do not press **Grant**

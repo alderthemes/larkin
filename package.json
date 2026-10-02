@@ -1,7 +1,7 @@
 {
   "name": "larkin",
   "private": true,
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "A café site built around the four things people check: where, when, what, and can I work here",
   "type": "module",
   "engines": {
@@ -19,7 +19,7 @@
     "@fontsource-variable/instrument-sans": "^5.3.0",
     "@studio/core": "file:./core",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.4",
+    "astro": "^7.3.5",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
@@ -36,8 +36,7 @@
       "src/assets/images/",
       "public/og.jpg",
       "public/favicon.svg",
-      "public/_headers",
-      "netlify.toml"
+      "public/_headers"
     ]
   },
   "license": "SEE LICENSE IN LICENSE.md",

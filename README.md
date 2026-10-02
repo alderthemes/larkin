@@ -54,7 +54,7 @@ Let your client edit the menu → [docs section 8](docs/README.md#8-let-your-cli
 
 Set `SITE` to your own domain (see `.env.example`) and deploy `dist/`.
 You do not need to edit `astro.config.mjs`.
-Cloudflare and Netlify configs are included (`wrangler.jsonc` and `netlify.toml`).
+Cloudflare config is included (`wrangler.jsonc`).
 
 ## Licence
 

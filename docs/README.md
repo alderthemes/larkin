@@ -84,9 +84,9 @@ needs it.
 
 ### Step 4. Put the site live, with `SITE` set
 
-**You do this (needs your account).** Connect the repository to a host that
-rebuilds the site on every push. The editor saves by pushing, so a host where
-you upload files by hand will not work. Pick one:
+**You do this (needs your account).** Connect the repository to Cloudflare,
+which rebuilds the site on every push. The editor saves by pushing, so a host
+where you upload files by hand will not work.
 
 **Cloudflare (the package's `wrangler.jsonc`).** In Cloudflare, open
 Workers & Pages and press **Create**. Under "Make something new" choose
@@ -111,17 +111,6 @@ Then deploy. A build can wait in a queue for several minutes when your
 account has other builds waiting. If you push again while one waits, the
 older build is listed as **Skipped** ("This build was skipped") and the
 newest one runs. That is normal.
-
-On Cloudflare, delete `netlify.toml` from the project, then commit and push
-(`git rm netlify.toml`, `git commit -m "Remove netlify.toml"`, `git push`).
-In step 8, `npm run cms -- check` looks at `netlify.toml` on every host and
-fails while the file is there without the editor's block.
-
-**Netlify (the package's `netlify.toml`).** Import the repository as in
-[section 9](#netlify). The build command and output folder are already in
-`netlify.toml`. Set `SITE` there: remove the `#` in front of the `SITE` line
-under `[build.environment]`, put your address in, then commit and push. You
-can delete `wrangler.jsonc`; Netlify does not use it.
 
 Other hosts are in [section 9](#9-deploying).
 
@@ -221,10 +210,7 @@ npm run build
 
 Add `--branch <name>` if your branch is not `main`. The command writes
 `public/admin/` and adds a marked block to `public/_headers`
-([details](#sveltia-cms-setup-on-your-own-address)). `check` also reads
-`netlify.toml`, on any host: if the file is there without the editor's block,
-`check` fails. On Cloudflare you deleted it in step 4. On Netlify, paste the
-block that `enable` prints into `netlify.toml`, then run `check` again.
+([details](#sveltia-cms-setup-on-your-own-address)).
 
 Then save and push (the push needs your GitHub sign-in):
 
@@ -609,8 +595,7 @@ which means the form renders but goes nowhere — set this before launch.
 
 | Host | What to use |
 |---|---|
-| Netlify | Add `netlify` to the `<form>` in `src/pages/contact.astro`; Netlify Forms picks it up |
-| Cloudflare, Vercel, static hosts | A form service: Formspree, Basin, Web3Forms |
+| Cloudflare | A form service: Formspree, Basin, Web3Forms |
 | Your own backend | Any URL that accepts a POST |
 
 Example with Formspree:
@@ -622,14 +607,11 @@ export const contactFormAction = "https://formspree.io/f/your-form-id";
 **Then add the service's origin to the Content-Security-Policy.** The policy
 ships with `form-action 'self'`, which means the browser blocks a submission to
 any other origin — **silently**. The page stays put, no error is shown, and the
-message goes nowhere. Edit the `form-action` directive in both `public/_headers`
-and `netlify.toml`:
+message goes nowhere. Edit the `form-action` directive in `public/_headers`:
 
 ```
 form-action 'self' https://formspree.io
 ```
-
-(Netlify Forms needs no change: the post stays on your own origin.)
 
 The form already includes a hidden honeypot field named `company`. Most form
 services can be configured to reject submissions where it is filled in — that
@@ -662,9 +644,8 @@ Copy `.env.example` to `.env` and put your domain in:
 SITE=https://your-cafe.com
 ```
 
-On a host, set the same thing as a build environment variable — Netlify under
-`[build.environment]` in `netlify.toml`, Cloudflare under Settings → Build →
-Variables. Either way the build reads it; you do not have to edit
+On Cloudflare, set the same thing as a build environment variable, under
+Settings → Build → Variables. The build reads it; you do not have to edit
 `astro.config.mjs`.
 
 Leave it unset and two things happen, both on purpose:
@@ -792,9 +773,7 @@ it had before, but check that in your host's own documentation. The owner
 will see no error, and the change will not appear. Tell them to message you
 if nothing changes after ten minutes. Turn on your host's notification for
 failed builds and send it to yourself, so you hear about it before the café
-does. In Netlify it is under Project configuration, Notifications, Deploy
-notifications (email notifications are listed for Pro and Enterprise plans;
-other types may be available on yours, see [Netlify's notifications page](https://docs.netlify.com/site-deploys/notifications/), read 2026-09-29). In
+does. In
 Cloudflare it is the "Project updates" notification, which can alert on a
 failed deployment (see [Cloudflare's notification list](https://developers.cloudflare.com/notifications/notification-available/), read 2026-09-29). It is set
 in the Notifications section of your Cloudflare account.
@@ -859,16 +838,6 @@ several rules gets all their headers and that a line made of an exclamation mark
 one (read 2026-09-29). The rest of the site keeps its policy, and
 `X-Frame-Options` is unchanged.
 
-**Netlify.** Netlify also reads `public/_headers`, and `netlify.toml` carries a
-copy of the policy. This tool never adds the block to `netlify.toml` (it only
-updates or removes a block you pasted), because how Netlify
-combines two rules for the same header is not documented (checked 2026-09-29),
-and the `!` line is Cloudflare syntax. `enable sveltia` prints the block to add
-to `netlify.toml`, and `npm run cms -- check` fails until it is there. It
-checks `netlify.toml` whatever your host is, so delete the file if you do not
-deploy to Netlify. This part is untested on a live Netlify site: after
-deploying, open `/admin` and confirm it loads.
-
 `npm run cms -- disable sveltia` removes the marked blocks and the `/admin`
 files.
 
@@ -893,11 +862,12 @@ exit 2.
 
 ## 9. Deploying
 
-The build output is a plain static `dist/` folder. It works anywhere.
+Cloudflare is the supported host. The build output is a plain static
+`dist/` folder.
 
-**If the owner will use the content editor, pick a host that connects to your
-Git repository** (Cloudflare, Netlify or Vercel below). A host where you only
-upload `dist/` by hand cannot rebuild the site when the owner saves.
+**If the owner will use the content editor, connect Cloudflare to your Git
+repository** (below). A host where you only upload `dist/` by hand cannot
+rebuild the site when the owner saves.
 
 ### Cloudflare Pages / Workers
 
@@ -906,16 +876,12 @@ Node version comes from the included `.node-version`. A `wrangler.jsonc` is
 included; change `name` to your project. For a Worker built from your GitHub
 repository, the screens are in [Launch guide, step 4](#launch-4).
 
-### Netlify
-
-`netlify.toml` is included with the build command, publish directory, Node
-version and security headers already set. Connect the repo and deploy.
-
-### Vercel
-
-Framework preset **Astro**; defaults are correct.
-
 ### Any other host
+
+The site is plain static files, so it also runs on other static hosts. The
+security headers (`public/_headers`), the content editor setup and the steps
+in this guide are written for Cloudflare: on another host you set up the
+headers yourself.
 
 ```bash
 npm run build
@@ -924,7 +890,7 @@ npm run build
 
 ### Before you go live: security checklist
 
-- `public/_headers` (Cloudflare) and `netlify.toml` ship with a strict
+- `public/_headers` (Cloudflare) ships with a strict
   Content-Security-Policy, HSTS, `X-Content-Type-Options` and a restrictive
   `Permissions-Policy`. **If you add a third-party embed (a map, an Instagram
   feed, analytics), you must widen the CSP for that origin** or the browser
@@ -953,7 +919,6 @@ Your files (an update never overwrites these):
 - `public/og.jpg`: your social sharing image
 - `public/favicon.svg`: your browser tab icon
 - `public/_headers`: your security headers, including any host you allowed
-- `netlify.toml`: the same headers for Netlify, including any host you allowed
 
 Everything else is our files: components, layouts, pages, scripts and
 configuration.
@@ -1004,7 +969,7 @@ core/                    shared design tokens and components
 public/
   favicon.svg            browser tab icon (colors are written in the file)
   og.jpg                 social sharing preview, 1200×630
-  _headers               security headers + cache rules (Cloudflare, Netlify)
+  _headers               security headers + cache rules (Cloudflare)
   open-status.js         puts today's hours on the badge, in the visitor's clock
   menu-close.js          closes the mobile menu on Escape
 .env.example             copy to .env and set SITE before your first deploy
@@ -1022,8 +987,8 @@ public/
 | A menu item does not appear | `available: false`, or an invalid `category` | check the frontmatter against the enum in `src/content.config.ts` |
 | Gallery section is missing | no images in `src/assets/images/` | add the files, or leave it: the section hides itself by design |
 | "Open now" never appears | JavaScript disabled, or no `hours` on the primary location | the plain hours line is the intended fallback; add `hours` to the location file |
-| Map embed does not load | Content-Security-Policy blocks the origin | add the embed origin to `frame-src` in `public/_headers` and `netlify.toml` |
-| Form submits but nothing happens, and there is no error | Content-Security-Policy `form-action` does not list the form service | add its origin to `form-action` in `public/_headers` and `netlify.toml` |
+| Map embed does not load | Content-Security-Policy blocks the origin | add the embed origin to `frame-src` in `public/_headers` |
+| Form submits but nothing happens, and there is no error | Content-Security-Policy `form-action` does not list the form service | add its origin to `form-action` in `public/_headers` |
 | Build fails after renaming the project folder | the link npm made to `./core` still points at the old path | `npm install` (the build itself no longer needs it; `npm run check` does) |
 | `npm run check` reports a type error | a TypeScript error in your edits | the file and line are in the output; `npm run build` does not run this check, so a type error never blocks a build |
 | `npm ls` says "extraneous" for `@emnapi/*`, `tslib` or `@img/sharp-wasm32` | a known friction between npm and the image library's optional WASM packages | nothing to fix — the install is not broken, and `npm ci` reports the same |

@@ -15,9 +15,9 @@ const dicts: Record<Locale, typeof en> = { en, tr };
 export const t = createT(dicts[LOCALE], en);
 
 /**
- * Where the contact form posts. On a host other than Cloudflare or Netlify,
- * put a form service endpoint here — Formspree, Basin, or similar. The step
- * is in docs/README.md.
+ * Where the contact form posts. Cloudflare does not process form posts on its
+ * own, and with "#" the form goes nowhere: put a form service endpoint here —
+ * Formspree, Basin, or similar. The step is in docs/README.md.
  */
 export const contactFormAction = "#";
 

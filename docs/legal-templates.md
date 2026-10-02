@@ -21,7 +21,7 @@ changes, change the sentence.
 | --- | --- | --- | --- |
 | privacy, "What this site collects" | the contact form asks for a name, an email address and a message | the form on `src/pages/contact.astro` has those fields | you add or remove a field |
 | privacy, "Where it goes" | the message reaches you directly or through a form service, and the website keeps no copy | `contactFormAction` in `src/lib/site.ts` points at your inbox route or a form service (as delivered it is `"#"` and delivers nothing) | you use a form service: name it in that paragraph, with a link to its own privacy terms |
-| privacy, "Cookies and analytics" | no analytics, no cookies | the kit's own code adds neither, and `mapEmbedUrl` is empty | your host adds an analytics script (Cloudflare Web Analytics does when it is switched on for the site, and the headers in `public/_headers` and `netlify.toml` allow it), you set `mapEmbedUrl` (the map provider loads in the visitor's browser), or you add any other third-party script: name the provider and say what it stores |
+| privacy, "Cookies and analytics" | no analytics, no cookies | the kit's own code adds neither, and `mapEmbedUrl` is empty | your host adds an analytics script (Cloudflare Web Analytics does when it is switched on for the site, and the headers in `public/_headers` allow it), you set `mapEmbedUrl` (the map provider loads in the visitor's browser), or you add any other third-party script: name the provider and say what it stores |
 | terms, "Reservations" | the site takes no reservations | the kit has no booking form | you add one |
 
 ## Privacy page: the fuller structure

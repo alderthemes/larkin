@@ -1,5 +1,5 @@
 # Security headers.
-# Cloudflare Pages/Workers and Netlify both read this file.
+# Cloudflare Pages/Workers read this file.
 # Review it before you go live: https://developers.cloudflare.com/pages/configuration/headers/
 #
 # Cloudflare Web Analytics injects a beacon script into every page when your
@@ -19,9 +19,6 @@
 # posts to a form service. form-action is set to 'self', so add the service's
 # host there — otherwise the browser blocks the submission silently and the
 # visitor sees nothing happen, not even an error.
-#
-# Make the same change in netlify.toml, which carries a copy of this policy,
-# so the site behaves the same on either host.
 
 # Hashed build output never changes: the filename carries a content hash, so a
 # new build is a new URL. Without this the host serves it with a short default
