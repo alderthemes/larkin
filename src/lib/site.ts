@@ -29,8 +29,10 @@ export const contactFormAction = "#";
  * not render at all, so the page never shows an empty gray box where a map
  * should be.
  *
- * The shipped Content-Security-Policy allows `frame-src https:`, so any
- * https provider works without editing public/_headers.
+ * The shipped Content-Security-Policy has `frame-src 'none'`, which blocks
+ * every embed. When you set this, open public/_headers and replace `'none'`
+ * in `frame-src` with the host of the address you pasted (the part between
+ * `https://` and the next `/`), or the map stays blank.
  */
 export const mapEmbedUrl = "";
 

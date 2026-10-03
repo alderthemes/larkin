@@ -18,7 +18,7 @@ so that we can reply. This website does not keep a copy.
 
 ## Cookies and analytics
 
-This site runs no analytics and sets no cookies.
+This website's own code runs no analytics and sets no cookies.
 
 ## Your questions
 

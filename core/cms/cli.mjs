@@ -154,7 +154,7 @@ function checkAuthUrl(v, label, code = 1) {
     die(code, `${label}: "${v}" is not a valid URL (expected e.g. https://auth.example.com).`);
   }
   if (u.protocol !== "https:" && u.protocol !== "http:")
-    die(code, `${label}: "${v}" must start with https://.`);
+    die(code, `${label}: "${v}" must start with https:// (http:// is accepted only for local testing).`);
 }
 
 /**
@@ -309,9 +309,23 @@ if (cmd === "status") {
   console.log(
     "Sveltia: on (public/admin/). The editor opens at /admin after the next deploy.",
   );
+  /* `--auth-url` is optional on purpose (the login service is deployed in a
+     later step), but leaving it out used to succeed in silence while the
+     docs said the address is needed (buyer test, 2026-10-03). The editor
+     opens without it and sign-in cannot work; say so, once, on stderr. */
+  if (sv.authUrl === undefined)
+    console.error(
+      "Warning: no --auth-url. The editor opens at /admin but has no login service, so signing in cannot work. " +
+        "Run the same command again with --auth-url https://... once the login service is deployed.",
+    );
 } else if (cmd === "disable" && args[1] === "sveltia") {
   rmSync(SV_CFG, { force: true });
   rmSync(SV_HTML, { force: true });
+  /* The folder goes too, but only when nothing else is in it: the docs say
+     disable removes public/admin/, and an empty folder was left behind
+     (buyer test, 2026-10-03). A file the user put there stays. */
+  const svDir = dirname(SV_CFG);
+  if (existsSync(svDir) && readdirSync(svDir).length === 0) rmSync(svDir, { recursive: true, force: true });
   const ht = rd(HDR);
   if (ht !== null && findBlock(ht) !== null) write(HDR, removeBlock(ht));
   console.log("sveltia: off. Content files were not touched.");

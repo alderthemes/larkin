@@ -188,9 +188,16 @@ function recordCollection(r) {
 }
 
 export function sveltiaConfig(model, { repo, branch = "main", authUrl } = {}) {
-  if (!repo || !/^[\w.-]+\/[\w.-]+$/.test(repo))
+  /* Two messages: a missing flag and a malformed value are different mistakes,
+     and "is required" sent a buyer who had typed a value looking for a flag
+     they had already given (buyer test, 2026-10-03). */
+  if (!repo)
     throw new Error(
       "sveltia: --repo owner/name is required (the GitHub repository the site builds from).",
+    );
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repo))
+    throw new Error(
+      `sveltia: --repo must be owner/name (got "${repo}"), the GitHub repository the site builds from.`,
     );
   const backend = { name: "github", repo, branch };
   if (authUrl) backend.base_url = authUrl;

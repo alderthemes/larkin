@@ -54,6 +54,22 @@ interface Props {
   infoLabels?: { address: string; phone: string; email: string; hours: string };
   class?: string;
 }
+/* Defaults are merged key by key, not object by object. A page that passes
+   `labels={{ name, email, message }}` from its dictionary used to replace the
+   whole default object, and with it the `required` marker: "(required)" was
+   printed in no language at all, and nobody noticed because nothing was
+   missing from the page except a word (buyer test, 2026-10-03). Now a key the
+   page leaves out keeps its English default and a key it passes wins. The
+   template is still expected to pass every key from src/i18n so the form
+   speaks the page's language; the merge only stops a partial object from
+   silently deleting a label. */
+const DEFAULT_LABELS = { name: "Name", email: "Email", message: "Message", required: "(required)" };
+const DEFAULT_ERRORS = {
+  name: "Please tell us your name.",
+  email: "Please give us an email address we can reply to.",
+  message: "Please tell us what you need.",
+};
+const DEFAULT_INFO_LABELS = { address: "Address", phone: "Phone", email: "Email", hours: "Opening hours" };
 const {
   eyebrow,
   title,
@@ -65,15 +81,14 @@ const {
   hours = [],
   formAction = "#",
   submitLabel = "Send message",
-  labels = { name: "Name", email: "Email", message: "Message", required: "(required)" },
-  errors = {
-    name: "Please tell us your name.",
-    email: "Please give us an email address we can reply to.",
-    message: "Please tell us what you need.",
-  },
-  infoLabels = { address: "Address", phone: "Phone", email: "Email", hours: "Opening hours" },
+  labels: labelsProp,
+  errors: errorsProp,
+  infoLabels: infoLabelsProp,
   class: className = "",
 } = Astro.props;
+const labels = { ...DEFAULT_LABELS, ...(labelsProp ?? {}) };
+const errors = { ...DEFAULT_ERRORS, ...(errorsProp ?? {}) };
+const infoLabels = { ...DEFAULT_INFO_LABELS, ...(infoLabelsProp ?? {}) };
 /* The info labels sit one level under whatever the section heading is, so the
    hierarchy holds wherever the section is used. Hard-coding them at h3 put an
    h1 -> h3 skip on every dedicated contact page and left them level with the
@@ -138,8 +153,8 @@ const hasMap = Astro.slots.has("map");
 
       <form class="ts-contact__form" action={formAction} method="POST">
         <div class="ts-contact__hp" aria-hidden="true">
-          <label for="hp-website">Website</label>
-          <input id="hp-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          <label for="contact-hp-website">Website</label>
+          <input id="contact-hp-website" name="website" type="text" tabindex="-1" autocomplete="off" />
         </div>
         {/* Every required field says so, and carries its own message. The
             message is always in the DOM and always tied to the field with
@@ -207,15 +222,22 @@ const hasMap = Astro.slots.has("map");
   .ts-contact {
     padding-block: var(--ts-section-y);
   }
+  /* minmax(0, …), not a bare fr. `1fr` means minmax(auto, 1fr): the track
+     cannot shrink below the form's min-content width, and a text input's
+     default width plus the form padding is about 315px. On a 320px screen
+     the container is 280px wide, so the column pushed past it and the page
+     scrolled sideways by 15px (measured: scrollWidth 335 at a 320 viewport;
+     WCAG 1.4.10). With a 0 minimum the column takes the container's width
+     and the inputs below shrink with it. */
   .ts-contact__grid {
     display: grid;
     gap: var(--ts-space-12);
     margin-top: var(--ts-space-12);
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   @media (min-width: 1024px) {
     .ts-contact__grid {
-      grid-template-columns: 0.8fr 1.2fr;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     }
   }
   .ts-contact__info {
@@ -303,6 +325,12 @@ const hasMap = Astro.slots.has("map");
     background: var(--ts-surface);
     color: var(--ts-text);
     min-height: 44px;
+    /* Fill the field and never force it wider: a text input's intrinsic
+       width is ~20 characters, and it is what made the grid above overflow
+       on narrow screens. */
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
   .ts-field textarea { min-height: auto; resize: vertical; }
   .ts-field input:focus-visible,

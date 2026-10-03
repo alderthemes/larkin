@@ -89,21 +89,27 @@ which rebuilds the site on every push. The editor saves by pushing, so a host
 where you upload files by hand will not work.
 
 **Cloudflare (the package's `wrangler.jsonc`).** In Cloudflare, open
-Workers & Pages and press **Create**. Under "Make something new" choose
-**Continue with GitHub**, pick your account in the account list, then
-**Select a repository** and **Next**. On **Set up your application**
-(screen names as seen on 2026-09-30):
+Workers & Pages and create a new application from your GitHub repository.
+Cloudflare's guide names the buttons **Create application**, then **Get
+started** next to **Import a repository**
+([Cloudflare's Workers Builds guide](https://developers.cloudflare.com/workers/ci-cd/builds/), read 2026-10-03);
+the dashboard's wording changes from time to time, so follow the screen that
+offers a Git repository. Pick the Git account that owns the repository, select
+it, and on the set-up screen fill in:
 
-- **Project name** is filled in with the repository's name. It must be the
-  same as `"name"` in `wrangler.jsonc` (it ships as `larkin`), or the build
-  fails ([Cloudflare's Workers Builds guide](https://developers.cloudflare.com/workers/ci-cd/builds/), read 2026-09-30).
-  Change one of the two so they match.
-- **Build command**: `npm run build` (the field starts empty).
-- **Deploy command**: `npx wrangler deploy` (already filled in).
-- Open **Advanced settings** and add a variable: **Variable name** `SITE`,
-  **Variable value** your live address, for example
-  `https://your-domain.com`. Set here, before the first deploy, the very first
-  build already uses it.
+- **Worker name** (the dashboard may call it the project name) is filled in
+  with the repository's name. It must be the same as `"name"` in
+  `wrangler.jsonc` (it ships as `larkin`), or the build fails: the same guide says
+  the two must match. Change one of the two so they match.
+- **Build command**: `npm run build`.
+- **Deploy command**: `npx wrangler deploy` (fill it in if it is not already
+  there).
+- A build variable named `SITE` with your live address as its value, for
+  example `https://your-domain.com`. Set before the first deploy, the very
+  first build already uses it. If the set-up screen gives you no place for
+  it, deploy first, then add it under the Worker's **Settings**, **Build**
+  (build variables and secrets; [Cloudflare's build settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), read 2026-10-03)
+  and push again.
 - Node version: Cloudflare reads the `.node-version` file
   ([build image](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/), read 2026-09-30).
 
@@ -134,12 +140,13 @@ site's address to `ALLOWED_DOMAINS`.
 
 1. Open the "Deploy to Cloudflare" link:
    https://deploy.workers.cloudflare.com/?url=https://github.com/sveltia/sveltia-cms-auth
-2. On **Set up your application**: choose your Git account, tick
-   **Create private Git repository**, keep the Project name
-   `sveltia-cms-auth`, leave **Build command** empty, and set
-   **Deploy command** to `pnpm run deploy`. Then deploy.
-3. If it says **Your GitHub authorization has expired**, open the Git account
-   dropdown, choose **New GitHub connection**, reconnect, and try again.
+2. On the set-up screen: choose your Git account, choose to create a private
+   Git repository, keep the name `sveltia-cms-auth`, leave the build command
+   empty, and keep the deploy command the dashboard fills in (we saw
+   `pnpm run deploy` there on 2026-09-30; the dashboard's wording and defaults
+   can change). Then deploy.
+3. If it says your GitHub authorization has expired, reconnect GitHub from the
+   Git account list and try again.
 4. The build can sit in **Initializing** for several minutes when your account
    has other builds waiting. It is not stuck.
 
@@ -177,12 +184,14 @@ once.
 ### Step 7. Give the login service its keys
 
 **You do this (needs your account).** In Cloudflare, open Workers & Pages,
-then the `sveltia-cms-auth` Worker, then Settings, then
-**Runtime variables and secrets**, then **Add variable**.
+then the `sveltia-cms-auth` Worker, then **Settings**, then
+**Variables & Secrets** (that is the name Cloudflare's build settings page
+gives it, read 2026-10-03; the dashboard may word it as runtime variables).
+Add one variable per row below.
 
-This is not the **Variables and secrets** box in the Build section. That box
-is for the build only, and the running login service cannot read it
-([Cloudflare's build settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), read 2026-09-30).
+This is not the build variables box under **Settings**, **Build**. That box is
+for the build only, and the running login service cannot read it
+([Cloudflare's build settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), read 2026-10-03).
 
 | Name | Type | Value |
 |------|------|-------|
@@ -190,10 +199,9 @@ is for the build only, and the running login service cannot read it
 | `GITHUB_CLIENT_SECRET` | tick **Secret** | the client secret from step 6 |
 | `ALLOWED_DOMAINS` | Text | your live hostname, without `https://`, for example `your-domain.com`. Several are separated by commas: `your-domain.com,www.your-domain.com`. Add `127.0.0.1,localhost` only if you want to sign in from your own computer. |
 
-Press **Add variable and deploy**.
+Save them, and deploy if the dashboard asks you to.
 
-**You should see:** the three names listed under Runtime variables and
-secrets.
+**You should see:** the three names listed under **Variables & Secrets**.
 
 <a id="launch-8"></a>
 
@@ -210,7 +218,9 @@ npm run build
 
 Add `--branch <name>` if your branch is not `main`. The command writes
 `public/admin/` and adds a marked block to `public/_headers`
-([details](#sveltia-cms-setup-on-your-own-address)).
+([details](#sveltia-cms-setup-on-your-own-address)). If you leave `--auth-url` out, the command still
+succeeds, but the editor has no login service and sign-in cannot work. Run it
+again with the address from step 5.
 
 Then save and push (the push needs your GitHub sign-in):
 
@@ -372,8 +382,8 @@ values and the three accent values and the entire site re-themes:
 :root {
   --ts-color-primary-900: #1a1917;  /* headings, buttons */
   --ts-color-accent-600:  #a6522f;  /* eyebrows, focus ring, seasonal badge */
-  --ts-surface:           #f8f7f4;  /* page background */
-  --ts-surface-alt:       #efede8;  /* alternating sections, cards */
+  --ts-surface:           #f9f6f0;  /* page background */
+  --ts-surface-alt:       #f1ece3;  /* alternating sections, cards */
   --ts-color-success:     #166534;  /* the "Open now" dot and its label */
   --ts-font-display: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --ts-font-sans: var(--ts-font-display);  /* an alias, not a second font */
@@ -387,7 +397,7 @@ text editor and change them to match if you re-theme.
 **Check contrast after changing colors.** Body text on the background must be
 at least 4.5:1, and `--ts-color-accent-600` is used for small text, so it needs
 4.5:1 too. Use any contrast checker; the shipped palette passes with room to
-spare (16.4:1 for body text, 5.1:1 for the accent).
+spare (16.3:1 for body text, 5.0:1 for the accent, both on the page background).
 
 `--ts-font-sans` is an alias of `--ts-font-display`, not a second family: this
 template sets one typeface. Point it at another variable to run two.
@@ -438,6 +448,10 @@ site, change one line in `src/lib/site.ts`:
 ```ts
 export const LOCALE: Locale = "tr";   // "en" | "tr"
 ```
+
+Interface strings switch; content files do not translate themselves. The
+menu, the locations, the questions and the legal pages in `src/content/` stay
+in the language you wrote them in. Translate those too.
 
 To add a language, copy `en.json` to e.g. `de.json` and translate the values
 (never the keys). Registering it takes **two** files, not one — this is the
@@ -502,8 +516,8 @@ No code changes.
 
 ```markdown
 ---
-name: "SE Division"
-streetAddress: "4400 SE Division St"
+name: "SE Wrenhollow"
+streetAddress: "2240 SE Wrenhollow St"
 addressLocality: "Portland"
 addressRegion: "OR"
 postalCode: "97206"
@@ -548,6 +562,10 @@ order: 10
 
 These feed the home page accordion and the `FAQPage` schema, which is what AI
 assistants and search engines quote when someone asks about your café.
+Google shows the FAQ rich result only for well-known government and health
+websites (Google's FAQPage documentation, read 2026-10-03), so do not expect
+one for a café. The data is kept for assistants and other engines that read
+it.
 
 ### Legal pages (`src/content/legal/`)
 
@@ -613,9 +631,13 @@ message goes nowhere. Edit the `form-action` directive in `public/_headers`:
 form-action 'self' https://formspree.io
 ```
 
-The form already includes a hidden honeypot field named `company`. Most form
-services can be configured to reject submissions where it is filled in — that
-removes the bulk of bot spam without a CAPTCHA.
+The form already includes a hidden honeypot field named `company`. It only
+catches anything if the service that receives the form treats that field as a
+trap: Formspree, for example, ignores a submission whose `_gotcha` field is
+filled in (its help page on honeypot filtering, undated, read 2026-10-03) and
+does nothing special with `company`. Read your service's documentation and
+rename the field to what it expects; that removes the bulk of bot spam without
+a CAPTCHA.
 
 ---
 
@@ -657,6 +679,29 @@ The second one looks drastic and is the safer failure. A site indexed under
 `example.com` hands its pages to a domain that is not yours, and undoing that
 takes weeks. `noindex` shows up in Search Console as "excluded by noindex" and
 one environment variable reverses it.
+
+### AI crawlers
+
+The generated `robots.txt` allows every crawler (`User-agent: *`, `Allow: /`),
+and that includes the crawlers run by AI companies: OpenAI's `GPTBot`
+("may be used in training", OpenAI's bot page, undated, read 2026-10-03),
+Anthropic's `ClaudeBot` ("could potentially contribute to their training",
+Anthropic's crawler article, updated 2026-04-07) and Google's
+`Google-Extended` token, which controls training and grounding for Gemini and
+"does not impact a site's inclusion in Google Search" (Google's crawler
+documentation, updated 2026-07-14). This is a choice, and it is yours. With
+the default, the site can be read and quoted by assistants, and `/llms.txt` is
+written for the same readers. To refuse a crawler, write the rule into
+`src/pages/robots.txt.ts`: that file hands the shared `robotsTxt()` output
+back as the response, so append your lines to that string, for example:
+
+```
+User-agent: GPTBot
+Disallow: /
+```
+
+Each company documents its crawler names and what each one does; read the
+current lists before you choose, because the names and purposes change.
 
 ---
 
@@ -773,10 +818,12 @@ it had before, but check that in your host's own documentation. The owner
 will see no error, and the change will not appear. Tell them to message you
 if nothing changes after ten minutes. Turn on your host's notification for
 failed builds and send it to yourself, so you hear about it before the café
-does. In
-Cloudflare it is the "Project updates" notification, which can alert on a
-failed deployment (see [Cloudflare's notification list](https://developers.cloudflare.com/notifications/notification-available/), read 2026-09-29). It is set
-in the Notifications section of your Cloudflare account.
+does. Cloudflare's notification list has a "Project updates" alert for Pages
+projects only ([Cloudflare's notification list](https://developers.cloudflare.com/notifications/notification-available/),
+read 2026-10-03). If you deployed with the Launch guide (Workers), we found
+no failed-build notification in that list. When a change does not appear,
+open the Worker in the Cloudflare dashboard, then **Settings**, **Builds**,
+and read the failed build's log.
 
 ### Sveltia CMS setup (on your own address)
 
@@ -788,8 +835,8 @@ login service that you deploy once; the same service can serve every site
 you build.
 
 The [Launch guide](#launch-guide-do-these-in-order) at the top of this file
-walks through these steps in a safe order, with the screen names you will see
-(steps 5 to 10). The list below is the short reference.
+walks through these steps in a safe order, with the screen names as Cloudflare's and GitHub's own
+documentation give them (steps 5 to 10). The list below is the short reference.
 
 1. Deploy [sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth) to
    Cloudflare Workers, following its README (read 2026-09-29). Note the Worker
@@ -798,8 +845,8 @@ walks through these steps in a safe order, with the screen names you will see
    ([GitHub's steps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)).
    Its authorization callback URL is `<YOUR_WORKER_URL>/callback` (per the
    sveltia-cms-auth README). Copy the Client ID and Client Secret.
-3. In the Worker's settings, under **Runtime variables and secrets** (not the
-   Build section), add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` (tick
+3. In the Worker's settings, under **Settings**, **Variables & Secrets** (not
+   the build variables under **Build**), add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` (tick
    **Secret** for the secret). The README also describes an optional
    `ALLOWED_DOMAINS` variable for your site's hostname, which it recommends.
 4. In the project, turn the editor on:
@@ -865,6 +912,16 @@ exit 2.
 Cloudflare is the supported host. The build output is a plain static
 `dist/` folder.
 
+**The `workers.dev` address.** A Worker whose `wrangler.jsonc` has no
+`routes` is also served at `<name>.<your-subdomain>.workers.dev`: Wrangler's
+configuration reference says `workers_dev` defaults to `true` when there is
+no `route` or `routes` (read 2026-10-03). So the site answers there as well
+as on your domain; canonical links still point at `SITE`. Once your own
+domain is connected and working, you can switch that address off by adding
+`"workers_dev": false` to `wrangler.jsonc` and deploying again. Do not do it
+before the domain works: with no domain and no `workers.dev` address, there
+is nothing left to open the site at.
+
 **If the owner will use the content editor, connect Cloudflare to your Git
 repository** (below). A host where you only upload `dist/` by hand cannot
 rebuild the site when the owner saves.
@@ -920,8 +977,11 @@ Your files (an update never overwrites these):
 - `public/favicon.svg`: your browser tab icon
 - `public/_headers`: your security headers, including any host you allowed
 
-Everything else is our files: components, layouts, pages, scripts and
-configuration.
+`package.json` is a special case. Every release lists it under "Your files",
+because you may have added packages or scripts of your own: merge it by hand,
+keeping what you added and taking our `version`, `scripts` and dependency
+versions. Everything else is our files: components, layouts, pages, scripts
+and configuration.
 
 1. Read `CHANGELOG.md` in the new zip. Each release lists "Your files" (the
    files above that changed in that release) and "Our files" (everything
@@ -931,14 +991,15 @@ configuration.
 3. Copy our files from the new folder over your site, and keep your files.
    Merge one of your files by hand only if the release lists it under "Your
    files": open your copy and the new one side by side and carry the change
-   across.
+   across. A file the release lists as "(removed)" is one you delete from
+   your site.
 4. Run `npm install`, then `npm run cms -- generate` so the content editor
    matches the new files (it says so and does nothing if the editor is off),
    `npm run cms -- check` to confirm, and `npm run build`. A build that passes
    is the sign the update is done.
 
-If you asked for access to the delivery repository, you can pull instead of
-downloading the zip. The same two lists tell you where to expect a
+If you work from a clone of the public repository, you can pull instead of
+downloading the files again. The same two lists tell you where to expect a
 conflict: in a file the release lists under "Your files".
 
 ---
@@ -982,12 +1043,13 @@ public/
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Cannot find module 'astro'` | dependencies not installed | `npm install` |
+| `npm install` ends with "high severity vulnerabilities" (2 on 2026-10-03) | A package Astro's build depends on (`http-cache-semantics`, advisory GHSA-ch52-4w7c-c8xp). No fixed release exists yet. As far as we can see in Astro's code it is used only while the site builds, to cache remote images; the published site is static files | Do **not** run `npm audit fix --force`: it replaces Astro 7 with an old Astro 2 release and the build stops. Leave the warning; it goes away with a kit update once Astro ships a fix |
 | Port 4321 already in use | another dev server is running | Astro auto-picks the next port; or `npm run dev -- --port 4322` |
 | Fonts look wrong / fall back | font package not installed | `npm install` again; check the `@import` lines at the top of `global.css` |
 | A menu item does not appear | `available: false`, or an invalid `category` | check the frontmatter against the enum in `src/content.config.ts` |
 | Gallery section is missing | no images in `src/assets/images/` | add the files, or leave it: the section hides itself by design |
 | "Open now" never appears | JavaScript disabled, or no `hours` on the primary location | the plain hours line is the intended fallback; add `hours` to the location file |
-| Map embed does not load | Content-Security-Policy blocks the origin | add the embed origin to `frame-src` in `public/_headers` |
+| Map embed does not load | Content-Security-Policy blocks the origin | replace `'none'` in `frame-src` in `public/_headers` with the embed origin |
 | Form submits but nothing happens, and there is no error | Content-Security-Policy `form-action` does not list the form service | add its origin to `form-action` in `public/_headers` |
 | Build fails after renaming the project folder | the link npm made to `./core` still points at the old path | `npm install` (the build itself no longer needs it; `npm run check` does) |
 | `npm run check` reports a type error | a TypeScript error in your edits | the file and line are in the output; `npm run build` does not run this check, so a type error never blocks a build |
@@ -999,7 +1061,8 @@ public/
 
 ## 13. Support
 
-Email support is included with this theme. Please send: what you were doing,
+Larkin is free and comes without a support obligation (see `LICENSE.md`).
+You can still write to support@alderthemes.com. Please send: what you were doing,
 what you expected, what happened, and your Node version (`node -v`).
 
 Seasonal menus go stale. If you hand this site to a client, agree who updates

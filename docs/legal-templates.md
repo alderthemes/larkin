@@ -21,8 +21,11 @@ changes, change the sentence.
 | --- | --- | --- | --- |
 | privacy, "What this site collects" | the contact form asks for a name, an email address and a message | the form on `src/pages/contact.astro` has those fields | you add or remove a field |
 | privacy, "Where it goes" | the message reaches you directly or through a form service, and the website keeps no copy | `contactFormAction` in `src/lib/site.ts` points at your inbox route or a form service (as delivered it is `"#"` and delivers nothing) | you use a form service: name it in that paragraph, with a link to its own privacy terms |
-| privacy, "Cookies and analytics" | no analytics, no cookies | the kit's own code adds neither, and `mapEmbedUrl` is empty | your host adds an analytics script (Cloudflare Web Analytics does when it is switched on for the site, and the headers in `public/_headers` allow it), you set `mapEmbedUrl` (the map provider loads in the visitor's browser), or you add any other third-party script: name the provider and say what it stores |
+| privacy, "Cookies and analytics" | the site's own code runs no analytics and sets no cookies | the kit's own code adds neither, and `mapEmbedUrl` is empty | your host adds an analytics script (Cloudflare Web Analytics does when it is switched on for the site, and the headers in `public/_headers` allow it), you set `mapEmbedUrl` (the map provider loads in the visitor's browser), or you add any other third-party script: name the provider and say what it stores |
+| privacy, "Cookies and analytics" | the sentence covers the site's own code only | the host sets nothing you have not switched on | your host sets a cookie of its own (Cloudflare, the host the Launch guide uses, can set a short-lived one): name it and say what it is for |
+| privacy (editor on) | nothing; the shipped page does not mention the editor | the editor is off (`npm run cms -- disable`, the state the kit ships in) | you turn the editor on: `/admin` loads Sveltia CMS from unpkg.com and signs editors in through GitHub, so two more parties see editor traffic: name both |
 | terms, "Reservations" | the site takes no reservations | the kit has no booking form | you add one |
+| terms, "Content" | the site's text and photographs are used with permission | you have replaced the demo photographs with the business's own, or kept the AI-generated demo images under `IMAGE-LICENSE.md` | you keep the demo images: do not claim to own them; `IMAGE-LICENSE.md` grants use, not ownership or exclusivity |
 
 ## Privacy page: the fuller structure
 

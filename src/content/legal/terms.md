@@ -22,5 +22,5 @@ sensitive personal information through it.
 
 ## Content
 
-The text, photographs and layout on this site belong to us or to our
-licensors and may not be reused without permission.
+The text, photographs and layout on this site are used with permission and
+may not be reused without it.

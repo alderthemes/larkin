@@ -88,7 +88,7 @@
     "eyebrow": "Hikayemiz",
     "title": "Kahve ve sakinlik için bir köşe",
     "lead": "Fern & Filter 2019'da basit bir fikirle başladı: iyi kahve yap, işleri basit tut, insanlara alan bırak.",
-    "summary": "Fern & Filter, Portland, Oregon'da 123 NW 23rd Avenue'da bir specialty kahve barı. 2019'dan beri haftanın yedi günü açık ve çekirdeklerini küçük partiler halinde kendi kavuruyor.",
+    "summary": "Fern & Filter, Portland, Oregon'un kuzeybatısında bir specialty kahve barı. Haftanın yedi günü açık ve çekirdeklerini küçük partiler halinde kendi kavuruyor.",
     "sourcingTitle": "Çekirdekler nereden geliyor",
     "sourcingBody": "Çekirdeklerimizi Portland'ın güneydoğusundaki atölyemizde küçük partiler halinde kavuruyoruz. Her paket, güvendiğimiz çiftliklerden geliyor: insanlara adil ödenen, toprağa saygı duyulan yerler. Bu konuda mükemmel değiliz ama bilerek davranıyoruz.",
     "nameTitle": "İsim nereden geliyor",
@@ -146,6 +146,7 @@
     "updated": "Son güncelleme"
   },
   "a11y": {
+    "mainNav": "Ana menü",
     "skipToContent": "İçeriğe atla",
     "externalLink": "Yeni sekmede açılır",
     "ogImageAlt": "Kafenin içi: ahşap tezgah ve espresso makinesi, pencere önünde eğrelti otları ve sokak penceresi yanındaki masalar"

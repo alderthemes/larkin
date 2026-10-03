@@ -1,12 +1,11 @@
 ---
-name: "NW 23rd Avenue"
-streetAddress: "123 NW 23rd Ave"
+name: "NW Thimbleberry Avenue"
+streetAddress: "1180 NW Thimbleberry Ave"
 addressLocality: "Portland"
 addressRegion: "OR"
 postalCode: "97210"
 addressCountry: "US"
 phone: "+1 503 555 0142"
-mapUrl: "https://www.google.com/maps/search/?api=1&query=123+NW+23rd+Ave+Portland+OR+97210"
 hours:
   - dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     opens: "07:00"

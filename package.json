@@ -1,7 +1,7 @@
 {
   "name": "larkin",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A café site built around the four things people check: where, when, what, and can I work here",
   "type": "module",
   "engines": {

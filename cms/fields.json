@@ -30,8 +30,8 @@
       "bodyLabel": "Notes",
       "bodyHint": "For your own reference. The site does not show this text.",
       "fields": {
-        "name": { "label": "Shop name", "hint": "As it reads on the site, e.g. NW 23rd Avenue." },
-        "streetAddress": { "label": "Street address", "hint": "e.g. 123 NW 23rd Ave" },
+        "name": { "label": "Shop name", "hint": "As it reads on the site, e.g. NW Thimbleberry Avenue." },
+        "streetAddress": { "label": "Street address", "hint": "e.g. 1180 NW Thimbleberry Ave" },
         "addressLocality": { "label": "City" },
         "addressRegion": { "label": "State or region", "hint": "e.g. OR" },
         "postalCode": { "label": "Postal code" },

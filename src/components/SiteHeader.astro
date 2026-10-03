@@ -35,7 +35,7 @@ const external = Boolean(primary?.data.mapUrl);
         <span>{t("site.name")}</span>
       </a>
 
-      <nav aria-label="Main" class="site-header__desktop">
+      <nav aria-label={t("a11y.mainNav")} class="site-header__desktop">
         <ul class="site-header__nav">
           {
             links.map((l) => (
@@ -78,7 +78,7 @@ const external = Boolean(primary?.data.mapUrl);
           >
           <span class="ts-visually-hidden">{t("nav.menu")}</span>
         </summary>
-        <nav aria-label="Main" class="site-header__panel">
+        <nav aria-label={t("a11y.mainNav")} class="site-header__panel">
           <ul>
             {
               links.map((l) => (

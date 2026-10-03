@@ -1,8 +1,8 @@
 # Demo Image License — Larkin
 
 All demo photographs in `src/assets/images/` and `public/og.jpg` were
-**AI-generated** for this template (Higgsfield platform, Nano Banana 2 model,
-generated 2026-09-02 under a paid plan). They depict a fictional coffee shop
+**AI-generated** for this template (Higgsfield platform, `nano_banana_flash`
+model, generated 2026-09-02). They depict a fictional coffee shop
 ("Fern & Filter") and no real place, person or product.
 
 - You may keep, modify or replace them in websites you build with this template.
@@ -25,14 +25,15 @@ similar output for other users. No exclusivity is claimed or granted.
 
 ## AI disclosure notice
 
-These images are AI-generated (Google Gemini / Nano Banana 2, via Higgsfield).
+These images are AI-generated (`nano_banana_flash` model, via Higgsfield; the
+model name is the one the platform's own job records use).
 The generation service may embed an invisible synthetic-content signal
 (such as SynthID). We do not promise that such a signal is present in every
 file or that it survives editing, cropping or re-encoding.
 
 If you deploy them to represent a REAL business, product, place or event — rather
 than as placeholder or illustrative content — you may become a "deployer" under
-Article 50(4) of EU Regulation 2024/1689 (the AI Act, in force since 2 August 2026)
+Article 50(4) of EU Regulation 2024/1689 (the AI Act; Article 50 applies from 2 August 2026)
 and may be required to disclose that the imagery is AI-generated. Compliance in that
 deployment context is your responsibility, not ours.
 

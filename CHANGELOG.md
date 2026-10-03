@@ -1,5 +1,92 @@
 # Changelog — Larkin
 
+## 1.0.2 — 2026-10-03
+
+- Fixed: `package.json` no longer carries a `repository` link to our private
+  source repository, which returned "not found" for buyers.
+- Fixed: where the contact form and the booking form share a page, each form's
+  hidden spam-trap field now has its own id.
+- Fixed: `npm run cms -- disable` removes `public/admin/` when the folder is
+  left empty; a file of yours in that folder is kept.
+- Fixed: in Larkin, the footer navigation's screen-reader label comes from
+  the language file, so it reads in Turkish when the site is in Turkish.
+- Fixed: in Larkin, the note above `mapEmbedUrl` in `src/lib/site.ts` now says
+  the shipped policy blocks every embed (`frame-src 'none'`) and that you
+  replace `'none'` with your map provider's host; it used to say any https
+  map works without editing `public/_headers`.
+- Fixed: where the guides tell you to allow a booking widget or map in
+  `frame-src`, they now say to replace `'none'` with the provider's host.
+- Changed: the Launch guide names Cloudflare's screens the way Cloudflare's
+  own documentation does (**Create application**, **Import a repository**,
+  **Settings**, **Variables & Secrets**) and says where the dashboard's
+  wording may differ, instead of quoting labels we saw once.
+- Changed: the failed-build note says Cloudflare's "Project updates" alert
+  exists for Pages projects only; for a Worker, read the build log under the
+  Worker's **Settings**, **Builds**.
+- New: a troubleshooting entry for the "high severity vulnerabilities" line
+  that `npm install` prints, and why `npm audit fix --force` must not be run
+  on the kit.
+- New: in Updating, `package.json` is always merged by hand, and a file the
+  release lists as "(removed)" is one you delete from your site.
+- New: `npm run cms -- enable sveltia` without `--auth-url` succeeds but
+  leaves the editor without a login service; the guide now says so.
+- New: Deploying explains the `workers.dev` address a Worker also answers on,
+  and how to switch it off once your own domain works.
+- New: an "AI crawlers" section in the SEO chapter: what the default
+  `robots.txt` allows, and how to refuse a crawler.
+- Changed: the language chapter says content files do not translate
+  themselves when `LOCALE` changes.
+- Changed: kits with a questions collection say Google shows the FAQ rich
+  result only for government and health websites.
+- Changed: the demo business now has an invented street address. The town,
+  region and postal-code area are real; the street does not exist anywhere,
+  so the sample cannot be mistaken for a real building or business. Your own
+  address goes in `src/lib/site.ts` under `business` (Larkin: the location
+  file in its content collection, see the README), and every page, the
+  structured data and `/llms.txt` read it from there.
+- Changed: the dictionaries (`src/i18n/*.json`) no longer carry a street or
+  village name. Sentences such as the parking answer, the "finding us" text and
+  the photo descriptions now describe the place without naming the street.
+- Changed (Larkin): the demo location has no `mapUrl`, so no "Get directions"
+  link renders until you add your own. The README's second-location example
+  uses an invented street as well.
+- Fixed: `IMAGE-LICENSE.md` says that Article 50 of the AI Act applies from 2 August 2026 rather than that the Act entered into force then; names each model as the platform's job records name it (several portraits and later frames were made on `nano_banana_flash`, not Nano Banana 2; one generation date corrected); and no longer mentions the plan the images were generated under.
+- Fixed: the sample privacy page says the "no analytics, no cookies" sentence covers the site's own code. `docs/legal-templates.md` gained two rows: the host's own cookie, and what to add when the editor is on (`/admin` loads Sveltia CMS from unpkg.com and signs editors in through GitHub).
+- Fixed (corsham, halwell, larkin, wardlow, wickmere): the sample terms page says the site's text and images are used with permission instead of claiming to own them; the demo images are AI-generated and `IMAGE-LICENSE.md` grants use, not ownership. `docs/legal-templates.md` gained a row for that sentence.
+- Fixed: the Support section said email support is included. Larkin is free
+  and comes without a support obligation, as `LICENSE.md` says; you can still
+  write to support@alderthemes.com.
+- Fixed: the Updating section spoke of asking for access to a delivery
+  repository. Larkin's repository is public; if you work from a clone, you can
+  pull.
+- Changed: a correction to the 0.3.0 entry. Two items there described terms of
+  the paid Personal License (liability limited to the amount you paid, and an
+  "If something is wrong with the Template" section about refunds). Larkin's
+  `LICENSE.md` is the Free License and has neither; read it for Larkin's terms.
+- Fixed: the color example in section 2 lists the shipped background colors
+  (`#f9f6f0`, `#f1ece3`) and their measured contrast (16.3:1 for body text,
+  5.0:1 for the accent); `public/favicon.svg` uses the same background color.
+- Changed: `public/_headers` sets `frame-src 'none'` instead of `frame-src https:`. No page in the kit embeds a frame by default, so nothing changes until you add one. When you paste an embed or switch the booking section to widget mode, add that host to `frame-src` — the exact host, as the comments in the file say.
+- Migration: if you had already added an embed and relied on `frame-src https:`, name its host in `public/_headers` before deploying.
+- Fixed: the main navigation's screen-reader label (`aria-label`) was the English word "Main" in every language. It is now the dictionary key `a11y.mainNav` in `src/i18n/en.json` and `tr.json`.
+- Fixed (core `sections/Contact.astro`): on a 320px-wide screen the contact section's grid column grew to the form's intrinsic width and the page scrolled sideways by 15px. The columns now use `minmax(0, 1fr)` and the inputs fill their field.
+- Fixed (core `sections/Contact.astro`): passing a `labels` object without `required` removed the "(required)" marker instead of keeping the default. Defaults are now merged key by key for `labels`, `errors` and `infoLabels`.
+- Changed (`npm run cms -- enable sveltia`): running it without `--auth-url` still succeeds, and now prints a warning that signing in cannot work until the login service address is given. A `--repo` value that is not `owner/name` is reported as malformed, not as missing. The URL error names http:// as accepted for local testing only.
+- Fixed: the README's first line no longer says "Zero JavaScript by default" for every kit. It is read from the kit: a kit with no `public/*.js` says no JavaScript is sent to the browser; a kit that ships scripts names them and says each page still works with JavaScript turned off.
+- Fixed: the README's "Make it yours" list pointed the business name at `src/lib/site.ts`. The line is now read from `site.ts`: where the name is `t("site.name")` it points at `src/i18n/en.json` (and `tr.json`), and it lists only the business fields that file holds.
+- Fixed: the `.gitignore` the kit ships now ignores `.wrangler/`, the folder `npx wrangler pages dev dist` leaves behind.
+- Changed: README headings and labels use American spelling ("License", "Colors").
+- Changed: a correction to an earlier note. The 2026-10-02 entry called the
+  images' synthetic-content signal "built-in". `IMAGE-LICENSE.md` is the
+  accurate text: the generation service may embed such a signal, and we do
+  not promise it is present in every image.
+
+Your files (merge by hand): `cms/fields.json`, `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions), `public/_headers`, `public/favicon.svg`, `src/content/legal/privacy.md`, `src/content/legal/terms.md`, `src/content/locations/nw-23rd.md` (removed), `src/content/locations/nw-thimbleberry.md`, `src/i18n/en.json`, `src/i18n/tr.json`, `src/lib/site.ts`
+
+Our files (copy over): `AGENTS.md`, `IMAGE-LICENSE.md`, `core/cms/cli.mjs`, `core/cms/emit.mjs`, `core/sections/Contact.astro`, `docs/README.md`, `docs/legal-templates.md`, `src/components/SiteFooter.astro`, `src/components/SiteHeader.astro`
+
+Run `npm run cms -- generate`, then `npm run cms -- check`.
+
 ## 1.0.1 — 2026-10-02
 
 - Changed: the AI disclosure notice in `IMAGE-LICENSE.md` describes the

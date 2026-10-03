@@ -88,7 +88,7 @@
     "eyebrow": "Our story",
     "title": "A corner for coffee and calm",
     "lead": "Fern & Filter started in 2019 with a simple idea: make great coffee, keep things simple, and leave room for people to be.",
-    "summary": "Fern & Filter is a specialty coffee bar at 123 NW 23rd Avenue in Portland, Oregon, roasting its own beans in small batches and open seven days a week since 2019.",
+    "summary": "Fern & Filter is a specialty coffee bar in Northwest Portland, Oregon, roasting its own beans in small batches and open seven days a week.",
     "sourcingTitle": "Where the beans come from",
     "sourcingBody": "We roast our own beans in small batches at our roastery in southeast Portland. Every bag is sourced from farms we trust, where people are paid fairly and the land is treated well. We are not perfect about it, but we are deliberate.",
     "nameTitle": "About the name",
@@ -146,6 +146,7 @@
     "updated": "Last updated"
   },
   "a11y": {
+    "mainNav": "Main",
     "skipToContent": "Skip to content",
     "externalLink": "Opens in a new tab",
     "ogImageAlt": "The cafe interior: a wooden bar with an espresso machine, ferns on the windowsill and tables by the street window"

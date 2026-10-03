@@ -2,7 +2,7 @@
 
 A café site built around the four things people check: where, when, what, and can I work here
 
-Astro + Tailwind CSS 4 + TypeScript. Zero JavaScript by default.
+Astro + Tailwind CSS 4 + TypeScript. No framework JavaScript. The browser receives 2 small scripts (`public/menu-close.js`, `public/open-status.js`); each page renders its content on the server and still works with JavaScript turned off.
 
 **Live demo:** https://larkin.alderthemes.com
 
@@ -36,11 +36,11 @@ template and pins the exact tree this was tested against.
 
 ## Make it yours
 
-1. **Business identity** (name, e-mail, phone): `src/lib/site.ts`
+1. **Business details** (phone, e-mail): `src/lib/site.ts`. The business name is `site.name` in `src/i18n/en.json` (and `src/i18n/tr.json`).
 2. **Addresses and opening hours**: `src/content/locations/`, one file per shop
 3. **Every visible string**: `src/i18n/en.json` (Turkish included; switch with `LOCALE` in `site.ts`)
 4. **Content**: `src/content/`, one markdown file per item
-5. **Colours and fonts**: the `:root` block in `src/styles/global.css`
+5. **Colors and fonts**: the `:root` block in `src/styles/global.css`
 
 Full documentation: [`docs/README.md`](docs/README.md).
 
@@ -56,7 +56,7 @@ Set `SITE` to your own domain (see `.env.example`) and deploy `dist/`.
 You do not need to edit `astro.config.mjs`.
 Cloudflare config is included (`wrangler.jsonc`).
 
-## Licence
+## License
 
 Free to use in unlimited projects, including client work. You may not republish it as a template. See [`LICENSE.md`](LICENSE.md).
 

@@ -43,21 +43,24 @@ value you need back.
    own GitHub repository"). The user runs `git push`: the first push may
    open a GitHub sign-in. **Get back:** the repository as `owner/name`.
 4. **STOP.** The user connects the repository to a host that builds on every
-   push. Cloudflare: Workers & Pages, **Create**, **Continue with GitHub**,
-   **Select a repository**, **Next**; on **Set up your application** the
-   **Project name** equal to `"name"` in `wrangler.jsonc`, **Build command**
-   `npm run build`, **Deploy command** `npx wrangler deploy`, and under
-   **Advanced settings** a variable `SITE` with the live address, before the
-   first deploy. A build listed as **Skipped** is an older one replaced by a
+   push. Cloudflare: Workers & Pages, create an application from the GitHub
+   repository (Cloudflare's guide names the buttons **Create application**
+   and **Get started** next to **Import a repository**; the dashboard's
+   wording changes, so follow the screen that offers a Git repository); on
+   the set-up screen the Worker name equal to `"name"` in `wrangler.jsonc`,
+   build command `npm run build`, deploy command `npx wrangler deploy`, and a
+   build variable `SITE` with the live address before the first deploy (if
+   the screen has no place for it: deploy, add it under **Settings**,
+   **Build**, and push again). A build listed as **Skipped** is an older one replaced by a
    newer push. **Get back:** the live address.
    Confirm the home page's `canonical` link uses it and that there is no
    `noindex` line.
 5. **STOP.** The user deploys the login service (sveltia-cms-auth) with the
-   "Deploy to Cloudflare" link in `docs/README.md` step 5, ticking **Create
-   private Git repository**, Build command empty, Deploy command
-   `pnpm run deploy`. Tell them: an "authorization has expired" message means
-   reconnecting GitHub from the Git account dropdown (**New GitHub
-   connection**), and **Initializing** can last several minutes. **Get
+   "Deploy to Cloudflare" link in `docs/README.md` step 5, choosing a private
+   Git repository, build command empty, and the deploy command as the
+   dashboard fills it in. Tell them: an "authorization has expired" message
+   means reconnecting GitHub from the Git account list, and a build that
+   shows as initializing can take several minutes. **Get
    back:** the Worker URL (`https://sveltia-cms-auth.<subdomain>.workers.dev`).
    If they already have one from another site, skip to step 7.
 6. **STOP.** The user creates a GitHub OAuth app: Settings, Developer
@@ -66,11 +69,10 @@ value you need back.
    **Register application**, copy the Client ID, **Generate a new client
    secret** (shown once). Nothing comes back to you: the keys go straight
    into Cloudflare in step 7.
-7. **STOP.** In Cloudflare, the `sveltia-cms-auth` Worker, Settings,
-   **Runtime variables and secrets** (not the Build section), **Add
-   variable**: `GITHUB_CLIENT_ID` (text), `GITHUB_CLIENT_SECRET` (tick
+7. **STOP.** In Cloudflare, the `sveltia-cms-auth` Worker, **Settings**,
+   **Variables & Secrets** (not the build variables under **Build**): `GITHUB_CLIENT_ID` (text), `GITHUB_CLIENT_SECRET` (tick
    **Secret**), `ALLOWED_DOMAINS` = the live hostname(s) without `https://`,
-   comma-separated. Then **Add variable and deploy**. Wait for the user to
+   comma-separated. Then save, and deploy if asked. Wait for the user to
    say it is done.
 8. **You run:**
    `npm run cms -- enable sveltia --repo owner/name --auth-url <worker-url>`,
