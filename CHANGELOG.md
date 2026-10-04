@@ -1,5 +1,14 @@
 # Changelog — Larkin
 
+## 1.0.3 — 2026-10-04
+
+- Changed: the sample email addresses in `src/lib/site.ts` now use `example.com`
+  (for example `hello@example.com`). Replace them with your own address as before.
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions), `src/lib/site.ts`
+
+Our files (copy over): `docs/README.md`
+
 ## 1.0.2 — 2026-10-03
 
 - Fixed: `package.json` no longer carries a `repository` link to our private

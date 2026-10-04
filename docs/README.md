@@ -316,7 +316,7 @@ You only ever need to touch **four places**. Nothing is hardcoded in components.
 ```ts
 export const business = {
   name: en.site.name,                       // comes from the i18n file
-  email: "hello@fernandfilter.example",     // your email
+  email: "hello@example.com",     // your email
   phone: "+1 503 555 0142",                 // your phone
   priceRange: "$",                          // $, $$, $$$
   servesCuisine: ["Coffee", "Light bites"],

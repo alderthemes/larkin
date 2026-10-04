@@ -43,7 +43,7 @@ export const mapEmbedUrl = "";
  */
 export const business = {
   name: t("site.name"),
-  email: "hello@fernandfilter.example",
+  email: "hello@example.com",
   phone: "+1 503 555 0142",
   priceRange: "$",
   servesCuisine: ["Coffee", "Light bites"],
@@ -58,7 +58,7 @@ export const business = {
    in /llms.txt, so shipping them publishes a phone number that does not ring
    and an address that bounces. The build says so once. */
 const DEMO_CONTACT = {
-  email: "hello@fernandfilter.example",
+  email: "hello@example.com",
   phone: "+1 503 555 0142",
 };
 
