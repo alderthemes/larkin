@@ -1,0 +1,57 @@
+---
+/**
+ * HoursToday — the "Today: 12:00 – 23:30" line.
+ *
+ * The server prints the whole week as one sentence (`fallback`, usually from
+ * `weeklyFallback` in core/utils/hours.ts). The browser script
+ * `/hours-today.js` (public/, same in every theme) replaces it with today's
+ * range, worked out in the business's time zone. Without JavaScript, without
+ * a time zone, or with hours it cannot read, the sentence stays: the line is
+ * never empty and never shows the wrong day.
+ *
+ * Using this component is how a theme shows the line; there is no setting.
+ */
+import type { Hours } from "../utils/hours";
+
+interface Props {
+  hours: Hours;
+  /** IANA name, e.g. "Europe/London". Without it the weekly sentence stays. */
+  timeZone?: string;
+  /** "Today" — printed with a colon after it. */
+  label: string;
+  /** What today reads when the business is closed: "Closed". */
+  closedLabel: string;
+  /** The weekly sentence the server prints. */
+  fallback: string;
+}
+
+const { hours, timeZone, label, closedLabel, fallback } = Astro.props;
+---
+
+<p class="hours-today" data-hours={JSON.stringify(hours)} data-tz={timeZone} data-closed={closedLabel}>
+  <span class="hours-today__dot" aria-hidden="true"></span>
+  <span class="hours-today__label">{label}:</span>
+  <span class="hours-today__value">{fallback}</span>
+</p>
+
+{/* CSP: this script cannot be inline (public/_headers sets script-src 'self') */}
+<script type="module" src="/hours-today.js"></script>
+
+<style>
+  .hours-today {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ts-space-2);
+    font-size: var(--ts-text-sm);
+    color: var(--ts-text-muted);
+  }
+  .hours-today__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--ts-radius-full);
+    background: var(--ts-color-success);
+  }
+  .hours-today__label { font-weight: var(--ts-weight-semibold); }
+  .hours-today__value { font-variant-numeric: tabular-nums; }
+</style>

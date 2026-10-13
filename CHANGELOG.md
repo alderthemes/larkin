@@ -1,5 +1,85 @@
 # Changelog — Larkin
 
+## 1.1.0 — 2026-10-13
+
+- Fixed: the short note for coding assistants in the project root now loads
+  `AGENTS.md` itself, so an assistant that reads only that note still gets the
+  kit's full instructions, recipes and checks.
+- Fixed: `npm run cms -- …` keeps working after the project folder is moved or
+  renamed once the dependencies are installed. Before, it stopped with a
+  "module not found" error until you ran `npm install` again in the new place.
+- Fixed: `package-lock.json` now pins the exact dependency tree we build and
+  test the kit with, so `npm ci` installs the same versions every time. Before,
+  some indirect dependencies were whatever was newest on the day the package
+  was prepared. Development-only tools are marked as such, so
+  `npm ci --omit=dev` skips them.
+- Changed: `README.md` now starts and ends with a hidden marker line. GitHub
+  and Markdown viewers do not show it, and the text you read is the same. An
+  update replaces `README.md` like the rest of the kit's documentation, so keep
+  your own notes in a file of your own.
+- Fixed: `core/utils/legal.ts` no longer pulls Astro's generic content types
+  into your type check. In a theme that uses it, `npx astro check` reported
+  every content collection entry as untyped (`implicitly has an 'any' type`).
+  The build and the pages were not affected.
+- New: `core/utils/legal.ts` holds a shared definition of the privacy and terms
+  collection, where `updated` is a day written YYYY-MM-DD (any other format
+  stops the build and names the expected one), and two helpers that print that date
+  in UTC: `formatUpdated(date, locale)` and `isoDate(date)`. In UTC, the page
+  shows the day written in the file whatever the time zone of the computer
+  that builds the site. Nothing changes on your site yet: your theme does not
+  use this file.
+- Changed (Bramley): the search and link-preview tags in
+  `src/layouts/BaseLayout.astro` now come from the shared
+  `core/components/SeoHead.astro`; the font preloads stay in the layout,
+  inside its slot. The pages are byte for byte the same as before.
+- Removed: the unused `SEOProps` type from `core/utils/seo.ts`. No theme
+  imported it except Bramley's old layout; `SeoHead`'s own props describe
+  the same tags. If your own code imports `SEOProps`, copy the interface
+  into your file.
+- New: `core/utils/business.ts` holds the shared schema of the business
+  details (`businessSchema`: name, e-mail, phone, address fields with
+  schema.org's names, country code, map link, price range, founding year as
+  text, time zone) and `readBusiness(data, { file, schema })`. A wrong or
+  missing field, or a field the schema does not know, stops the build and
+  names the file and every field. Nothing changes on your site yet: your
+  theme does not use this file.
+- New: `core/utils/refs.ts` holds `missingReference({ file, field, value, folder, hint?, why? })`,
+  the one message a theme prints when a reference in your content points at
+  nothing (a dish, a plan, a practitioner naming something that has no file).
+  It stops the build and names the file, the field and the value. Nothing
+  changes on your site yet: your theme does not use this file.
+- New: `core/components/SeoHead.astro` prints the tags every page's `<head>`
+  needs for search engines and link previews: character set, viewport,
+  title, description, canonical address, robots, icon, Open Graph and
+  Twitter card, and the page's structured data. A page marked `noindex`
+  gets no canonical link, and every page is `noindex` while the site
+  address is still the example.com placeholder. Theme-specific tags such as
+  font preloads go in its slot. Nothing changes on your site yet: your theme
+  does not use this file.
+- New: `core/utils/hours.ts` reads a week of opening hours from a business
+  details data file (one entry per day, a closed day is `{ "closed": true }`) and builds
+  the hours table rows, the weekly sentence and the structured data from it.
+  A day that closes after midnight is one entry, `closes` earlier than
+  `opens`, as schema.org and Google describe it.
+- New: `core/components/HoursToday.astro` and a small browser script show
+  today's hours for the business's own time zone, whatever the visitor's
+  time zone or language. Without a time zone, without JavaScript, or with
+  hours that do not read, the weekly sentence stays: never a wrong day.
+  Nothing changes on your site yet: your theme does not use these files.
+- New: a field in a "records" form (`cms/fields.json`) may be marked
+  `"optional": true`: the key may be missing from the data file, and the
+  editor shows the field as not required. Nothing changes on your site yet:
+  your kit's forms do not use it.
+- Changed: `core/utils/hours.ts` also reads the day shapes the content editor
+  writes: `{ "open": "", "close": "", "closed": true }` is a closed day
+  (a ticked "Closed all day" wins over the times beside it) and
+  `{ "open", "close", "closed": false }` is an open day. A day written by hand
+  as `{ "closed": true }` or `{ "open", "close" }` reads as before.
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions)
+
+Our files (copy over): `CLAUDE.md`, `README.md`, `core/cms/record.mjs`, `core/components/HoursToday.astro`, `core/components/SeoHead.astro`, `core/utils/business.ts`, `core/utils/hours.ts`, `core/utils/legal.ts`, `core/utils/refs.ts`, `core/utils/seo.ts`, `package-lock.json`, `scripts/cms.mjs`
+
 ## 1.0.3 — 2026-10-04
 
 - Changed: the sample email addresses in `src/lib/site.ts` now use `example.com`

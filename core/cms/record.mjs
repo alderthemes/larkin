@@ -25,6 +25,12 @@
  * "list" (a list of text), and an object when "fields" is given.
  * "nullable": true on a number: the file may hold null, the editor shows an
  * optional number and writes null when it is emptied (measured live 2026-09-30).
+ * "optional": true on any field: the key may be missing from the file (a closed
+ * day written by hand is { "closed": true } with no open/close). The editor shows
+ * it as not required and writes it back as it is ("" for a cleared text, false
+ * for an unticked switch): the file's schema reads that shape. No site-wide
+ * omit_empty_optional_fields for this - that switch is one for the whole site
+ * and would change how the collections save their optional lists (founder, 2026-10-13).
  *
  * Key order. The editor rewrites the whole file on save, in its own key order
  * (Sveltia 0.223.0, src/lib/services/contents/draft/save/serialize.js,
@@ -49,7 +55,7 @@ const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 
 const RECORD_KEYS = new Set(["label", "file", "hint", "fields"]);
-const FIELD_KEYS = new Set(["label", "hint", "kind", "fields", "nullable"]);
+const FIELD_KEYS = new Set(["label", "hint", "kind", "fields", "nullable", "optional"]);
 const KINDS = new Set(["string", "text", "number", "integer", "boolean", "list", "object"]);
 const LOCALE_TOKEN = "{locale}";
 
@@ -111,6 +117,8 @@ function toField(path, name, hint, value, file) {
   const numeric = kind === "number" || kind === "integer";
   if (hint.nullable !== undefined && (hint.nullable !== true || !numeric))
     fail(`${path}: "nullable": true is for a number that may be empty ("kind": "number" or "integer").`);
+  if (hint.optional !== undefined && hint.optional !== true)
+    fail(`${path}: "optional": true is the only value; it says the key may be missing from the file.`);
   const expected = {
     string: "text (a string)",
     text: "text (a string)",
@@ -137,18 +145,40 @@ function toField(path, name, hint, value, file) {
         (value === null && numeric ? ` (add "nullable": true if the value may be empty)` : "") +
         ". Fix the declaration or the file.",
     );
-  const f = { name, label: hint.label ?? name, required: !hint.nullable, kind };
+  return shape(path, name, hint, kind, value, file);
+}
+
+/** The field the model carries; `value` is the file's value at that key (an absent optional key: undefined). */
+function shape(path, name, hint, kind, value, file) {
+  const f = { name, label: hint.label ?? name, required: !hint.nullable && !hint.optional, kind };
   if (hint.hint) f.hint = hint.hint;
   if (kind === "number") f.step = 0.01;
   if (hint.nullable) f.nullable = true;
-  if (kind === "object") f.fields = fieldsFrom(path, hint.fields, value, file);
+  if (hint.optional) f.optional = true;
+  if (kind === "object") f.fields = fieldsFrom(path, hint.fields, value ?? {}, file);
   return f;
+}
+
+/** An "optional": true key that the file does not hold: declared, not checked against a value. */
+function absentField(path, name, hint, file) {
+  if (!isObj(hint)) fail(`${path}: must be an object, e.g. { "label": "Title" }.`);
+  for (const k of Object.keys(hint))
+    if (!FIELD_KEYS.has(k))
+      fail(`${path}: "${k}" is not a record field setting. Use: ${[...FIELD_KEYS].join(", ")}.`);
+  const kind = hint.kind ?? (hint.fields !== undefined ? "object" : "string");
+  if (!KINDS.has(kind))
+    fail(`${path}: "kind": ${JSON.stringify(kind)} is not known in a record. Use one of: ${[...KINDS].join(", ")}.`);
+  if (kind === "object" && hint.fields === undefined)
+    fail(`${path}: an object needs "fields": a label for each part you want in the form.`);
+  if (hint.nullable !== undefined) fail(`${path}: "nullable" and "optional" do not go together; "optional" already lets the key be missing.`);
+  return shape(path, name, hint, kind, undefined, file);
 }
 
 function fieldsFrom(path, hintFields, obj, file) {
   if (!isObj(hintFields) || Object.keys(hintFields).length === 0)
     fail(`${path}: "fields" must be an object with at least one entry.`);
   return Object.entries(hintFields).map(([k, h]) => {
+    if (!has(obj, k) && isObj(h) && h.optional === true) return absentField(`${path}.${k}`, k, h, file);
     if (!has(obj, k))
       fail(
         `${path}.${k}: in cms/fields.json but not in ${file}. Check the spelling; keys are case-sensitive` +
@@ -239,7 +269,7 @@ export function buildRecords(records, ctx) {
     if (ctx.omitEmpty) {
       const walk = (fs, p) =>
         fs.forEach((f) => {
-          if (!f.required)
+          if (!f.required && !f.optional)
             fail(
               `${p}.${f.name}: may be empty, but an optional image, date or link in a collection makes the editor leave empty fields out of the file, ` +
                 `so emptying this number would remove the key from ${file} instead of writing null. Remove "nullable", or make those collection fields required.`,

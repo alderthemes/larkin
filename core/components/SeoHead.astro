@@ -1,0 +1,61 @@
+---
+/**
+ * SeoHead — the tags every page's <head> needs for search engines and link
+ * previews: character set, viewport, title, description, canonical address,
+ * robots, icon, Open Graph and Twitter card, and the page's structured data.
+ *
+ * A theme's layout writes <html> and <head> itself and puts this inside the
+ * <head>. Anything theme-specific (font preloads, an extra meta tag) goes in
+ * the default slot; it lands after the link-preview tags and before the
+ * structured data.
+ *
+ * Two rules live here so every theme gets them the same way:
+ * - A page that is not meant to be indexed (`noindex`) has no canonical
+ *   link. /404/ used to declare itself canonical at an address the server
+ *   answers with 404: a signal contradicting itself.
+ * - While the site address is still the example.com placeholder, every page
+ *   is noindex. Nobody deploys to example.com; if the canonical address is
+ *   the placeholder, search engines are being handed a domain that is not
+ *   the site's own. noindex until SITE is set is the recoverable failure: it
+ *   shows up in Search Console as "excluded by noindex", and one environment
+ *   variable undoes it.
+ */
+import { buildTitle, jsonLd } from "../utils/seo";
+
+interface Props {
+  /** The page's own title; the site name is appended by `buildTitle`. */
+  title: string;
+  siteName: string;
+  description: string;
+  /** Link-preview image, as a path on the site. Pass "" for none. */
+  image?: string;
+  noindex?: boolean;
+  /** schema.org data for this page, printed as JSON-LD. */
+  schema?: unknown;
+}
+
+const { title, siteName, description, image = "/og.jpg", noindex = false, schema } = Astro.props;
+const fullTitle = buildTitle(title, siteName);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const placeholderSite = canonical.hostname.endsWith("example.com");
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{!noindex && <link rel="canonical" href={canonical} />}
+{(noindex || placeholderSite) && <meta name="robots" content="noindex" />}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+{image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+<meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+
+<slot />
+
+{schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}

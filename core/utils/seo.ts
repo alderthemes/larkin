@@ -1,20 +1,8 @@
 /**
  * Helpers for titles, canonical URLs and schema.org output.
  * Each template calls the schema builder for its own sector; the JSON-LD is
- * written by BaseLayout inside a <script type="application/ld+json">.
+ * printed by core's SeoHead inside a <script type="application/ld+json">.
  */
-
-export interface SEOProps {
-  title: string;
-  description: string;
-  /** Site name — joined as "Page — Site" */
-  siteName: string;
-  url?: string;
-  image?: string;
-  locale?: string;
-  type?: "website" | "article";
-  noindex?: boolean;
-}
 
 export function buildTitle(pageTitle: string, siteName: string): string {
   return pageTitle === siteName ? pageTitle : `${pageTitle} — ${siteName}`;

@@ -1,3 +1,5 @@
+[//]: # "gen:root-readme begin"
+
 # Larkin / Café
 
 A café site built around the four things people check: where, when, what, and can I work here
@@ -65,3 +67,5 @@ Demo photography is AI-generated and covered by [`IMAGE-LICENSE.md`](IMAGE-LICEN
 ---
 
 [Alder Themes](https://alderthemes.com) · support@alderthemes.com
+
+[//]: # "gen:root-readme end"
