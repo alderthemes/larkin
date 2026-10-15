@@ -2,8 +2,9 @@
 import { MENU_CATEGORIES } from "../content.config";
 /**
  * MenuList — the menu, grouped by category.
- * A list rather than a table: name and description on the left, price and
- * tags on the right. Seasonal items carry an accent badge, because the
+ * A list in the markup, set as a table on screen: the category in the first
+ * column, then name, price, description and tags in fixed columns, so they
+ * line up down the menu. Seasonal items carry an accent badge, because the
  * seasonal rotation is what regulars come back to check. An empty category
  * does not vanish silently — it shows an empty state, so a mistake in the
  * content is visible rather than invisible.
@@ -90,115 +91,146 @@ const groups = categories.map((category) => ({
 </div>
 
 <style>
+  /* The production table on the back label of the bag. Each category is one
+     row of the table: its name in the first column, its items in the rest.
+     An item is name, price, description and tags, in that order in the
+     markup and on the screen; the grid only decides where each one sits.
+     The columns are the same width in every row, so prices and descriptions
+     line up down the whole menu however long a name is. The price column is
+     at least 4.5rem and grows to the widest price in the category ("CHF
+     112.50", "₺1.250,75"), never into the description.
+     Colors come from the surface the list is printed on (--lk-*): ink on a
+     label, cream on the gusset. */
   .menu-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-12);
+    border-top: 2px solid var(--lk-ink, currentColor);
   }
   .menu-list__group {
-    scroll-margin-top: calc(var(--ts-c-nav-height, 64px) + var(--ts-space-16));
+    display: grid;
+    gap: var(--ts-space-3);
+    padding-block: var(--ts-space-5);
+    border-bottom: 1px solid var(--lk-rule, currentColor);
+    scroll-margin-top: calc(var(--ts-c-nav-height) + 4.5rem);
   }
-  /* A narrowed small capital, not a second display heading. At 31px the
-     category was the same size as the section title above it and the page had
-     two headings competing for the same job. */
   .menu-list__category {
-    margin: 0 0 var(--ts-space-4);
-    font-size: var(--larkin-label-size);
-    font-weight: var(--ts-weight-medium);
-    letter-spacing: var(--larkin-label-tracking);
-    text-transform: uppercase;
-    color: var(--ts-text-subtle);
-    padding-bottom: var(--ts-space-3);
-    border-bottom: 1px solid var(--ts-border);
+    margin: 0;
+    font-family: var(--ts-font-display);
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    overflow-wrap: break-word;
   }
   .menu-list__empty {
     margin: 0;
-    font-size: var(--ts-text-sm);
     font-style: italic;
-    color: var(--ts-text-muted);
+    color: var(--lk-ink-soft, currentColor);
   }
   .menu-list__items {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    gap: var(--ts-space-5);
   }
-  /* The price sits at the column edge with an open corridor between it and
-     the name. That is the arrangement for a menu of short entries; the
-     restaurant theme, whose dishes carry two lines of description each, sets
-     its prices against the name instead. Neither uses a leader of dots. */
   .menu-list__item {
-    display: flex;
-    /* Let the name and the price drop onto two lines when they no longer fit
-       side by side: at 200% text the price row ran off the screen. */
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--ts-space-4);
+    row-gap: var(--ts-space-1);
     align-items: baseline;
-    justify-content: space-between;
-    /* Row gap small, column gap wide. When the price wraps under the name on
-       a narrow screen it stays with its item instead of floating 32px below. */
-    gap: var(--ts-space-1) var(--ts-space-8);
-    padding: var(--ts-space-4) 0;
-    border-bottom: 1px solid var(--ts-border);
   }
-  .menu-list__item:last-child {
-    border-bottom: none;
-  }
-
+  /* The wrapper only groups the markup; the grid places its children. */
   .menu-list__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-1);
+    display: contents;
   }
   .menu-list__name {
+    grid-column: 1;
+    grid-row: 1;
     margin: 0;
     display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: var(--ts-space-3);
-    font-size: var(--ts-text-lg);
-    font-weight: var(--ts-weight-medium);
-    color: var(--ts-text);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ts-space-2);
+    font-size: 1.25rem;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.005em;
   }
-  /* One of the two places the terracotta appears (the other is the current
-     page in the header). The seasonal rotation is what a regular is scanning
-     the menu for, so it earns the color, and it works as a mark rather than
-     as a filled chip because almost nothing else on the page is colored. */
+  /* The seasonal tag: the one place terracotta is a fill, cream type on it
+     at 5.5:1. It is real text from the content and never tilts. */
   .menu-list__badge {
-    font-size: var(--larkin-label-size);
-    font-weight: var(--ts-weight-medium);
-    letter-spacing: var(--larkin-label-tracking);
+    display: inline-block;
+    padding: 0.28rem 0.55rem 0.26rem;
+    border-radius: 4px;
+    background: var(--ts-color-accent-600);
+    color: var(--larkin-on-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
     text-transform: uppercase;
-    color: var(--ts-color-accent-600);
+  }
+  .menu-list__price {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
   .menu-list__desc {
-    margin: 0;
-    font-size: var(--ts-text-sm);
-    line-height: var(--ts-leading-body);
-    color: var(--ts-text-muted);
+    grid-column: 1 / -1;
+    margin: var(--ts-space-1) 0 0;
+    line-height: 1.55;
+    color: var(--lk-ink-soft, currentColor);
     max-width: var(--ts-prose-max);
   }
   .menu-list__tags {
+    grid-column: 1 / -1;
     list-style: none;
     display: flex;
     flex-wrap: wrap;
     gap: var(--ts-space-2);
-    margin: var(--ts-space-1) 0 0;
+    margin: 0;
     padding: 0;
   }
-  /* A note, not a chip. A filled box around "Decaf available" gives it the
-     weight of a promotion; set as quiet type it reads as what it is. */
   .menu-list__tag {
-    font-size: var(--ts-text-xs);
-    color: var(--ts-text-subtle);
+    font-size: 0.875rem;
+    font-weight: 650;
   }
   .menu-list__tag + .menu-list__tag::before {
     content: "·";
     margin-inline-end: var(--ts-space-2);
   }
-  .menu-list__price {
-    margin: 0;
-    flex-shrink: 0;
-    font-size: var(--ts-text-base);
-    font-variant-numeric: tabular-nums;
-    color: var(--ts-text-muted);
+
+  @media (min-width: 760px) {
+    .menu-list__group {
+      grid-template-columns: minmax(0, 2.6fr) minmax(0, 9.4fr);
+      column-gap: var(--ts-space-6);
+      align-items: baseline;
+    }
+    /* The rows share one set of columns (subgrid), so the price column is
+       as wide as the widest price and every row still lines up. */
+    .menu-list__items {
+      grid-template-columns: minmax(0, 3.4fr) minmax(4.5rem, max-content) minmax(0, 4.4fr) minmax(0, 2fr);
+      column-gap: var(--ts-space-5);
+    }
+    .menu-list__item {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      column-gap: var(--ts-space-5);
+    }
+    .menu-list__desc {
+      grid-column: 3;
+      grid-row: 1;
+      margin: 0;
+    }
+    .menu-list__tags {
+      grid-column: 4;
+      grid-row: 1;
+      justify-content: flex-end;
+      text-align: right;
+    }
   }
 </style>

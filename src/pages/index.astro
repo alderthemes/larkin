@@ -17,6 +17,7 @@ import MenuList from "../components/MenuList.astro";
 import WorkspaceInfo from "../components/WorkspaceInfo.astro";
 import GalleryStrip from "../components/GalleryStrip.astro";
 import FaqList from "../components/FaqList.astro";
+import Seal from "../components/Seal.astro";
 import { t, business } from "../lib/site";
 import { getLocations, formatAddress, openingHours, branchNodes } from "../lib/locations";
 import { cafeSchema, faqSchema } from "@studio/core/utils/seo";
@@ -32,6 +33,26 @@ const heroImages = import.meta.glob<{ default: ImageMetadata }>("../assets/image
   eager: true,
 });
 const hero = Object.values(heroImages)[0]?.default;
+
+/* The title is one string in the dictionary and stays one heading. On screen
+   it is set in two lines so the window can open between them: it splits
+   after its first comma, or, with no comma, at the word gap nearest the
+   middle. A one-word title keeps one line and the window drops below it.
+   Only the display changes; the text is the same words in the same order,
+   and the space between the lines stays in the markup. */
+function splitTitle(title: string): [string, string] | [string] {
+  const text = title.trim();
+  const comma = text.indexOf(",");
+  if (comma !== -1 && comma < text.length - 1) {
+    return [text.slice(0, comma + 1).trim(), text.slice(comma + 1).trim()];
+  }
+  const gaps = [...text.matchAll(/\s+/g)].map((m) => m.index ?? 0);
+  if (gaps.length === 0) return [text];
+  const middle = text.length / 2;
+  const at = gaps.reduce((best, gap) => (Math.abs(gap - middle) < Math.abs(best - middle) ? gap : best));
+  return [text.slice(0, at).trim(), text.slice(at).trim()];
+}
+const titleLines = splitTitle(t("hero.title"));
 
 const url = new URL("/", Astro.site).toString();
 const schema = [
@@ -73,29 +94,41 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={t("hero.title")} description={t("hero.lead")} schema={schema}>
-  {/* Hero: a statement, then the room.
 
-      The first screen is type and nothing else. A cafe visitor is standing on
-      the pavement deciding whether to walk in, so the four things they came
-      for — the name, where it is, whether it is open, and how to get there —
-      are readable before an image has loaded. The photograph earns its place
-      immediately after, running the full width of the screen, where it
-      answers the fifth question: what it feels like inside. */}
+<BaseLayout title={t("hero.title")} description={t("hero.lead")} schema={schema}>
+  {/* The front face of the bag.
+
+      The four things a visitor on the pavement came for (the name, where it
+      is, whether it is open, the way in) are type on the bag and readable
+      before an image has loaded. The photograph is a window cut between the
+      two lines of the title: the room, seen through the bag. In the markup
+      it comes last, after everything a visitor reads. */}
   <section class="hero">
     <Container>
-      <div class="hero__grid">
+      <div class:list={["hero__grid", titleLines.length === 1 && "hero__grid--one-line"]}>
         <div class="hero__content">
           <p class="hero__eyebrow">{t("hero.eyebrow")}</p>
-          <h1 class="hero__title">{t("hero.title")}</h1>
+          {/* The space between the two lines is real text: a reader that
+              drops the tags (a search crawler, an assistant fetching the
+              page) still gets "coffee, no", not "coffee,no". In the grid it
+              is white space between two items and takes no room. */}
+          <h1 class="hero__title larkin-display">
+            {titleLines.map((line, i) => (
+              <>
+                {i > 0 && " "}
+                <span class="hero__line">{line}</span>
+              </>
+            ))}
+          </h1>
           <p class="hero__lead">{t("hero.lead")}</p>
         </div>
 
         <div class="hero__side">
 
-          {/* Where it is and whether it is open, on the first screen and
-              above the photograph. This is the answer a cafe visitor came
-              for, and it should not depend on an image having loaded. */}
+          {/* Where it is and whether it is open, printed along the bottom of
+              the front like the weight and origin line on a bag. This is the
+              answer a cafe visitor came for, and it does not depend on an
+              image having loaded. */}
           {
             primary && (
               <div class="hero__meta">
@@ -105,9 +138,9 @@ const schema = [
             )
           }
 
-          {/* One filled action. The menu is a link: a visitor who wants the
-              menu will find a link, and a visitor who wants the shop should
-              not have to choose between two identical buttons. */}
+          {/* One drawn action at most. The menu is a link: a visitor who
+              wants the menu will find a link, and a visitor who wants the
+              shop should not have to choose between two identical buttons. */}
           <div class="hero__actions">
             {
               primary?.data.mapUrl && (
@@ -122,60 +155,69 @@ const schema = [
                 </Button>
               )
             }
-            <a class="hero__link" href="/menu/">{t("hero.secondaryCta")}</a>
+            <a class="hero__link larkin-link" href="/menu/">{t("hero.secondaryCta")}</a>
           </div>
         </div>
+
+        {/* With a single shop the print line is the location, and a card
+            underneath repeats the address and the open state word for word.
+            With more than one there is something to tell apart, so each shop
+            gets a label of its own. */}
+        {
+          locations.length > 1 && (
+            <div class="hero__location">
+              <SectionHeading
+                eyebrow={t("location.eyebrow")}
+                title={t("location.title")}
+                class="hero__location-heading"
+              />
+              <div class="hero__location-cards">
+                {locations.map((location) => (
+                  <div class="hero__location-card larkin-panel larkin-panel--label">
+                    <LocationCard location={location} headingLevel="h2" />
+                  </div>
+                ))}
+              </div>
+              <p class="hero__all-locations">
+                <a class="larkin-link" href="/contact/">{t("location.viewAll")}</a>
+              </p>
+            </div>
+          )
+        }
+
+        {
+          hero && (
+            <div class="hero__band">
+              <div class="larkin-window larkin-window--pill larkin-window--opening hero__window">
+                <CroppedImage
+                  src={hero}
+                  alt={t("hero.imageAlt")}
+                  wide={[3, 1]}
+                  narrow={[5, 2]}
+                  sizes="(min-width: 900px) 92vw, 100vw"
+                  eager
+                  class="hero__img"
+                />
+              </div>
+              <Seal motion="opening" class="hero__seal" />
+            </div>
+          )
+        }
       </div>
-
-      {/* With a single shop the hero strip is the location, and a card
-          underneath repeats the address and the open state word for word.
-          With more than one there is something to tell apart, so the cards
-          appear then. */}
-      {
-        locations.length > 1 && (
-          <div class="hero__location">
-            <SectionHeading
-              eyebrow={t("location.eyebrow")}
-              title={t("location.title")}
-              class="hero__location-heading"
-            />
-            {locations.map((location) => (
-              <LocationCard location={location} headingLevel="h2" />
-            ))}
-            <p class="hero__all-locations">
-              <a href="/contact/">{t("location.viewAll")}</a>
-            </p>
-          </div>
-        )
-      }
     </Container>
-
-    {
-      hero && (
-        <div class="hero__band">
-          <CroppedImage
-            src={hero}
-            alt={t("hero.imageAlt")}
-            wide={[3, 1]}
-            narrow={[4, 5]}
-            sizes="100vw"
-            eager
-            class="hero__img"
-          />
-        </div>
-      )
-    }
   </section>
 
-  {/* Menu highlights */}
-  {
-    featured.length > 0 && (
-      <section class="featured">
-        <Container class="featured__grid">
+  {/* The back of the bag: the label with the menu and, beside it, the
+      side gusset with the workspace notes. */}
+  <div class:list={["back", featured.length === 0 && "back--single"]}>
+    {
+      featured.length > 0 && (
+        <section class="featured larkin-panel larkin-panel--label">
           <SectionHeading
             eyebrow={t("menu.eyebrow")}
             title={t("menu.title")}
             subtitle={t("menu.subtitle")}
+            class="featured__heading"
           />
           <div class="featured__list">
             <MenuList
@@ -189,41 +231,46 @@ const schema = [
               {t("menu.viewFull")}
             </Button>
           </p>
-        </Container>
-      </section>
-    )
-  }
+        </section>
+      )
+    }
 
-  <WorkspaceInfo />
+    <WorkspaceInfo />
+  </div>
 
   <GalleryStrip />
 
-  {/* SSS */}
+  {/* The second label: the questions. Cut as a leaf, not as the first. */}
   {
     faqs.length > 0 && (
-      <section class="faq-section" id="faq">
-        <Container>
+      <section class="faq-section larkin-panel larkin-panel--leaf" id="faq">
+        <div class="faq-section__grid">
           <SectionHeading
             eyebrow={t("faq.eyebrow")}
             title={t("faq.title")}
             subtitle={t("faq.subtitle")}
+            class="faq-section__heading"
           />
           <div class="faq-section__list">
             <FaqList items={faqs} />
           </div>
-        </Container>
+        </div>
       </section>
     )
   }
 
-  {/* Contact shortcut */}
+  {/* The back of the bag, closed by the second seal, pressed over the edge
+      of the label above it. The address is the largest line here: the
+      weight of the section is where the shop is, not a button. */}
   <section class="say-hello">
+    <Seal motion="scroll" class="say-hello__seal" />
     <Container>
       <div class="say-hello__inner">
         <SectionHeading
           eyebrow={t("contact.eyebrow")}
           title={t("contact.title")}
           subtitle={t("contact.subtitle")}
+          class="say-hello__heading"
         />
         <div class="say-hello__actions">
           <Button href="/contact/" variant="primary">{t("contact.form.submit")}</Button>
@@ -235,214 +282,391 @@ const schema = [
 </BaseLayout>
 
 <style>
+  /* ============ The front face ============ */
   .hero {
-    padding-top: var(--ts-space-16);
+    padding-top: clamp(0.75rem, 1.6vw, 1.25rem);
   }
-  @media (min-width: 768px) {
-    .hero {
-      padding-top: var(--ts-space-24);
-    }
-  }
-  /* The statement and the practical detail sit side by side, unevenly. The
-     heading gets the room; the address, the open state and the way in get a
-     narrower column so they read as a block rather than as a tail on the end
-     of the paragraph. */
+  /* One grid for the whole face, so the title's two lines can sit on its
+     rows (subgrid) with the window between them. */
   .hero__grid {
     display: grid;
-    gap: var(--ts-space-10);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(0.5rem, 1.6vw, 1.5rem);
   }
-  @media (min-width: 900px) {
-    .hero__grid {
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
-      gap: var(--ts-space-16);
-      align-items: end;
-    }
+  .hero__content,
+  .hero__side {
+    display: contents;
   }
   .hero__eyebrow {
-    margin: 0 0 var(--ts-space-4);
+    grid-row: 1;
+    grid-column: 1 / -1;
+    margin: 0 0 clamp(0.75rem, 1.6vw, 1.25rem);
     font-size: var(--larkin-label-size);
-    font-weight: var(--ts-weight-medium);
+    font-weight: var(--ts-weight-semibold);
     letter-spacing: var(--larkin-label-tracking);
     text-transform: uppercase;
-    color: var(--ts-text-subtle);
   }
+  /* The one h1: the largest type on the page at every width (45px on a
+     390px phone, where the largest h2 is 42px). Its lines sit on rows 2
+     and 4; row 3 is the window. */
   .hero__title {
+    grid-row: 2 / span 3;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
     margin: 0;
-    font-family: var(--ts-font-display);
-    font-size: var(--ts-text-display);
-    /* Bold, like every h2 and the about page's h1. At 500 the largest heading
-       on the site was the lightest one. */
-    font-weight: var(--ts-weight-bold);
-    line-height: var(--ts-leading-display);
-    letter-spacing: var(--ts-tracking-tight);
-    color: var(--ts-text);
-    /* Not `ch`. That unit is the width of the "0" glyph, so it is the one
-       length that changes when the webfont replaces the fallback face - the
-       title fell from two lines to one and everything under it jumped 64px
-       (measured). A rem is the same length in both faces. */
-    max-width: 41rem;
-    text-wrap: balance;
+    font-size: clamp(2.6rem, 11.6vw, 7.5rem);
+    color: var(--larkin-on-color);
+  }
+  .hero__line {
+    display: block;
+    grid-column: 1 / -1;
+  }
+  .hero__line:first-child {
+    grid-row: 1;
+  }
+  .hero__line:nth-child(2) {
+    grid-row: 3;
+    padding-top: 0.06em;
+  }
+  .hero__band {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    position: relative;
+    margin-block: clamp(0.6rem, 1.4vw, 1.25rem);
+  }
+  /* A one-line title: the window drops below it. */
+  .hero__grid--one-line .hero__title {
+    grid-row: 2;
+    grid-template-rows: auto;
+  }
+  .hero__grid--one-line .hero__band {
+    grid-row: 4;
+  }
+  .hero__window {
+    height: clamp(9.5rem, 30vw, 21rem);
+  }
+  .hero__window :global(img) {
+    object-position: 42% 58%;
+  }
+  .hero__band :global(.hero__seal) {
+    width: clamp(5.75rem, 22vw, 10.5rem);
+    left: -0.35rem;
+    top: 50%;
+    translate: 0 -50%;
   }
   .hero__lead {
-    margin: var(--ts-space-6) 0 0;
-    font-size: var(--ts-text-lg);
-    line-height: var(--ts-leading-snug);
-    color: var(--ts-text-muted);
-    max-width: var(--ts-prose-max);
+    grid-row: 5;
+    grid-column: 1 / -1;
+    margin: var(--ts-space-4) 0 0;
+    max-width: 32rem;
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+    line-height: 1.5;
   }
-  /* A rule above, not a bar beside. The keyline separates the practical block
-     from the sentence above it without pretending to be a card. */
-  .hero__side {
-    display: flex;
-    flex-direction: column;
-    /* A grid item defaults to its content width and refuses to shrink; at
-       200% text this column overflowed its container. */
-    min-width: 0;
-  }
+  /* The print line: address, today, the way in, between two thin rules. */
   .hero__meta {
+    grid-row: 6;
+    grid-column: 1 / -1;
     display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-2);
-    padding-top: var(--ts-space-5);
-    border-top: 1px solid var(--ts-border-strong);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ts-space-1) var(--ts-space-6);
+    margin-top: var(--ts-space-6);
+    padding-block: var(--ts-space-3);
+    border-top: 2px solid var(--lk-rule);
+    font-size: 0.9375rem;
+    font-weight: 550;
   }
   .hero__address {
     margin: 0;
-    font-size: var(--ts-text-sm);
-    color: var(--ts-text-muted);
   }
   .hero__actions {
-    margin-top: var(--ts-space-6);
+    grid-row: 7;
+    grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--ts-space-6);
+    gap: var(--ts-space-2) var(--ts-space-5);
+    padding-block: var(--ts-space-1);
+    border-top: 2px solid var(--lk-rule);
+    border-bottom: 2px solid var(--lk-rule);
   }
-  .hero__link {
-    color: var(--ts-text);
-    font-size: var(--ts-text-base);
-    text-decoration: underline;
-    text-underline-offset: 0.35em;
-    text-decoration-thickness: 1px;
-    text-decoration-color: var(--ts-border-strong);
-    transition: text-decoration-color var(--ts-duration-fast) var(--ts-ease-out);
-  }
-  .hero__link:hover {
-    text-decoration-color: var(--ts-text);
-  }
-  /* Edge to edge. Inside the container the same photograph reads as an
-     illustration of the sentence above it; at full width it reads as the
-     room. */
-  .hero__band {
-    margin-top: var(--ts-space-16);
-  }
-  /* The shape is cut into the file at build time — one crop for each screen,
-     one download. The CSS only has to stop it stretching.
-     Reached through the band with :global, because the img is rendered by
-     CroppedImage and never carries this page's scope attribute: the old
-     `.hero__img` rule matched nothing, the photograph fell back to its
-     1920px file width and, on a 2560px screen, sat against the left edge
-     with 640px of empty page to its right. */
-  .hero__band :global(picture),
-  .hero__band :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  /* One column per shop from 640px up. The block only renders with more
-     than one location, so a single card never sits in a grid. */
   .hero__location {
-    margin-top: var(--ts-section-y);
+    grid-row: 8;
+    grid-column: 1 / -1;
+    margin-top: var(--ts-space-10);
     display: grid;
-    gap: var(--ts-space-3);
-    grid-template-columns: minmax(0, 1fr);
-    max-width: 32rem;
+    gap: var(--ts-space-4);
   }
-  @media (min-width: 640px) {
-    .hero__location {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 52rem;
-    }
-    .hero__all-locations {
-      grid-column: 1 / -1;
-    }
-    .hero__location-heading {
-      grid-column: 1 / -1;
-    }
+  .hero__location-cards {
+    display: grid;
+    gap: var(--larkin-rim);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero__location-card {
+    margin: 0;
+    padding-block: var(--ts-space-6);
   }
   .hero__all-locations {
     margin: 0;
-    font-size: var(--ts-text-sm);
   }
-  /* One link treatment across the site: ink with a muted underline. The
-     accent is kept for the seasonal mark and the current page. */
-  .hero__all-locations a {
-    color: var(--ts-text);
-    text-decoration: underline;
-    text-decoration-color: var(--ts-text-muted);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.3em;
+  .hero :global(.hero__location-heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: inherit;
+  }
+  /* Every second shop's label is cut as a leaf, so a row of shops does not
+     repeat one corner. */
+  .hero__location-card:nth-child(even) {
+    border-radius: var(--larkin-cut-leaf) var(--larkin-cut-fold);
+  }
+  @media (min-width: 640px) {
+    .hero__location-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* An odd count: the last shop takes the whole row rather than standing
+       alone in half of it. */
+    .hero__location-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+  /* Three shops share one row. */
+  @media (min-width: 1000px) {
+    .hero__location-cards:has(> :nth-child(3):last-child) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .hero__location-cards:has(> :nth-child(3):last-child) > .hero__location-card {
+      grid-column: auto;
+    }
+  }
+  @media (min-width: 900px) {
+    .hero__line:nth-child(2) {
+      grid-column: 1 / 7;
+    }
+    .hero__band {
+      grid-column: 2 / -1;
+    }
+    .hero__band :global(.hero__seal) {
+      left: -5rem;
+      width: clamp(8.5rem, 12vw, 11rem);
+    }
+    .hero__lead {
+      grid-row: 4;
+      grid-column: 7 / -1;
+      margin-top: 0;
+      align-self: center;
+      padding-top: var(--ts-space-2);
+    }
+    .hero__grid--one-line .hero__lead {
+      grid-row: 5;
+      margin-top: var(--ts-space-4);
+    }
+    .hero__meta {
+      grid-row: 6;
+      grid-column: 1 / 9;
+      margin-top: clamp(1.25rem, 2vw, 1.75rem);
+      border-bottom: 2px solid var(--lk-rule);
+    }
+    .hero__actions {
+      grid-row: 6;
+      grid-column: 9 / -1;
+      align-self: end;
+      justify-content: flex-end;
+      margin-left: calc(-1 * clamp(0.5rem, 1.6vw, 1.5rem));
+      padding-left: clamp(0.5rem, 1.6vw, 1.5rem);
+      padding-block: var(--ts-space-3);
+    }
+    .hero__meta,
+    .hero__actions {
+      min-height: 4.75rem;
+    }
   }
 
-  .featured {
-    padding-block: var(--ts-section-y);
-    background: var(--ts-surface-alt);
+  /* ============ The back: label + gusset ============ */
+  .back {
+    margin-top: clamp(1rem, 2vw, 1.75rem);
+    margin-inline: max(var(--larkin-rim), (100% - var(--ts-container-max)) / 2);
+    display: grid;
+    gap: var(--larkin-rim);
   }
-  .featured__list {
-    margin-top: var(--ts-space-10);
-    max-width: 44rem;
+  .back > :global(.larkin-panel) {
+    margin-inline: 0;
   }
-  .featured__cta {
-    margin: var(--ts-space-10) 0 0;
-  }
-  /* Heading on the left, the list on the right, so the section uses the
-     whole frame instead of a column on the left with the right half empty.
-     The Container is a core component, so its class is reached with
-     :global() from inside this section. */
-  @media (min-width: 1024px) {
-    .featured :global(.featured__grid) {
+  @media (min-width: 1000px) {
+    .back:not(.back--single) {
+      grid-template-columns: minmax(0, 8.6fr) minmax(0, 3.4fr);
+      align-items: stretch;
+    }
+    /* Without featured items the gusset stands alone across the bag: its
+       heading on the left, the four notes paired on the right. */
+    .back--single :global(.workspace__inner) {
       display: grid;
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      column-gap: var(--ts-space-16);
+      column-gap: var(--ts-space-12);
       align-items: start;
     }
-    .featured :global(.featured__grid > :first-child) {
-      grid-row: 1 / span 2;
-    }
-    .featured__list,
-    .featured__cta {
-      grid-column: 2;
-    }
-    .featured__list {
+    .back--single :global(.workspace__grid) {
       margin-top: 0;
-      max-width: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--ts-space-6);
     }
   }
 
-  .faq-section {
-    padding-block: var(--ts-section-y);
+  /* The label: a production table. A heavy rule, the small label, then the
+     title with the line about the season beside its foot. */
+  .featured {
+    padding-block: clamp(2.5rem, 5vw, 4.25rem) clamp(2.5rem, 5vw, 4rem);
   }
-  .faq-section__list {
-    margin-top: var(--ts-space-10);
+  .featured :global(.featured__heading) {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ts-space-4);
+    padding-top: var(--ts-space-3);
+    border-top: 5px solid var(--ts-text);
+  }
+  .featured :global(.featured__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.25rem, 5.4vw, 5.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    margin-top: var(--ts-space-2);
+  }
+  .featured :global(.featured__heading .ts-heading__subtitle) {
+    font-size: 1rem;
+    line-height: 1.55;
+    max-width: 26rem;
+  }
+  @media (min-width: 760px) {
+    .featured :global(.featured__heading) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+      column-gap: var(--ts-space-8);
+      align-items: end;
+    }
+    .featured :global(.featured__heading .ts-heading__eyebrow) {
+      grid-column: 1 / -1;
+    }
+    .featured :global(.featured__heading .ts-heading__subtitle) {
+      padding-bottom: var(--ts-space-2);
+    }
+  }
+  .featured__list {
+    margin-top: clamp(1.75rem, 3.5vw, 3rem);
+  }
+  .featured__cta {
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
   }
 
+  /* ============ The questions: the second label ============ */
+  .faq-section {
+    padding-block: clamp(2.75rem, 5.5vw, 4.75rem) clamp(5rem, 9vw, 8.5rem);
+  }
+  .faq-section__grid {
+    display: grid;
+    gap: var(--ts-space-6);
+  }
+  .faq-section :global(.faq-section__heading) {
+    gap: var(--ts-space-4);
+  }
+  .faq-section :global(.faq-section__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.1rem, 4.6vw, 4.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    max-width: 11ch;
+  }
+  .faq-section :global(.faq-section__heading .ts-heading__subtitle) {
+    font-size: 1rem;
+    line-height: 1.55;
+    max-width: 20rem;
+  }
+  @media (min-width: 900px) {
+    .faq-section__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--ts-space-12);
+    }
+    .faq-section__list {
+      padding-top: var(--ts-space-1);
+    }
+  }
+
+  /* ============ The closing address section: the back of the bag ============ */
   .say-hello {
-    padding-block: var(--ts-section-y);
-    background: var(--ts-surface-alt);
+    position: relative;
+    padding-block: clamp(3.5rem, 6vw, 4.5rem) clamp(2.25rem, 4vw, 3.25rem);
+  }
+  .say-hello :global(.say-hello__seal) {
+    width: clamp(6.5rem, 26vw, 13rem);
+    right: max(var(--ts-container-pad), (100% - var(--ts-container-max)) / 2 + var(--ts-container-pad));
+    top: calc(-1 * clamp(3.25rem, 6vw, 6rem));
   }
   .say-hello__inner {
-    max-width: 46rem;
+    display: grid;
+    gap: var(--ts-space-6);
+  }
+  .say-hello :global(.say-hello__heading) {
+    max-width: none;
+    gap: var(--ts-space-4);
+  }
+  .say-hello :global(.say-hello__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.5rem, 9.4vw, 7rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    color: inherit;
+  }
+  .say-hello :global(.say-hello__heading .ts-heading__subtitle) {
+    max-width: 28rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
   }
   .say-hello__actions {
-    margin-top: var(--ts-space-8);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--ts-space-6);
+    display: grid;
+    gap: var(--ts-space-4);
+    justify-items: start;
   }
   .say-hello__address {
     margin: 0;
-    font-size: var(--ts-text-sm);
-    color: var(--ts-text-muted);
+    font-family: var(--ts-font-display);
+    font-weight: 500;
+    font-size: clamp(1.375rem, 2.6vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-width: 22ch;
+    overflow-wrap: break-word;
+  }
+  @media (min-width: 900px) {
+    .say-hello__inner {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--ts-space-6);
+      row-gap: var(--ts-space-6);
+      align-items: end;
+    }
+    /* The heading's three parts share the section grid: the title across,
+       the sentence under it on the left, the action and the address on the
+       right of the same row. */
+    .say-hello :global(.say-hello__heading) {
+      display: contents;
+    }
+    .say-hello :global(.say-hello__heading > *) {
+      grid-column: 1 / -1;
+    }
+    .say-hello :global(.say-hello__heading .ts-heading__subtitle) {
+      grid-column: 1 / span 4;
+      grid-row: 3;
+    }
+    .say-hello__actions {
+      grid-column: 6 / -1;
+      grid-row: 3;
+      grid-template-columns: auto 1fr;
+      align-items: end;
+      column-gap: var(--ts-space-8);
+    }
   }
 </style>

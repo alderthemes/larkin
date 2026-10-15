@@ -1,0 +1,21 @@
+---
+/**
+ * Seal — presses the shop's seal (SealDefs.astro) at one spot on the page.
+ *
+ * `motion` picks how it arrives: "opening" turns it into place once on load
+ * and then lets it turn a little further as the opening scrolls away;
+ * "scroll" turns it into place as it scrolls into view. Either way the seal
+ * is decoration (aria-hidden) and its finished state is the one without
+ * motion. One "opening" seal per page: it is the element that carries over
+ * between pages.
+ */
+interface Props {
+  motion?: "opening" | "scroll";
+  class?: string;
+}
+const { motion = "scroll", class: className = "" } = Astro.props;
+---
+
+<div class:list={["larkin-seal", `larkin-seal--${motion}`, className]} aria-hidden="true">
+  <svg viewBox="0 0 200 200" focusable="false"><use href="#larkin-seal"></use></svg>
+</div>

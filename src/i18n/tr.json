@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Fern & Filter",
-    "tagline": "Portland kuzeybatısında specialty kahve ve hafif atıştırmalıklar"
+    "tagline": "Pazartesi kavrulan kahve, Portland kuzeybatısında yeşil bir tentenin altında"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -12,8 +12,8 @@
   },
   "hero": {
     "eyebrow": "Kahve barı ve kavurma atölyesi",
-    "title": "İyi kahve, acele yok",
-    "lead": "Portland'ın kuzeybatısında, güneş alan bir köşede specialty kahve ve hafif atıştırmalıklar. Gelin, yerinizi bulun.",
+    "title": "Pazartesi kavruldu, acele yok",
+    "lead": "Pazartesi kavuruyor, çekirdekleri yeşil tentenin altındaki bara gelmeden önce iki gün dinlendiriyoruz.",
     "primaryCta": "Yol tarifi al",
     "secondaryCta": "Menüye göz at",
     "imageAlt": "Aydınlık bir sabahta Fern & Filter'ın barı ve pencere kenarı oturma alanı"
@@ -36,10 +36,10 @@
   },
   "menu": {
     "eyebrow": "Ne ikram ederiz",
-    "title": "Birkaç favori",
-    "subtitle": "Menümüz mevsimle değişir. Şu an bardakta olanlar:",
+    "title": "Bugün barda",
+    "subtitle": "Espresso yıl boyu Awning harmanı. Pour-over her ayın birinde değişir.",
     "pageTitle": "İkram listemiz",
-    "pageSubtitle": "Fiyatlar USD cinsindendir. Menü mevsimsel olarak değişir.",
+    "pageSubtitle": "Fiyatlar USD cinsindendir. Sezonluk etiketli içecekler elimize ne geçerse ona göre gelir gider.",
     "viewFull": "Menüye göz at",
     "seasonalBadge": "Sezonluk",
     "categoriesNav": "Menü kategorileri",
@@ -61,15 +61,15 @@
   "workspace": {
     "eyebrow": "Çalışma alanı",
     "title": "Evet, laptopunuzu getirin",
-    "lead": "Bazen bir masa, bir priz ve iyi bir kahve yeter. Üçü de burada.",
+    "lead": "Uzun meşe masa sekiz kişilik ve kenarı boyunca priz var. Hafta içi 9:00'da dolu olur.",
     "wifiTitle": "Wi-Fi",
-    "wifiBody": "Ücretsiz, şifresiz. Görüntülü görüşmeye yeter.",
+    "wifiBody": "Ücretsiz, şifresiz. Görüntülü görüşme için kaldırımdaki bank daha sessiz.",
     "powerTitle": "Priz",
-    "powerBody": "Her masada ve bar boyunca priz var.",
+    "powerBody": "Uzun masada ve barda, pencerelerde yok.",
     "noiseTitle": "Ses seviyesi",
-    "noiseBody": "Hafif bir uğultu. Ne kütüphane, ne konser.",
+    "noiseBody": "Öğütücü, süt potları, tramvay zili.",
     "laptopTitle": "Laptop politikası",
-    "laptopBody": "Her gün buyrun. Hafta sonları 10:00 ile 13:00 arasında masa paylaşımı rica ediyoruz."
+    "laptopBody": "Her gün buyrun. Hafta sonları 10:00 ile 13:00 arasında uzun masayı paylaşmanızı rica ediyoruz."
   },
   "gallery": {
     "eyebrow": "İçeriden",
@@ -86,15 +86,15 @@
   },
   "about": {
     "eyebrow": "Hikayemiz",
-    "title": "Kahve ve sakinlik için bir köşe",
-    "lead": "Fern & Filter 2019'da basit bir fikirle başladı: iyi kahve yap, işleri basit tut, insanlara alan bırak.",
-    "summary": "Fern & Filter, Portland, Oregon'un kuzeybatısında bir specialty kahve barı. Haftanın yedi günü açık ve çekirdeklerini küçük partiler halinde kendi kavuruyor.",
+    "title": "İki pencere ve uzun bir masa",
+    "lead": "Fern & Filter 2019'da NW Thimbleberry'deki yeşil tentenin altında açıldı. Pazartesileri nehrin karşı yakasında kavuruyor, çekirdekleri aynı öğleden sonra geri getiriyoruz.",
+    "summary": "Fern & Filter, Portland, Oregon'da NW Thimbleberry Avenue üzerinde bir specialty kahve barı. Awning ev harmanını ve her ay değişen tek menşe kahvesini her pazartesi kendi kavuruyor; haftanın yedi günü açık.",
     "sourcingTitle": "Çekirdekler nereden geliyor",
-    "sourcingBody": "Çekirdeklerimizi Portland'ın güneydoğusundaki atölyemizde küçük partiler halinde kavuruyoruz. Her paket, güvendiğimiz çiftliklerden geliyor: insanlara adil ödenen, toprağa saygı duyulan yerler. Bu konuda mükemmel değiliz ama bilerek davranıyoruz.",
+    "sourcingBody": "Awning harmanı Brezilya ve Kolombiya; her yıl aynı iki çiftlikten alıyoruz ki her pakette aynı tatsın. Tek menşede risk alıyoruz: ayda bir parti, uzun masada numuneler tadılarak seçiliyor. Bu konuda mükemmel değiliz ama bilerek davranıyoruz.",
     "nameTitle": "İsim nereden geliyor",
     "nameBody": "Eğreltiotu Portland'dır: her yerde yetişir, fazla bir şey istemez. Filtre ise yaptığımız iş: ham bir şeyi alıp uğruna yavaşlamaya değer bir şeye dönüştürmek.",
     "roastTitle": "Nasıl kavuruyoruz",
-    "roastBody": "Açıktan ortaya. Kavurmayı değil, menşeyi tatmanızı istiyoruz. Tek menşe seçimimiz her ay değişir; tezgahta sorun ya da menüden taze olanı görün.",
+    "roastBody": "Açıktan ortaya, her pazartesi, Portland'ın güneydoğusundaki küçük atölyemizde. Çekirdekler iki gün dinlenir; pazartesinin kavrumu çarşambanın espressosu olur. Tek menşe her ayın birinde değişir, raftaki paket hangisi olduğunu söyler.",
     "imageAlt": "Tezgahın ve kendi kavurduğumuz çekirdeklerin durduğu rafın üzerine düşen sabah ışığı"
   },
   "faq": {
@@ -104,8 +104,8 @@
   },
   "contact": {
     "eyebrow": "Merhaba deyin",
-    "title": "Bizi bulun",
-    "subtitle": "Soru, öneri ya da sadece kahve muhabbeti. Sizi dinlemeyi çok isteriz.",
+    "title": "Yeşil tentenin altında",
+    "subtitle": "Uzun masayı, çekirdekleri ya da sıradaki tadımı sorun. Kapanıştan sonra okuyoruz.",
     "formTitle": "Bize mesaj gönderin",
     "hoursTitle": "Haftalık saatler",
     "form": {
@@ -138,7 +138,7 @@
   },
   "notFound": {
     "title": "Yanlış dönüş",
-    "body": "Bu sayfa yok, ama kahvemiz var. Sizi geri götürelim.",
+    "body": "Bu sayfa yok. Kahve bir tık ötede, ya da tramvay durağının iki blok kuzeyinde.",
     "cta": "Ana sayfaya dön",
     "ctaSecondary": "Menümüze göz at"
   },

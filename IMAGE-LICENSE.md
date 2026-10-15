@@ -1,9 +1,11 @@
 # Demo Image License — Larkin
 
-All demo photographs in `src/assets/images/` and `public/og.jpg` were
-**AI-generated** for this template (Higgsfield platform, `nano_banana_flash`
-model, generated 2026-09-02). They depict a fictional coffee shop
-("Fern & Filter") and no real place, person or product.
+All demo photographs in `src/assets/images/` were **AI-generated** for this
+template (Higgsfield platform, `gpt_image_2_5` model, generated 2026-10-15).
+The share image at `public/og.jpg` was cut from an AI-edited version of the
+opening photograph (`01-hero-room.jpg`; same platform and model, generated
+2026-10-15). They depict a fictional coffee shop ("Fern & Filter") and no real
+place, person or product.
 
 - You may keep, modify or replace them in websites you build with this template.
 - They are demo content: for a real client project we recommend replacing them
@@ -25,11 +27,12 @@ similar output for other users. No exclusivity is claimed or granted.
 
 ## AI disclosure notice
 
-These images are AI-generated (`nano_banana_flash` model, via Higgsfield; the
-model name is the one the platform's own job records use).
-The generation service may embed an invisible synthetic-content signal
-(such as SynthID). We do not promise that such a signal is present in every
-file or that it survives editing, cropping or re-encoding.
+These images are AI-generated (Higgsfield platform, `gpt_image_2_5` model; the
+model name is the one the platform's own job records use). Generative platforms
+commonly embed provenance metadata or an invisible watermark in their output;
+**we have not verified which scheme, if any, applies to these files**, and you
+should not assume either its presence or its absence. If a signal is present,
+we do not promise that it survives editing, cropping or re-encoding.
 
 If you deploy them to represent a REAL business, product, place or event — rather
 than as placeholder or illustrative content — you may become a "deployer" under

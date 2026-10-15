@@ -1,14 +1,23 @@
 ---
+/**
+ * 404 — printed on the bag like every other page: the number set huge as
+ * decoration (aria-hidden), the seal pressed over its corner, the sentence
+ * and the two ways back underneath.
+ */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
 import Button from "@studio/core/components/Button.astro";
+import Seal from "../components/Seal.astro";
 import { t } from "../lib/site";
 ---
 
 <BaseLayout title="404" description={t("notFound.body")} noindex>
   <section class="nf">
     <Container size="narrow">
-      <p class="nf__code" aria-hidden="true">404</p>
+      <div class="nf__mark">
+        <p class="nf__code" aria-hidden="true">404</p>
+        <Seal motion="opening" class="nf__seal" />
+      </div>
       <h1 class="nf__title">{t("notFound.title")}</h1>
       <p class="nf__body">{t("notFound.body")}</p>
       <div class="nf__actions">
@@ -21,37 +30,50 @@ import { t } from "../lib/site";
 
 <style>
   .nf {
-    padding-block: var(--ts-space-24);
-    text-align: center;
+    padding-block: clamp(2rem, 6vw, 5rem) clamp(4rem, 9vw, 7rem);
   }
   .nf :global(.ts-container) {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--ts-space-5);
   }
+  .nf__mark {
+    position: relative;
+  }
+  /* Large decoration, printed in the cream of the bag. */
   .nf__code {
     margin: 0;
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-4xl);
-    color: var(--ts-color-primary-500); /* large text, 3:1 minimum (WCAG AA) */
-    font-weight: var(--ts-weight-bold);
+    font-size: clamp(6rem, 26vw, 15rem);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    color: var(--larkin-on-color);
+  }
+  .nf__mark :global(.nf__seal) {
+    width: clamp(5rem, 16vw, 9rem);
+    right: calc(-1 * clamp(2rem, 6vw, 4rem));
+    top: -0.75rem;
   }
   .nf__title {
     margin: 0;
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-2xl);
-    color: var(--ts-color-primary-900);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1;
   }
   .nf__body {
     margin: 0;
-    color: var(--ts-text-muted);
-    max-width: 42ch;
+    max-width: 30rem;
+    font-size: 1.125rem;
+    line-height: 1.55;
   }
   .nf__actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: var(--ts-space-3);
+    margin-top: var(--ts-space-2);
   }
 </style>

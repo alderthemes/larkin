@@ -2,6 +2,9 @@
 /**
  * The legal page template, generated from the legal collection (privacy,
  * terms). Adding a file to that collection adds a page.
+ *
+ * The title is printed on the bag; the text itself is set on a cream label,
+ * in a reading column.
  */
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -24,7 +27,7 @@ const { Content } = await render(entry);
       <p class="legal__updated">
         {t("legal.updated")}: <time datetime={entry.data.updated}>{entry.data.updated}</time>
       </p>
-      <div class="legal__body">
+      <div class="legal__body larkin-panel larkin-panel--label">
         <Content />
       </div>
     </Container>
@@ -33,31 +36,102 @@ const { Content } = await render(entry);
 
 <style>
   .legal {
-    padding-block: var(--ts-space-16) var(--ts-section-y);
+    padding-block: clamp(1.5rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
   }
   .legal__title {
     margin: 0;
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-3xl);
-    line-height: var(--ts-leading-tight);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    overflow-wrap: break-word;
   }
   .legal__updated {
-    margin: var(--ts-space-3) 0 0;
-    font-size: var(--ts-text-sm);
-    color: var(--ts-text-muted);
+    margin: var(--ts-space-4) 0 0;
+    font-weight: 550;
   }
   .legal__body {
-    margin-top: var(--ts-space-10);
-    line-height: var(--ts-leading-body);
+    margin: clamp(1.75rem, 4vw, 3rem) calc(-1 * var(--larkin-rim)) 0;
+    padding-block: clamp(2rem, 4vw, 3.25rem);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  .legal__body > :global(:first-child) {
+    margin-top: 0;
   }
   .legal__body :global(h2) {
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-xl);
+    font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
     margin: var(--ts-space-10) 0 var(--ts-space-3);
+  }
+  /* On a phone the long label is cut into a stack of labels: each section
+     heading is printed on the bag in the gap between two of them. Every
+     piece keeps the label's rounded die-cut: the cream above the gap ends
+     in two rounded corners and the cream below starts with two (the pseudo
+     elements are the label continuing into the gap), so no cream edge is
+     left square. */
+  @media (max-width: 899.98px) {
+    .legal {
+      padding-bottom: var(--ts-space-20);
+    }
+    /* The label sits on the text edge, the bag showing round it. */
+    .legal__body {
+      margin: var(--ts-space-10) 0 0;
+    }
+    .legal__body :global(h2) {
+      position: relative;
+      margin: var(--ts-space-2) calc(-1 * var(--ts-container-pad)) var(--ts-space-2);
+      padding: calc(var(--larkin-cut-label) + var(--ts-space-10)) var(--ts-container-pad)
+        calc(var(--larkin-cut-label) + var(--ts-space-8));
+      background: var(--larkin-bag);
+      color: var(--larkin-on-color);
+    }
+    .legal__body :global(h2)::before,
+    .legal__body :global(h2)::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: var(--larkin-cut-label);
+      background: var(--larkin-label);
+    }
+    .legal__body :global(h2)::before {
+      top: 0;
+      border-radius: 0 0 var(--larkin-cut-label) var(--larkin-cut-label);
+    }
+    .legal__body :global(h2)::after {
+      bottom: 0;
+      border-radius: var(--larkin-cut-label) var(--larkin-cut-label) 0 0;
+    }
+  }
+  /* On a wide screen the label is wider than the reading column it holds,
+     so the margin round the text is label, not bag. */
+  @media (min-width: 900px) {
+    .legal__body {
+      margin-inline: calc(-1 * clamp(2rem, 5vw, 5rem));
+      padding-inline: clamp(2.5rem, 6vw, 6rem);
+    }
+  }
+  .legal__body :global(p),
+  .legal__body :global(li) {
+    color: var(--ts-text-muted);
+    max-width: var(--ts-prose-max);
   }
   .legal__body :global(p) {
     margin: 0 0 var(--ts-space-4);
-    color: var(--ts-text-muted);
   }
-  .legal__body :global(strong) { color: var(--ts-text); }
+  .legal__body :global(strong) {
+    color: var(--ts-text);
+  }
+  .legal__body :global(a) {
+    color: var(--ts-text);
+    font-weight: 600;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    overflow-wrap: anywhere;
+  }
 </style>

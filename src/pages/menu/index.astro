@@ -10,6 +10,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
 import MenuList from "../../components/MenuList.astro";
+import Seal from "../../components/Seal.astro";
 import { t } from "../../lib/site";
 import { menuSchema } from "@studio/core/utils/seo";
 
@@ -43,14 +44,23 @@ const schema = menuSchema(
   description={t("menu.pageSubtitle")}
   schema={schema}
 >
+  {/* The menu page is the back of the bag. Its title is printed on the
+      terracotta; under it the category bar runs like the print line on a
+      bag and stays under the header as the page scrolls; then each category
+      is a panel of its own, cream label and fern gusset in turn. The color
+      follows the panel's place, never the category, so adding a category
+      keeps the rhythm. */}
   <section class="menu-page">
-    <Container>
+    <Container class="menu-page__head">
       {/* No eyebrow here, deliberately: the page has one strong heading and
            repeating "What we serve" above it as a kicker would weaken the
            hierarchy rather than reinforce it. */}
-      <SectionHeading title={t("menu.pageTitle")} subtitle={t("menu.pageSubtitle")} level="h1" />
+      <SectionHeading title={t("menu.pageTitle")} subtitle={t("menu.pageSubtitle")} level="h1" class="menu-page__heading" />
+      <Seal motion="opening" class="menu-page__seal" />
+    </Container>
 
-      <nav class="menu-page__nav" aria-label={t("menu.categoriesNav")}>
+    <nav class="menu-page__nav" aria-label={t("menu.categoriesNav")}>
+      <Container>
         <ul>
           {
             categories.map((category) => (
@@ -60,46 +70,97 @@ const schema = menuSchema(
             ))
           }
         </ul>
-      </nav>
+      </Container>
+    </nav>
 
-      <div class="menu-page__list">
-        {/* An empty menu folder used to build a page with a heading and
-            nothing under it. MenuList shows the empty state per category,
-            but with no items at all there is no category to show it in. */}
-        {items.length === 0 ? (
+    <div class="menu-page__list">
+      {/* An empty menu folder used to build a page with a heading and
+          nothing under it. MenuList shows the empty state per category,
+          but with no items at all there is no category to show it in. */}
+      {items.length === 0 ? (
+        <Container>
           <p class="menu-page__empty">{t("menu.empty")}</p>
-        ) : (
-          <MenuList items={items} categories={[...categories]} withAnchors />
-        )}
-      </div>
-    </Container>
+        </Container>
+      ) : (
+        <MenuList items={items} categories={[...categories]} withAnchors />
+      )}
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   .menu-page {
-    padding-block: var(--ts-space-16) var(--ts-section-y);
+    padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 6vw, 5rem);
   }
-  .menu-page__empty {
-    margin-top: var(--ts-space-10);
-    color: var(--ts-text-muted);
+  /* The category bar and the header together stand over the top of the
+     page: a fragment link or a backwards Tab lands below both. */
+  :global(html:has(.menu-page__nav)) {
+    scroll-padding-top: calc(var(--ts-c-nav-height) + 5.5rem);
   }
+  .menu-page :global(.menu-page__head) {
+    position: relative;
+  }
+  .menu-page :global(.menu-page__heading) {
+    max-width: none;
+    gap: var(--ts-space-5);
+  }
+  .menu-page :global(.menu-page__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.6rem, 10.4vw, 7.5rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    max-width: 9ch;
+  }
+  .menu-page :global(.menu-page__heading .ts-heading__subtitle) {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    max-width: 22rem;
+  }
+  .menu-page :global(.menu-page__seal) {
+    width: clamp(5.5rem, 18vw, 10rem);
+    right: var(--ts-container-pad);
+    top: 0;
+  }
+  @media (min-width: 900px) {
+    .menu-page :global(.menu-page__heading) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+      column-gap: var(--ts-space-10);
+      align-items: end;
+      padding-right: clamp(10rem, 14vw, 13rem);
+    }
+    .menu-page :global(.menu-page__heading .ts-heading__subtitle) {
+      padding-bottom: var(--ts-space-3);
+    }
+  }
+  @media (max-width: 899.98px) {
+    .menu-page :global(.menu-page__heading .ts-heading__title) {
+      padding-right: clamp(5.5rem, 22vw, 9rem);
+    }
+  }
+
+  /* The print line of categories, sticky under the header. When it sticks
+     its band runs the full width of the bag, so the panels slide under the
+     bag and not under a strip with ragged ends. */
   .menu-page__nav {
     position: sticky;
-    top: var(--ts-c-nav-height, 64px);
+    top: var(--ts-c-nav-height);
     z-index: var(--ts-z-sticky);
-    margin-top: var(--ts-space-10);
-    padding-block: var(--ts-space-3);
-    background: color-mix(in srgb, var(--ts-surface) 94%, transparent);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--ts-border);
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+    background: var(--larkin-bag);
+    box-shadow: 0 0 0 100vmax var(--larkin-bag);
+    clip-path: inset(0 -100vmax);
   }
   .menu-page__nav ul {
     list-style: none;
     display: flex;
     gap: var(--ts-space-1);
     margin: 0;
-    padding: 0;
+    padding: var(--ts-space-2) 0;
+    border-top: 2px solid var(--lk-rule);
+    border-bottom: 2px solid var(--lk-rule);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
@@ -115,24 +176,88 @@ const schema = menuSchema(
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding-inline: var(--ts-space-4);
-    border-radius: var(--ts-radius-md);
-    font-size: var(--ts-text-sm);
-    font-weight: var(--ts-weight-medium);
-    color: var(--ts-color-primary-700);
+    padding-inline: var(--ts-space-3);
+    font-weight: var(--ts-weight-semibold);
+    color: var(--larkin-on-color);
     text-decoration: none;
     white-space: nowrap;
+    border-radius: var(--ts-radius-full);
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: var(--ts-space-3) calc(100% - 8px);
+    background-size: 0 2px;
+    transition: background-size calc(0.3s * var(--larkin-motion, 1)) var(--ts-ease-out);
   }
   .menu-page__nav a:hover {
-    background: var(--ts-surface-alt);
-    color: var(--ts-color-primary-900);
+    background-size: calc(100% - 2 * var(--ts-space-3)) 2px;
   }
-  .menu-page__nav a:focus-visible {
+
+  .menu-page__empty {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  /* Each category its own panel; the bag shows between them. */
+  .menu-page__list :global(.menu-list) {
+    display: grid;
+    gap: var(--larkin-rim);
+    border-top: 0;
+  }
+  .menu-page__list :global(.menu-list__group) {
+    margin-inline: max(var(--larkin-rim), (100% - var(--ts-container-max)) / 2);
+    padding: clamp(2rem, 4vw, 3.25rem) var(--ts-container-pad);
+    border-bottom: 0;
+    background: var(--larkin-label);
+    color: var(--ts-text);
+    border-radius: var(--larkin-cut-label);
+    --lk-ink: var(--ts-text);
+    --lk-ink-soft: var(--ts-text-muted);
+    --lk-rule: var(--ts-border);
+    --ts-focus-ring: 0 0 0 2px var(--larkin-label), 0 0 0 5px var(--ts-text);
+  }
+  .menu-page__list :global(.menu-list__group:nth-child(even)) {
+    background: var(--larkin-gusset);
+    color: var(--larkin-on-color);
+    border-radius: var(--larkin-cut-fold);
+    --lk-ink: var(--larkin-on-color);
+    --lk-ink-soft: var(--larkin-on-color);
+    --lk-rule: color-mix(in srgb, var(--larkin-on-color) 40%, transparent);
+    --ts-focus-ring: 0 0 0 2px var(--larkin-gusset), 0 0 0 5px var(--larkin-on-color);
+  }
+  /* A focused category (reached from the bar) shows no ring of its own:
+     the heading it scrolls to is the answer. */
+  .menu-page__list :global(.menu-list__group:focus) {
     outline: none;
-    box-shadow: var(--ts-focus-ring);
   }
-  .menu-page__list {
-    margin-top: var(--ts-space-12);
-    max-width: 44rem;
+  .menu-page__list :global(.menu-list__category) {
+    font-size: clamp(1.75rem, 3.4vw, 3rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .menu-page__list :global(.menu-list__items) {
+    gap: 0;
+  }
+  /* Inside a panel the items are the table's rows, divided by rules. */
+  .menu-page__list :global(.menu-list__item) {
+    padding-block: var(--ts-space-4);
+    border-top: 1px solid var(--lk-rule);
+  }
+  .menu-page__list :global(.menu-list__item:first-child) {
+    border-top: 2px solid var(--lk-ink);
+  }
+  @media (min-width: 760px) {
+    .menu-page__list :global(.menu-list__group) {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      align-items: start;
+    }
+    .menu-page__list :global(.menu-list__category) {
+      position: sticky;
+      top: calc(var(--ts-c-nav-height) + 6rem);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .menu-page__nav a {
+      transition: none;
+    }
   }
 </style>

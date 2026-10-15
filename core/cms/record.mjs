@@ -69,12 +69,28 @@ function typeName(v) {
 }
 
 /**
- * The active language of a kit: `export const LOCALE ... = "tr"` or `= DEFAULT_LOCALE`
- * in src/lib/site.ts (all ten kits, read 2026-09-30), DEFAULT_LOCALE being the
- * core's utils/i18n.ts value. Anything else is "could not read", never a guess.
- * `coreI18n` is the text of utils/i18n.ts (the caller reads it next to this file).
+ * The active language of a kit, for a "{locale}" record path. Two shapes (T13):
+ * a kit with src/data/site.json reads `locale` there (the owner's file) and
+ * site.ts is not consulted; a kit from before the move reads
+ * `export const LOCALE ... = "tr"` or `= DEFAULT_LOCALE` in src/lib/site.ts,
+ * DEFAULT_LOCALE being the core's utils/i18n.ts value. Anything else is
+ * "could not read", never a guess.
+ * `coreI18n` is the text of utils/i18n.ts (the caller reads it next to this
+ * file); `siteJson` the text of src/data/site.json, or null when missing.
  */
-export function readLocale(siteTs, coreI18n) {
+export function readLocale(siteTs, coreI18n, siteJson = null) {
+  if (siteJson !== null) {
+    let data;
+    try {
+      data = JSON.parse(siteJson);
+    } catch (e) {
+      return { error: `src/data/site.json is not valid JSON: ${e.message}` };
+    }
+    const v = data && typeof data === "object" && !Array.isArray(data) ? data.locale : undefined;
+    if (typeof v === "string" && /^[a-z]{2}(?:-[A-Za-z]{2,4})?$/.test(v)) return { locale: v };
+    if (v === undefined) return { error: 'src/data/site.json has no "locale" (expected "en", "tr", ...)' };
+    return { error: `src/data/site.json "locale" is ${JSON.stringify(v)}, which this tool cannot read (expected "en", "tr", ...)` };
+  }
   if (siteTs === null) return { error: "src/lib/site.ts does not exist" };
   const m = [...siteTs.matchAll(/^export const LOCALE\b[^=\n]*=\s*([^;\n]+);/gm)];
   if (m.length !== 1)

@@ -1,0 +1,58 @@
+---
+/**
+ * SealDefs — the shop's round seal, drawn once per page as an SVG symbol.
+ * Seal.astro presses it wherever the page needs it, with <use>.
+ *
+ * The ring text is built from words already on the site, so it changes when
+ * they do: the shop's name, the hero's small label and, when the tagline
+ * says where the shop is ("… in Northwest Portland"), that place. Nothing
+ * here is new text, and all of it is decoration: the symbol is aria-hidden
+ * and the real name and address stay in the page as text.
+ *
+ * The type size follows the length of the ring text, so a long name gets
+ * smaller letters rather than letters crushed together.
+ */
+import { t } from "../lib/site";
+
+const place = (() => {
+  const tagline = t("site.tagline");
+  const at = tagline.lastIndexOf(" in ");
+  return at === -1 ? "" : tagline.slice(at + 4).trim();
+})();
+
+const ring = [t("site.name"), t("hero.eyebrow"), place]
+  .filter(Boolean)
+  .map((part) => part.toUpperCase())
+  .join(" · ");
+const text = `${ring} ·`;
+/* 61 characters set at 14.5 fill the ring; more characters, smaller type. */
+const fontSize = Math.max(9, Math.min(14.5, (14.5 * 61) / text.length)).toFixed(2);
+---
+
+<svg class="larkin-seal-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="larkin-seal-ring" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
+    <symbol id="larkin-seal" viewBox="0 0 200 200">
+      <circle class="larkin-seal__paper" cx="100" cy="100" r="98" />
+      <circle class="larkin-seal__line" cx="100" cy="100" r="90" />
+      <circle class="larkin-seal__line" cx="100" cy="100" r="56" />
+      <text class="larkin-seal__text" font-size={fontSize} letter-spacing="2">
+        <textPath href="#larkin-seal-ring" textLength="458" lengthAdjust="spacing">{text}</textPath>
+      </text>
+      <g class="larkin-seal__leaf" transform="translate(70 66) scale(1.9)">
+        <path class="larkin-seal__leaf--fern" d="M16 27c0-7 4-11 10-12-1 7-4 11-10 12Z" />
+        <path class="larkin-seal__leaf--clay" d="M16 27C16 19 12 15 6 14c1 7 4 11 10 13Z" />
+        <path d="M16 27V13" />
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<style>
+  .larkin-seal-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+</style>

@@ -1,6 +1,6 @@
 ---
 name: "House Espresso"
-description: "Our daily blend: chocolate, hazelnut and a clean finish."
+description: "The Awning blend, named for the one over our door. Cocoa, hazelnut, a clean finish."
 price: 4
 category: "espresso"
 tags: ["decaf"]

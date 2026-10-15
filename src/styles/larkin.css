@@ -1,0 +1,478 @@
+/* larkin.css — the bag.
+
+   The site is one screen-printed coffee bag. Its terracotta body runs the
+   whole page, and the header, each page's opening and the closing are
+   printed straight on it. Cream labels and the fern side gusset are
+   die-cut panels stuck on; photographs are windows cut into the bag; a
+   round seal shuts it; the footer is small print on its base, under a
+   heat-sealed edge.
+
+   Shared by every page: the type voices, the surfaces and the ink each
+   one carries, the windows, the seal, the buttons, the motion and the
+   print stylesheet.
+
+   It is ours: an update replaces it. Colors, fonts and shapes are not set
+   here; they come from the `:root` block in `global.css`, which is yours.
+   Every value below reads a token, so retinting the tokens retints this
+   file.
+
+   Imported by src/layouts/BaseLayout.astro, after global.css. */
+
+/* ---------------------------------------------------------------------
+   Font fallbacks. Arial, resized to the measure of Unbounded at weight 600
+   (bold Arial) and of Figtree at 400, with the web fonts' own ascent and
+   descent. Until the web fonts arrive the page is set in these, and when
+   they arrive the lines keep their length and height: nothing jumps.
+   Measured in Chromium on 2026-10-15: a 140-character sample is 1.3015 x
+   bold Arial's width in Unbounded 600 and 1.0129 x Arial's in Figtree; the
+   vertical metrics are the fonts' hhea values (995/245 and 950/250 of
+   1000), divided by the size adjustment.
+   --------------------------------------------------------------------- */
+@font-face {
+  font-family: "Unbounded Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Arial");
+  font-weight: 100 900;
+  size-adjust: 130.15%;
+  ascent-override: 76.45%;
+  descent-override: 18.82%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Figtree Fallback";
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 101.29%;
+  ascent-override: 93.79%;
+  descent-override: 24.68%;
+  line-gap-override: 0%;
+}
+
+/* ---------------------------------------------------------------------
+   Ground
+   --------------------------------------------------------------------- */
+html {
+  /* A fragment link or a backwards Tab lands below the sticky header, not
+     under it (WCAG 2.4.11). The menu page adds its category bar. */
+  scroll-padding-top: calc(var(--ts-c-nav-height) + var(--ts-space-4));
+  scrollbar-color: var(--larkin-bag) var(--larkin-label);
+}
+body.larkin {
+  background: var(--larkin-label);
+  font-size: 1.0625rem;
+  overflow-x: clip;
+}
+.larkin ::selection {
+  background: var(--larkin-gusset);
+  color: var(--larkin-on-color);
+}
+
+/* ---------------------------------------------------------------------
+   Surfaces. Each one says what prints on it: the ink, the second ink,
+   the rule, the focus ring and the button. A component never picks a color
+   for itself; it reads these, so the same menu list is ink on a label and
+   cream on the gusset.
+   --------------------------------------------------------------------- */
+.larkin-bag {
+  background: var(--larkin-bag);
+  color: var(--larkin-on-color);
+  --lk-ink: var(--larkin-on-color);
+  --lk-ink-soft: var(--ts-text-invert-muted);
+  --lk-rule: color-mix(in srgb, var(--larkin-on-color) 45%, transparent);
+  --lk-ground: var(--larkin-bag);
+  /* Core's section heading reads these: cream title, cream sentence. */
+  --ts-c-section-heading-color: var(--larkin-on-color);
+  --ts-c-section-subheading-color: var(--ts-text-invert-muted);
+  --lk-btn-ink: var(--larkin-on-color);
+  --lk-btn-fill: transparent;
+  --lk-btn-hover-fill: var(--larkin-on-color);
+  --lk-btn-hover-ink: var(--ts-text);
+  --ts-focus-ring: 0 0 0 2px var(--larkin-bag), 0 0 0 5px var(--larkin-on-color);
+  /* The bag clips what hangs over its edge (the seals), never what scrolls. */
+  overflow-x: clip;
+}
+.larkin-panel {
+  margin-inline: max(var(--larkin-rim), (100% - var(--ts-container-max)) / 2);
+  padding-inline: var(--ts-container-pad);
+}
+.larkin-panel--label,
+.larkin-panel--leaf {
+  background: var(--larkin-label);
+  color: var(--ts-text);
+  --lk-ink: var(--ts-text);
+  --lk-ink-soft: var(--ts-text-muted);
+  --lk-rule: var(--ts-border);
+  --lk-ground: var(--larkin-label);
+  --ts-c-section-heading-color: var(--ts-text);
+  --ts-c-section-subheading-color: var(--ts-text-muted);
+  --lk-btn-ink: var(--ts-text);
+  --lk-btn-fill: transparent;
+  --lk-btn-hover-fill: var(--ts-text);
+  --lk-btn-hover-ink: var(--larkin-label);
+  --ts-focus-ring: 0 0 0 2px var(--larkin-label), 0 0 0 5px var(--ts-text);
+}
+.larkin-panel--label {
+  border-radius: var(--larkin-cut-label);
+}
+/* The second label is cut as a leaf: two opposite corners rounded, the other
+   two nearly square. */
+.larkin-panel--leaf {
+  border-radius: var(--larkin-cut-leaf) var(--larkin-cut-fold);
+}
+/* The gusset is the fold of the bag: straight, almost square edges. */
+.larkin-panel--gusset {
+  background: var(--larkin-gusset);
+  color: var(--larkin-on-color);
+  border-radius: var(--larkin-cut-fold);
+  --lk-ink: var(--larkin-on-color);
+  --lk-ink-soft: var(--larkin-on-color);
+  --lk-rule: color-mix(in srgb, var(--larkin-on-color) 40%, transparent);
+  --lk-ground: var(--larkin-gusset);
+  --ts-c-section-heading-color: var(--larkin-on-color);
+  --ts-c-section-subheading-color: var(--larkin-on-color);
+  --lk-btn-ink: var(--larkin-on-color);
+  --lk-btn-fill: transparent;
+  --lk-btn-hover-fill: var(--larkin-on-color);
+  --lk-btn-hover-ink: var(--larkin-gusset);
+  --ts-focus-ring: 0 0 0 2px var(--larkin-gusset), 0 0 0 5px var(--larkin-on-color);
+}
+
+/* ---------------------------------------------------------------------
+   Type voices
+   --------------------------------------------------------------------- */
+.larkin-display {
+  font-family: var(--ts-font-display);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+/* ---------------------------------------------------------------------
+   Buttons: a ring in the ink of the surface, filled under the pointer.
+   On a label the primary button is the one filled thing, and lets go of
+   its fill under the pointer. The doubled class outranks core's scoped
+   rules without touching core.
+   --------------------------------------------------------------------- */
+.larkin .ts-btn.ts-btn {
+  border: 2px solid var(--lk-btn-ink, currentColor);
+  border-radius: var(--ts-radius-full);
+  background: var(--lk-btn-fill, transparent);
+  color: var(--lk-btn-ink, currentColor);
+  font-weight: 650;
+  padding-inline: var(--ts-space-5);
+  transition:
+    background-color calc(0.25s * var(--larkin-motion, 1)) var(--ts-ease-out),
+    color calc(0.25s * var(--larkin-motion, 1)) var(--ts-ease-out),
+    border-color calc(0.25s * var(--larkin-motion, 1)) var(--ts-ease-out);
+}
+.larkin .ts-btn.ts-btn:hover {
+  background: var(--lk-btn-hover-fill, currentColor);
+  color: var(--lk-btn-hover-ink, inherit);
+}
+.larkin .larkin-panel--label .ts-btn--primary.ts-btn,
+.larkin .larkin-panel--leaf .ts-btn--primary.ts-btn {
+  background: var(--ts-text);
+  color: var(--larkin-label);
+}
+.larkin .larkin-panel--label .ts-btn--primary.ts-btn:hover,
+.larkin .larkin-panel--leaf .ts-btn--primary.ts-btn:hover {
+  background: transparent;
+  color: var(--ts-text);
+}
+
+/* A link on any surface: the surface's ink, a thick underline that opens
+   out under the pointer. */
+.larkin-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--lk-ink, currentColor);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+  transition: text-underline-offset calc(0.25s * var(--larkin-motion, 1)) var(--ts-ease-out);
+}
+.larkin-link:hover {
+  text-underline-offset: 0.45em;
+}
+
+/* ---------------------------------------------------------------------
+   The heat seal: the crimped edge at the top of the page and above the
+   footer. CSS only: a hard-stop rib pattern and a row of teeth cut by a
+   mask. No image, no visible gradient.
+   --------------------------------------------------------------------- */
+.larkin-crimp {
+  height: 28px;
+  background-color: var(--larkin-bag);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--larkin-crimp) 0 2px,
+    transparent 2px 7px
+  );
+}
+.larkin-crimp--top {
+  margin-top: 10px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 7px / 100% 100% no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 0 0 / 14px 7px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) 0 7px / 100% 100% no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 0 0 / 14px 7px repeat-x;
+}
+.larkin-crimp--bottom {
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 7px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 0 100% / 14px 7px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) 0 0 / 100% calc(100% - 7px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 0 100% / 14px 7px repeat-x;
+}
+
+/* ---------------------------------------------------------------------
+   Windows. A photograph is only ever seen through a cut in the bag, and
+   the cut has two shapes: a rounded rectangle and a horizontal capsule.
+   The shape follows the position on the page, never the photograph. The
+   field color covers the edge of the photograph; no frame, no shadow.
+   --------------------------------------------------------------------- */
+.larkin-window {
+  --win-r: var(--larkin-window-rect);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--win-r);
+  /* What shows through the cut before the photograph has arrived. */
+  background: var(--larkin-crimp);
+}
+.larkin-window--pill {
+  --win-r: var(--larkin-window-pill);
+}
+.larkin-window picture,
+.larkin-window img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.larkin-window img {
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------------
+   The seal. One symbol (BaseLayout), drawn by <use> wherever it is pressed.
+   Its ring text is built from words already on the site. Decoration only:
+   aria-hidden, and it is the only thing on the page that turns.
+   --------------------------------------------------------------------- */
+.larkin-seal {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  aspect-ratio: 1;
+}
+.larkin-seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: rotate(-4deg);
+}
+.larkin-seal__paper {
+  fill: var(--larkin-sticker);
+}
+.larkin-seal__line {
+  fill: none;
+  stroke: var(--ts-text);
+  stroke-width: 2;
+}
+.larkin-seal__text {
+  fill: var(--ts-text);
+  font-family: var(--ts-font-sans);
+  font-weight: 700;
+}
+.larkin-seal__leaf {
+  fill: none;
+  stroke: var(--larkin-gusset);
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.larkin-seal__leaf--fern {
+  fill: var(--larkin-gusset);
+}
+.larkin-seal__leaf--clay {
+  fill: var(--larkin-bag);
+  stroke: var(--larkin-bag);
+}
+
+/* ---------------------------------------------------------------------
+   Motion: the bag opens.
+   The rules above are the finished page. Everything below only adds the way
+   in, and only for a visitor whose device has not asked for less motion.
+   Two things start on their own (the opening window and its seal) and both
+   are over in under 1.5 seconds. The rest follows the scroll. Nothing loops,
+   no text moves, and a browser without scroll timelines simply shows the
+   finished page.
+   The two switches are the buyer's, in the `:root` block of global.css:
+   `--larkin-motion` (1 on, 0 off) scales every distance and angle in the
+   keyframes below and the page crossfade, so at 0 each animation starts
+   where it ends and nothing moves; it also scales the duration of every
+   transition on the site (buttons, links, the menu control, the questions'
+   plus), so at 0 a state changes at once. `--larkin-scroll` is the scroll
+   behavior. The fallbacks keep the
+   shipped motion for a global.css written before the switches existed.
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: var(--larkin-scroll, smooth);
+  }
+  /* Page to page, the browser crossfades and the opening seal carries
+     over. At motion 0 the change is immediate. */
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: calc(0.25s * var(--larkin-motion, 1));
+  }
+  .larkin-window--opening {
+    animation: larkin-window-open 1s var(--ts-ease-out) 0.1s both;
+  }
+  .larkin-window--opening img {
+    animation: larkin-settle 1.2s var(--ts-ease-out) 0.1s both;
+  }
+  .larkin-seal--opening svg {
+    animation: larkin-seal-on 0.9s cubic-bezier(0.2, 0.9, 0.25, 1.15) 0.55s both;
+  }
+  .larkin-seal--opening {
+    view-transition-name: larkin-seal;
+  }
+  /* The timeline sits in its own rule, after the animation: the minifier
+     folds a timeline written beside the shorthand into the shorthand, and
+     the browser then drops the whole declaration. The second selector is
+     written differently (and weighs more) so the two are never merged. */
+  @supports (animation-timeline: view()) {
+    .larkin-window--scroll {
+      animation: larkin-window-open linear both;
+    }
+    .larkin-window--scroll img {
+      animation: larkin-settle linear both;
+    }
+    .larkin-seal--scroll svg {
+      animation: larkin-seal-on linear both;
+    }
+    .larkin-window.larkin-window--scroll,
+    .larkin-window.larkin-window--scroll img,
+    .larkin-seal.larkin-seal--scroll svg {
+      animation-timeline: view();
+    }
+    .larkin-window.larkin-window--scroll {
+      animation-range: entry 0% cover 35%;
+    }
+    .larkin-window.larkin-window--scroll img {
+      animation-range: entry 0% cover 45%;
+    }
+    .larkin-seal.larkin-seal--scroll svg {
+      animation-range: entry 10% cover 40%;
+    }
+  }
+  @supports (animation-timeline: scroll()) {
+    .larkin-seal--opening {
+      animation: larkin-seal-drift linear both;
+    }
+    .larkin-seal.larkin-seal--opening {
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+  }
+}
+@keyframes larkin-window-open {
+  from {
+    clip-path: inset(
+      calc(9% * var(--larkin-motion, 1)) calc(6% * var(--larkin-motion, 1)) round var(--win-r)
+    );
+  }
+  to { clip-path: inset(0 0 round var(--win-r)); }
+}
+@keyframes larkin-settle {
+  from { transform: scale(calc(1 + 0.12 * var(--larkin-motion, 1))); }
+  to { transform: scale(1); }
+}
+@keyframes larkin-seal-on {
+  from {
+    transform: rotate(calc(-4deg - 90deg * var(--larkin-motion, 1)))
+      scale(calc(1 - 0.14 * var(--larkin-motion, 1)));
+  }
+  to { transform: rotate(-4deg) scale(1); }
+}
+@keyframes larkin-seal-drift {
+  from { rotate: 0deg; }
+  to { rotate: calc(24deg * var(--larkin-motion, 1)); }
+}
+
+/* ---------------------------------------------------------------------
+   Print: the menu, the hours and the address on plain paper. The bag, its
+   seals, the windows and the heat seal stay on screen.
+   On paper every surface is the paper and every ink is black, whatever the
+   printer does with backgrounds: the colors are reset as tokens, so every
+   rule that reads them (the titles printed on the bag, the gusset panels,
+   the menu page's categories, the header) follows without being named
+   here. Only the places that fill a shape with ink (buttons, the seasonal
+   tag) are drawn as outlines instead, so they read with background
+   graphics off too. Nothing moves on paper.
+   --------------------------------------------------------------------- */
+@media print {
+  :root,
+  body.larkin {
+    --ts-surface: #fff;
+    --ts-surface-alt: #fff;
+    --ts-surface-invert: #fff;
+    --ts-text: #000;
+    --ts-text-invert: #000;
+    --ts-text-invert-muted: #000;
+    --ts-text-invert-subtle: #000;
+    --larkin-bag: #fff;
+    --larkin-gusset: #fff;
+    --larkin-label: #fff;
+    --larkin-sticker: #fff;
+    --larkin-on-color: #000;
+    --ts-c-footer-bg: #fff;
+    --ts-c-footer-text: #000;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .larkin-crimp,
+  .larkin-seal,
+  .larkin-window,
+  .site-header__mobile,
+  .skip-link {
+    display: none !important;
+  }
+  body.larkin,
+  .larkin-bag,
+  .larkin-panel--label,
+  .larkin-panel--leaf,
+  .larkin-panel--gusset,
+  .site-header {
+    background: none !important;
+    color: #000 !important;
+    --lk-ink: #000;
+    --lk-ink-soft: #000;
+    --lk-rule: #999;
+  }
+  .larkin .ts-btn.ts-btn,
+  .menu-list__badge {
+    background: none !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+  }
+  .larkin-panel {
+    margin: 0 !important;
+    padding-inline: 0 !important;
+  }
+  .site-header {
+    position: static !important;
+  }
+}

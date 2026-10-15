@@ -2,11 +2,17 @@
 /**
  * Contact — location cards, the weekly hours, the form and a map slot.
  * With a second file in the locations collection the cards become a grid.
+ *
+ * The page is the back of the bag. The title is printed on the terracotta;
+ * the shop sits on the fern gusset, the weekly hours on a cream label cut as
+ * a leaf, the direct lines are printed on the bag itself, and the form is the
+ * large cream label beside them.
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
 import Button from "@studio/core/components/Button.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import Seal from "../components/Seal.astro";
 import LocationCard from "../components/LocationCard.astro";
 import { t, business, contactFormAction, mapEmbedUrl } from "../lib/site";
 import { getLocations, openingHours, groupedHours, hoursRowLabel, formatAddress } from "../lib/locations";
@@ -58,12 +64,17 @@ const schema = cafeSchema({
         title={t("contact.title")}
         subtitle={t("contact.subtitle")}
         level="h1"
+        class="contact__heading"
       />
+      <Seal motion="opening" class="contact__seal" />
 
       <div class="contact__grid">
         <div class="contact__locations">
           <ul
-            class:list={["contact__loc-list", locations.length > 1 && "contact__loc-list--multi"]}
+            class:list={[
+              "contact__loc-list larkin-panel larkin-panel--gusset",
+              locations.length > 1 && "contact__loc-list--multi",
+            ]}
           >
             {
               locations.map((loc) => (
@@ -74,7 +85,7 @@ const schema = cafeSchema({
             }
           </ul>
 
-          <div class="contact__hours">
+          <div class="contact__hours larkin-panel larkin-panel--leaf">
             <h2 class="contact__subtitle">{t("contact.hoursTitle")}</h2>
             <dl class="contact__hours-list">
               {
@@ -116,7 +127,7 @@ const schema = cafeSchema({
           </dl>
         </div>
 
-        <div class="contact__form-wrap">
+        <div class="contact__form-wrap larkin-panel larkin-panel--label">
           <h2 class="contact__subtitle">{t("contact.formTitle")}</h2>
           <form class="contact__form" action={contactFormAction} method="POST">
             <div class="contact__field">
@@ -171,7 +182,7 @@ const schema = cafeSchema({
           map should be. */}
       {
         mapEmbedUrl && (
-          <div class="contact__map">
+          <div class="contact__map larkin-window">
             <iframe
               src={mapEmbedUrl}
               title={t("contact.mapAlt")}
@@ -187,67 +198,143 @@ const schema = cafeSchema({
 
 <style>
   .contact {
-    padding-block: var(--ts-space-16) var(--ts-section-y);
+    padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 6vw, 5rem);
   }
+  .contact :global(.ts-container) {
+    position: relative;
+  }
+  .contact :global(.contact__heading) {
+    max-width: none;
+    gap: var(--ts-space-4);
+    padding-right: clamp(5.5rem, 20vw, 13rem);
+  }
+  .contact :global(.contact__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.6rem, 10.4vw, 7.5rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
+  .contact :global(.contact__heading .ts-heading__subtitle) {
+    max-width: 30rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+  .contact :global(.contact__seal) {
+    width: clamp(5.5rem, 18vw, 10rem);
+    right: var(--ts-container-pad);
+    top: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  /* The cards, the hours and the direct lines are three pieces in the left
+     column, each on its own surface; the form is the right column. In the
+     markup they keep their order: shop, hours, direct lines, form. */
   .contact__grid {
-    margin-top: var(--ts-space-12);
+    margin-top: clamp(2rem, 4vw, 3.5rem);
     display: grid;
     /* `minmax(0, 1fr)`, not the implicit `auto`. An auto track is sized by its
        content and cannot go below it: at 200% text the single column measured
-       460px inside a 240px box and the page scrolled sideways. `min-width: 0`
-       on the children does not help — the track is the thing that will not
-       shrink. */
+       460px inside a 240px box and the page scrolled sideways. */
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--ts-space-12);
+    gap: var(--larkin-rim);
+  }
+  .contact__locations {
+    display: contents;
+  }
+  .contact__grid :global(.larkin-panel) {
+    margin-inline: 0;
+    min-width: 0;
   }
   @media (min-width: 1024px) {
     .contact__grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: var(--ts-space-16);
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto auto 1fr;
       align-items: start;
     }
+    .contact__loc-list,
+    .contact__hours,
+    .contact__direct {
+      grid-column: 1;
+    }
+    /* The form label runs the full height of the left column, and the
+       message box takes the room that leaves: the bag shows round the
+       pieces, not as a field left over under the form. */
+    .contact__form-wrap {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+    }
+    .contact__form {
+      flex: 1;
+    }
+    .contact__field:has(textarea) {
+      flex: 1;
+    }
+    .contact__field textarea {
+      flex: 1;
+      min-height: 10rem;
+    }
+    /* Two shops or more: the shops take the full width above. */
+    .contact__loc-list--multi {
+      grid-column: 1 / -1;
+    }
+    .contact__grid:has(.contact__loc-list--multi) .contact__form-wrap {
+      grid-row: 2 / span 2;
+    }
   }
-  .contact__locations {
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-10);
-    min-width: 0;
-  }
+
   .contact__loc-list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding-block: clamp(1.75rem, 3.5vw, 2.75rem);
     display: grid;
-    gap: var(--ts-space-6);
+    gap: var(--ts-space-8);
   }
   @media (min-width: 640px) {
     .contact__loc-list--multi {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* An odd count: the last shop takes the whole row. */
+    .contact__loc-list--multi > li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
     }
   }
+  /* Three shops share one row. */
+  @media (min-width: 1024px) {
+    .contact__loc-list--multi:has(> :nth-child(3):last-child) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .contact__loc-list--multi:has(> :nth-child(3):last-child) > li {
+      grid-column: auto;
+    }
+  }
+
   .contact__subtitle {
     margin: 0 0 var(--ts-space-4);
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-xl);
-    font-weight: var(--ts-weight-semibold);
-    line-height: var(--ts-leading-snug);
-    color: var(--ts-color-primary-900);
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .contact__hours {
+    padding-block: clamp(1.75rem, 3.5vw, 2.75rem);
   }
   .contact__hours-list {
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--ts-space-2);
-    font-size: var(--ts-text-sm);
-    max-width: min(24rem, 100%);
+    border-top: 2px solid var(--ts-text);
   }
   .contact__hours-row {
     display: flex;
     justify-content: space-between;
-    gap: var(--ts-space-4);
-    padding-bottom: var(--ts-space-2);
-    border-bottom: 1px solid var(--ts-border);
     flex-wrap: wrap;
+    gap: var(--ts-space-4);
+    padding-block: var(--ts-space-3);
+    border-bottom: 1px solid var(--ts-border);
   }
   .contact__hours-row dt {
     color: var(--ts-text-muted);
@@ -255,58 +342,55 @@ const schema = cafeSchema({
   .contact__hours-row dd {
     margin: 0;
     font-variant-numeric: tabular-nums;
-    color: var(--ts-color-primary-700);
+    font-weight: 650;
   }
+
+  /* The direct lines are printed on the bag itself, cream. */
   .contact__direct {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--ts-space-1);
     margin: 0;
-    font-size: var(--ts-text-sm);
+    padding: clamp(1.25rem, 2.5vw, 2rem) var(--ts-container-pad);
   }
   .contact__direct dt {
-    color: var(--ts-text-muted);
+    margin-top: var(--ts-space-3);
+    font-size: var(--larkin-label-size);
+    font-weight: var(--ts-weight-semibold);
+    letter-spacing: var(--larkin-label-tracking);
+    text-transform: uppercase;
+  }
+  .contact__direct dt:first-child {
+    margin-top: 0;
   }
   .contact__direct dd {
-    margin: 0 0 var(--ts-space-2);
-  }
-  /* The aspect ratio is declared so the row reserves its height before the
-     embed loads, and the border keeps the frame from floating on the ground
-     colour. */
-  .contact__map {
-    margin-top: var(--ts-space-12);
-    border: 1px solid var(--ts-border);
-    border-radius: var(--ts-radius-lg);
-    overflow: hidden;
-  }
-  .contact__map iframe {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border: 0;
+    margin: 0;
+    font-weight: 550;
   }
   .contact__direct a {
     /* An e-mail address has no spaces to break at, so it sets a minimum width
        the box cannot go below. */
     overflow-wrap: anywhere;
-    /* The site's one link treatment: ink with a muted underline. */
-    color: var(--ts-text);
-    text-decoration: underline;
-    text-decoration-color: var(--ts-text-muted);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.3em;
-    /* 16.7px tall before this. inline-flex is what lets a link have a height
-       at all; the phone number is the one control a person taps while walking. */
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    color: var(--larkin-on-color);
+    font-family: var(--ts-font-display);
+    font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
   }
 
+  .contact__form-wrap {
+    padding-block: clamp(1.75rem, 3.5vw, 2.75rem);
+  }
   .contact__form {
     display: flex;
     flex-direction: column;
     gap: var(--ts-space-5);
-    max-width: min(30rem, 100%);
+    max-width: min(34rem, 100%);
   }
   .contact__field {
     display: flex;
@@ -314,20 +398,17 @@ const schema = cafeSchema({
     gap: var(--ts-space-1);
   }
   .contact__field label {
-    font-size: var(--ts-text-sm);
-    font-weight: var(--ts-weight-medium);
-    color: var(--ts-color-primary-700);
+    font-weight: 650;
   }
   .contact__field input,
   .contact__field textarea {
-    min-height: 44px;
-    padding: var(--ts-space-3);
+    min-height: 48px;
+    padding: var(--ts-space-3) var(--ts-space-4);
     font: inherit;
-    font-size: var(--ts-text-base);
     color: var(--ts-c-input-text);
-    background: var(--ts-c-input-bg);
-    border: 1px solid var(--ts-c-input-border);
-    border-radius: var(--ts-c-input-radius);
+    background: var(--larkin-sticker);
+    border: 2px solid var(--ts-c-input-border);
+    border-radius: var(--ts-radius-lg);
   }
   .contact__field textarea {
     resize: vertical;
@@ -339,16 +420,15 @@ const schema = cafeSchema({
   .contact__field input:focus-visible,
   .contact__field textarea:focus-visible {
     outline: none;
-    border-color: var(--ts-c-input-border-focus);
+    border-color: var(--ts-text);
     box-shadow: var(--ts-focus-ring);
   }
-  /* Error display. Measured: submitting the empty form left NO trace on the
-     page — no field was marked, no message stayed visible, and nothing was
-     announced to a screen reader. The only feedback was the browser's own
-     bubble, whose language follows the browser rather than the document.
-     The `:user-invalid` hook was already available and unused.
-     These rules come AFTER the focus rule on purpose: same specificity, so
-     the later one wins, and the focus rule was overriding the error colour. */
+  .contact__form :global(.ts-btn) {
+    align-self: flex-start;
+  }
+  /* Error display. These rules come AFTER the focus rule on purpose: same
+     specificity, so the later one wins, and the focus rule was overriding
+     the error colour. */
   .contact__req {
     font-weight: var(--ts-weight-regular);
     color: var(--ts-text-muted);
@@ -356,7 +436,7 @@ const schema = cafeSchema({
   .contact__error {
     display: none;
     margin: var(--ts-space-1) 0 0;
-    font-size: var(--ts-text-sm);
+    font-size: 0.9375rem;
     color: var(--ts-color-error);
   }
   .contact__field input:user-invalid,
@@ -373,5 +453,17 @@ const schema = cafeSchema({
     width: 1px;
     height: 1px;
     overflow: hidden;
+  }
+
+  /* The map is one more window cut into the bag. Its ratio is declared so
+     the row reserves its height before the embed loads. */
+  .contact__map {
+    margin-top: var(--larkin-rim);
+  }
+  .contact__map iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
   }
 </style>

@@ -1,5 +1,87 @@
 # Changelog — Larkin
 
+## 2.0.0 — 2026-10-15
+
+- New: the content editor reads a file named `cms/labels.json` when it exists.
+  `{ "menu.name": { "label": "Plate name" } }` lays your label or hint over
+  the field we declared in `cms/fields.json`; the key is the form and the
+  field, nested parts joined with dots (`business.hours.mon.open`). A key that
+  names no field stops `npm run cms -- generate` with the key in the message.
+- Changed: the content editor's generator reads the site language from
+  a file named `src/data/site.json` (`locale`) when the kit has that file, and from
+  `src/lib/site.ts` as before when it does not. Only a "{locale}" record path
+  uses it; nothing changes in a kit without `site.json`.
+- New (core, not used by a kit yet): a header generator named
+  `core/security/headers.mjs` writes `public/_headers` from data — our base
+  policy, the kit's path rules, your hosts to allow and the Cloudflare Web
+  Analytics switch, the booking and form addresses your site already reads,
+  and the `/admin` policy while the content editor is on. A kit that ships a
+  data file named `src/data/headers.json` and a script named `scripts/headers.mjs`
+  writes the file on every `npm run build`; the content editor commands then
+  leave the file alone. A kit without those files keeps today's behavior.
+- Changed: a new look on every page. The site is drawn as one screen-printed
+  coffee bag. The bag is terracotta and runs the whole page: the header, each
+  page's opening and the closing contact section are printed on it in cream.
+  The menu and the questions are cream labels stuck on the bag, the workspace
+  notes are its fern-green side gusset, the photographs are windows cut into
+  it, and a round seal made from your shop's name closes it. The footer is
+  the small print on the base of the bag, one ruled line each for the links,
+  the opening hours and every shop. The page addresses are unchanged.
+- Changed: new demo photographs. The seven photographs in
+  `src/assets/images/` and the share image `public/og.jpg` are new, with the
+  same file names and sizes. They are AI-generated, like the ones they
+  replace; `IMAGE-LICENSE.md` covers them.
+- Changed: new demo text, written for one café: the tagline, the opening
+  section, the menu headings, the workspace notes, the About page, the
+  contact heading and the 404 page in `src/i18n/en.json` and
+  `src/i18n/tr.json`, and the wording of eight menu items and five questions
+  in `src/content/`. No text key was added or removed, and no item name,
+  price, shop or opening hour changed.
+- Changed: on the home page the title is set in two lines with the opening
+  photograph in a window between them, on a phone too. The title is still
+  one line of text in `src/i18n/en.json`: it is split after its first comma,
+  or at the word gap nearest the middle when it has none.
+- Changed: the menu is set as a table, with names, prices, descriptions and
+  tags in columns that line up down the page. On the menu page each category
+  is a panel of its own.
+- Changed: new typefaces. Unbounded sets the headings, Figtree everything
+  else. Instrument Sans is no longer used.
+- New: the opening window opens once when the page loads and the seal turns
+  into place; the gallery windows open as they scroll into view. Nothing
+  loops, and none of it runs when the visitor's device asks for reduced
+  motion. To switch it off for everyone, set `--larkin-motion: 0` in the
+  `:root` block of `src/styles/global.css`; `--larkin-scroll` chooses smooth
+  or instant scrolling to a place on the page (`docs/README.md`, section 2,
+  Step 4, "Motion").
+- New: the phone browser's bar takes the bag's terracotta. It follows
+  `--ts-surface-invert` in `src/styles/global.css` by itself, and the font
+  preloads follow your two font tokens: neither needs editing in our files.
+- New: the menu, the opening hours and the address print on plain paper.
+- Migration: `src/styles/global.css` is yours, and this release replaces its
+  `:root` block and the font lines at the top. Take the new file, then carry
+  across only the values you had changed, using the token names in
+  `docs/README.md`, section 2, Step 4, including the two motion switches
+  (`--larkin-motion`, `--larkin-scroll`). The theme's own styles moved to a
+  new file, `src/styles/larkin.css`, which is ours.
+- Migration: the photographs in `src/assets/images/`, `public/og.jpg`,
+  `src/i18n/en.json`, `src/i18n/tr.json` and the changed menu and question
+  files in `src/content/` are yours. If you replaced them with your own,
+  keep yours: the new look needs no change in them. If you still use the demo
+  ones and want the new demo, copy ours over them.
+- Migration: `public/favicon.svg` is yours, and its two colors are now
+  terracotta and cream. Keep your own icon if you have one.
+- Migration: run `npm install` after updating: `package.json` now lists
+  `@fontsource-variable/unbounded` and `@fontsource-variable/figtree` in
+  place of `@fontsource-variable/instrument-sans`. Keep any packages you
+  added yourself.
+- Migration: if you edited a component or a page for its look, compare it
+  with the new one before copying ours over it: every component's styles
+  changed.
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions), `public/favicon.svg`, `public/og.jpg`, `src/assets/images/01-hero-room.jpg`, `src/assets/images/02-bar.jpg`, `src/assets/images/03-latte.jpg`, `src/assets/images/04-pourover.jpg`, `src/assets/images/05-food.jpg`, `src/assets/images/06-storefront.jpg`, `src/assets/images/07-detail.jpg`, `src/content/faq/beans.md`, `src/content/faq/decaf.md`, `src/content/faq/dogs.md`, `src/content/faq/groups.md`, `src/content/faq/seating.md`, `src/content/menu/americano.md`, `src/content/menu/butter-croissant.md`, `src/content/menu/cappuccino.md`, `src/content/menu/cold-brew.md`, `src/content/menu/granola-bowl.md`, `src/content/menu/house-espresso.md`, `src/content/menu/single-origin-pour-over.md`, `src/content/menu/sourdough-and-jam.md`, `src/i18n/en.json`, `src/i18n/tr.json`, `src/styles/global.css`
+
+Our files (copy over): `IMAGE-LICENSE.md`, `core/cms/cli.mjs`, `core/cms/emit.mjs`, `core/cms/labels.mjs`, `core/cms/record.mjs`, `core/package.json`, `core/security/headers.mjs`, `docs/README.md`, `package-lock.json`, `src/components/FaqList.astro`, `src/components/GalleryStrip.astro`, `src/components/LocationCard.astro`, `src/components/MenuList.astro`, `src/components/OpenStatus.astro`, `src/components/Seal.astro`, `src/components/SealDefs.astro`, `src/components/SiteFooter.astro`, `src/components/SiteHeader.astro`, `src/components/WorkspaceInfo.astro`, `src/layouts/BaseLayout.astro`, `src/lib/font-preloads.ts`, `src/lib/theme-color.ts`, `src/pages/404.astro`, `src/pages/about.astro`, `src/pages/contact.astro`, `src/pages/index.astro`, `src/pages/legal/[id].astro`, `src/pages/menu/index.astro`, `src/styles/larkin.css`
+
 ## 1.1.0 — 2026-10-13
 
 - Fixed: the short note for coding assistants in the project root now loads

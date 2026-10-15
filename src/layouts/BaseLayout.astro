@@ -5,14 +5,14 @@
  * prop.
  */
 import "../styles/global.css";
-// The Latin subset the demo content actually uses. Importing it here as a URL
-// gives the same hashed file the stylesheet's @font-face already points at -
-// Vite emits one asset, not a second copy - so the preload below can name it.
-import latinFontUrl from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
+import "../styles/larkin.css";
 import { buildTitle, jsonLd } from "@studio/core/utils/seo";
 import { LOCALE, t } from "../lib/site";
+import { THEME_COLOR } from "../lib/theme-color";
+import { FONT_PRELOADS } from "../lib/font-preloads";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import SealDefs from "../components/SealDefs.astro";
 
 interface Props {
   title: string;
@@ -77,27 +77,39 @@ const placeholderSite = canonical.hostname.endsWith("example.com");
 
         Without the preload the browser learns the font exists only after the
         stylesheet has parsed, so the chain is HTML -> CSS -> font and the page
-        paints once in the fallback face and again in the real one. Only the
-        latin subset is preloaded: latin-ext is a further 11 KB that this
-        content never touches, and a preload nobody uses is pure waste.
+        paints once in the fallback face and again in the real one (the
+        fallback faces in larkin.css are sized to match, so the swap does not
+        move the lines). Which files are preloaded follows the font tokens in
+        global.css (src/lib/font-preloads.ts).
         `crossorigin` is required even for a same-origin font, because fonts
         are fetched in CORS mode - without it the browser downloads the file
         twice. */}
-    <link rel="preload" href={latinFontUrl} as="font" type="font/woff2" crossorigin />
+    {FONT_PRELOADS.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+    {/* The phone browser paints its own bar in the bag's terracotta, read
+        from global.css (src/lib/theme-color.ts). */}
+    {THEME_COLOR && <meta name="theme-color" content={THEME_COLOR} />}
 
     {schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}
   </head>
-  <body>
+  <body class="larkin">
     <a href="#main" class="skip-link">{t("a11y.skipToContent")}</a>
-    <SiteHeader />
-    {/* tabindex="-1" makes <main> focusable by script and by a fragment
-        link without putting it in the tab order. Without it the skip link
-        moves the sequential starting point but leaves focus on <body>:
-        Chrome papers over the difference, Safari and some screen readers
-        historically do not. */}
-    <main id="main" tabindex="-1">
-      <slot />
-    </main>
+    <SealDefs />
+    {/* The top of the bag: its heat-sealed edge, then the bag itself, which
+        carries the header and every page. The footer is the base, under a
+        second sealed edge. */}
+    <div class="larkin-crimp larkin-crimp--top" aria-hidden="true"></div>
+    <div class="larkin-bag">
+      <SiteHeader />
+      {/* tabindex="-1" makes <main> focusable by script and by a fragment
+          link without putting it in the tab order. Without it the skip link
+          moves the sequential starting point but leaves focus on <body>:
+          Chrome papers over the difference, Safari and some screen readers
+          historically do not. */}
+      <main id="main" tabindex="-1">
+        <slot />
+      </main>
+    </div>
+    <div class="larkin-crimp larkin-crimp--bottom" aria-hidden="true"></div>
     <SiteFooter />
   </body>
 </html>
@@ -108,12 +120,12 @@ const placeholderSite = canonical.hostname.endsWith("example.com");
     left: var(--ts-space-4);
     top: calc(-1 * var(--ts-space-24));
     z-index: var(--ts-z-skip);
-    background: var(--ts-surface);
-    color: var(--ts-text);
+    background: var(--ts-text);
+    color: var(--larkin-sticker);
     padding: var(--ts-space-3) var(--ts-space-4);
-    border-radius: var(--ts-radius-md);
-    box-shadow: var(--ts-shadow-md);
-    transition: top var(--ts-duration-fast) var(--ts-ease-out);
+    border-radius: var(--ts-radius-full);
+    font-weight: var(--ts-weight-semibold);
+    transition: top calc(var(--ts-duration-fast) * var(--larkin-motion, 1)) var(--ts-ease-out);
   }
   .skip-link:focus-visible {
     top: var(--ts-space-4);

@@ -3,12 +3,18 @@
  * About — the short story and how the coffee is sourced and roasted.
  * The "summary" paragraph is written to be quotable on its own: it is the
  * sentence an answer engine lifts when someone asks about the shop.
+ *
+ * The opening is printed on the bag, with the bar seen through a wide window
+ * under the title. The three short stories share one cream label below,
+ * stepping down it from left to right like the blocks of text on the back of
+ * a bag. One label, one color: three blocks are not three colors.
  */
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Container from "@studio/core/components/Container.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
+import Seal from "../components/Seal.astro";
 import { t, business } from "../lib/site";
 import { getPrimaryLocation, openingHours } from "../lib/locations";
 import { cafeSchema } from "@studio/core/utils/seo";
@@ -22,16 +28,18 @@ const storyImage = images["../assets/images/02-bar.jpg"]?.default;
 
 /* `src` is the smallest candidate, not the largest: srcset decides what a
    modern browser fetches, and `src` is only the fallback for one that cannot
-   read srcset. */
+   read srcset. The file keeps the photograph's proportions; the window
+   crops it (a wide capsule on a laptop, a rectangle on a phone). */
 const story = storyImage
   ? await (async () => {
-      const [small, large] = await Promise.all([
-        getImage({ src: storyImage, width: 520, format: "webp" }),
-        getImage({ src: storyImage, width: 780, format: "webp" }),
+      const [small, medium, large] = await Promise.all([
+        getImage({ src: storyImage, width: 640, format: "webp" }),
+        getImage({ src: storyImage, width: 1024, format: "webp" }),
+        getImage({ src: storyImage, width: 1400, format: "webp" }),
       ]);
       return {
         src: small.src,
-        srcset: `${small.src} 520w, ${large.src} 780w`,
+        srcset: `${small.src} 640w, ${medium.src} 1024w, ${large.src} 1400w`,
         width: small.attributes.width,
         height: small.attributes.height,
       };
@@ -70,12 +78,13 @@ const schema = cafeSchema({
 <BaseLayout title={t("nav.about")} description={t("about.summary")} schema={schema}>
   <section class="about">
     <Container>
-      <div class="about__grid">
+      <div class:list={["about__grid", !story && "about__grid--no-photo"]}>
         <div class="about__text">
           <SectionHeading
             eyebrow={t("about.eyebrow")}
             title={t("about.title")}
             level="h1"
+            class="about__heading"
           />
           <p class="about__lead">{t("about.lead")}</p>
           <p class="about__summary">{t("about.summary")}</p>
@@ -84,104 +93,211 @@ const schema = cafeSchema({
         {
           story && (
             <div class="about__media">
-              <img
-                src={story.src}
-                srcset={story.srcset}
-                sizes="(min-width: 1440px) 610px, (min-width: 1024px) calc((100vw - 144px) / 2.1), 100vw"
-                width={story.width}
-                height={story.height}
-                alt={t("about.imageAlt")}
-                loading="eager"
-                decoding="async"
-                class="about__img"
-              />
+              <div class="larkin-window larkin-window--pill larkin-window--opening about__window">
+                <img
+                  src={story.src}
+                  srcset={story.srcset}
+                  sizes="(min-width: 900px) 92vw, 100vw"
+                  width={story.width}
+                  height={story.height}
+                  alt={t("about.imageAlt")}
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  class="about__img"
+                />
+              </div>
+              <Seal motion="opening" class="about__seal" />
             </div>
           )
         }
       </div>
-
-      <div class="about__blocks">
-        <article class="about__block">
-          <h2 class="about__block-title">{t("about.sourcingTitle")}</h2>
-          <p class="about__block-body">{t("about.sourcingBody")}</p>
-        </article>
-        <article class="about__block">
-          <h2 class="about__block-title">{t("about.roastTitle")}</h2>
-          <p class="about__block-body">{t("about.roastBody")}</p>
-        </article>
-        <article class="about__block">
-          <h2 class="about__block-title">{t("about.nameTitle")}</h2>
-          <p class="about__block-body">{t("about.nameBody")}</p>
-        </article>
-      </div>
     </Container>
+
+    <div class="about__blocks larkin-panel larkin-panel--label">
+      <article class="about__block">
+        <h2 class="about__block-title">{t("about.sourcingTitle")}</h2>
+        <p class="about__block-body">{t("about.sourcingBody")}</p>
+      </article>
+      <article class="about__block">
+        <h2 class="about__block-title">{t("about.roastTitle")}</h2>
+        <p class="about__block-body">{t("about.roastBody")}</p>
+      </article>
+      <article class="about__block">
+        <h2 class="about__block-title">{t("about.nameTitle")}</h2>
+        <p class="about__block-body">{t("about.nameBody")}</p>
+      </article>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   .about {
-    padding-block: var(--ts-space-16) var(--ts-section-y);
+    padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 6vw, 5rem);
   }
+  /* Title across, the window under it, then the lead and the summary side
+     by side. The photograph comes last in the markup, after the words. */
   .about__grid {
     display: grid;
-    gap: var(--ts-space-10);
-    align-items: center;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(0.5rem, 1.6vw, 1.5rem);
   }
-  @media (min-width: 1024px) {
-    .about__grid {
-      grid-template-columns: 1.1fr 1fr;
-      gap: var(--ts-space-16);
-    }
+  .about__text {
+    display: contents;
+  }
+  .about :global(.about__heading) {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    max-width: none;
+    gap: var(--ts-space-4);
+  }
+  .about :global(.about__heading .ts-heading__eyebrow) {
+    margin-bottom: var(--ts-space-1);
+  }
+  .about :global(.about__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.6rem, 8.6vw, 6.75rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    max-width: 14ch;
+  }
+  .about__media {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    position: relative;
+    margin-block: clamp(1.25rem, 2.6vw, 2.25rem);
+  }
+  .about__window {
+    --win-r: var(--larkin-window-rect);
+    aspect-ratio: 4 / 3;
+  }
+  .about__window img {
+    object-position: 50% 45%;
+  }
+  .about :global(.about__seal) {
+    width: clamp(5.5rem, 20vw, 10rem);
+    right: -0.35rem;
+    bottom: calc(-1 * clamp(1.75rem, 4vw, 3rem));
   }
   .about__lead {
-    margin: var(--ts-space-6) 0 0;
-    font-size: var(--ts-text-lg);
-    line-height: var(--ts-leading-body);
-    color: var(--ts-color-primary-700);
-    max-width: 52ch;
+    grid-row: 3;
+    grid-column: 1 / -1;
+    margin: 0;
+    max-width: 30rem;
+    font-family: var(--ts-font-display);
+    font-size: clamp(1.25rem, 2.1vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
   }
   .about__summary {
+    grid-row: 4;
+    grid-column: 1 / -1;
     margin: var(--ts-space-4) 0 0;
-    font-size: var(--ts-text-base);
-    line-height: var(--ts-leading-body);
-    color: var(--ts-text-muted);
-    max-width: 58ch;
+    max-width: var(--ts-prose-max);
+    font-size: 1.0625rem;
+    line-height: 1.6;
   }
-  .about__img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    /* Square, like the hero and gallery photographs. */
-    border-radius: 0;
+  .about__grid--no-photo .about__lead {
+    margin-top: var(--ts-space-6);
   }
+  @media (min-width: 900px) {
+    .about__media {
+      grid-column: 1 / 12;
+    }
+    .about__window {
+      --win-r: var(--larkin-window-pill);
+      aspect-ratio: auto;
+      height: clamp(14rem, 26vw, 22rem);
+    }
+    /* Here the seal closes the far end of the window, not the near one
+       as on the home page. */
+    .about :global(.about__seal) {
+      right: -2.5rem;
+      top: auto;
+      bottom: -2.5rem;
+      width: clamp(8.5rem, 12vw, 11rem);
+    }
+    .about__lead {
+      grid-column: 1 / 7;
+    }
+    .about__summary {
+      grid-row: 3;
+      grid-column: 8 / -1;
+      margin-top: var(--ts-space-1);
+    }
+  }
+
+  /* The label: three blocks stepping down it, left to right. */
   .about__blocks {
-    margin-top: var(--ts-space-16);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-block: clamp(2.5rem, 5vw, 4.25rem);
     display: grid;
     gap: var(--ts-space-8);
   }
-  @media (min-width: 768px) {
-    .about__blocks {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
   .about__block {
-    padding-top: var(--ts-space-5);
-    border-top: 1px solid var(--ts-border-strong);
+    padding-top: var(--ts-space-4);
+    border-top: 2px solid var(--ts-text);
+    min-width: 0;
   }
   .about__block-title {
     margin: 0 0 var(--ts-space-3);
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-xl);
-    font-weight: var(--ts-weight-semibold);
-    line-height: var(--ts-leading-snug);
-    color: var(--ts-color-primary-900);
+    font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    overflow-wrap: break-word;
   }
   .about__block-body {
     margin: 0;
-    font-size: var(--ts-text-sm);
-    line-height: var(--ts-leading-body);
+    max-width: var(--ts-prose-max);
+    font-size: 1.0625rem;
+    line-height: 1.6;
     color: var(--ts-text-muted);
+  }
+  /* On a phone each block is a label of its own, set to the text edge
+     above with the bag showing round it, and the second is cut as a leaf. */
+  @media (max-width: 899.98px) {
+    .about {
+      padding-bottom: var(--ts-space-24);
+    }
+    .about__blocks {
+      padding: 0;
+      background: none;
+      margin-top: var(--ts-space-12);
+      gap: var(--ts-space-8);
+      margin-inline: var(--ts-container-pad);
+    }
+    .about__block {
+      padding: var(--ts-space-8) var(--ts-container-pad);
+      border-top: 0;
+      border-radius: var(--larkin-cut-label);
+      background: var(--larkin-label);
+    }
+    .about__block:nth-child(even) {
+      border-radius: var(--larkin-cut-leaf) var(--larkin-cut-fold);
+    }
+    .about__block-title {
+      padding-top: var(--ts-space-4);
+      border-top: 2px solid var(--ts-text);
+    }
+  }
+  @media (min-width: 900px) {
+    .about__blocks {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--ts-space-6);
+      row-gap: var(--ts-space-10);
+    }
+    .about__block:nth-child(1) {
+      grid-column: 1 / span 6;
+    }
+    .about__block:nth-child(2) {
+      grid-column: 4 / span 6;
+    }
+    .about__block:nth-child(3) {
+      grid-column: 7 / span 6;
+    }
   }
 </style>

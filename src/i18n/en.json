@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Fern & Filter",
-    "tagline": "Specialty coffee and light bites in Northwest Portland"
+    "tagline": "Coffee roasted on Mondays, poured under a green awning in Northwest Portland"
   },
   "nav": {
     "home": "Home",
@@ -12,8 +12,8 @@
   },
   "hero": {
     "eyebrow": "Coffee bar & roastery",
-    "title": "Good coffee, no rush",
-    "lead": "Specialty coffee and light bites in a sunlit corner of Northwest Portland. Walk in, settle in.",
+    "title": "Roasted Monday, no rush",
+    "lead": "We roast on Mondays and let the beans rest two days before they reach the bar under the green awning.",
     "primaryCta": "Get directions",
     "secondaryCta": "View full menu",
     "imageAlt": "The bar and window seating at Fern & Filter on a bright morning"
@@ -36,10 +36,10 @@
   },
   "menu": {
     "eyebrow": "What we serve",
-    "title": "A few favorites",
-    "subtitle": "Our full menu changes with the seasons. Here is what is pouring right now.",
+    "title": "On the bar today",
+    "subtitle": "Espresso is the Awning blend all year. The pour-over changes on the first of the month.",
     "pageTitle": "What we serve",
-    "pageSubtitle": "Prices in USD. The menu changes seasonally.",
+    "pageSubtitle": "Prices in USD. Drinks tagged Seasonal come and go with what we can get.",
     "viewFull": "View full menu",
     "seasonalBadge": "Seasonal",
     "categoriesNav": "Menu categories",
@@ -61,15 +61,15 @@
   "workspace": {
     "eyebrow": "Workspace",
     "title": "Yes, bring your laptop",
-    "lead": "Sometimes you need a table, an outlet and good coffee to get things done. We have all three.",
+    "lead": "The long oak table seats eight and has outlets along its rail. On weekdays it is full by 9:00.",
     "wifiTitle": "Wi-Fi",
-    "wifiBody": "Free, no password. Fast enough for video calls.",
+    "wifiBody": "Free, no password. For video calls, the sidewalk bench is quieter.",
     "powerTitle": "Power",
-    "powerBody": "Outlets at every table and along the bar.",
+    "powerBody": "Long table and bar, not the windows.",
     "noiseTitle": "Noise level",
-    "noiseBody": "A gentle hum. Not a library, not a concert.",
+    "noiseBody": "Grinder, pitchers, the streetcar bell.",
     "laptopTitle": "Laptop policy",
-    "laptopBody": "Welcome all day. On weekends we ask you to share tables between 10:00 and 13:00."
+    "laptopBody": "Welcome all day. On weekends we ask you to share the long table between 10:00 and 13:00."
   },
   "gallery": {
     "eyebrow": "Inside",
@@ -86,15 +86,15 @@
   },
   "about": {
     "eyebrow": "Our story",
-    "title": "A corner for coffee and calm",
-    "lead": "Fern & Filter started in 2019 with a simple idea: make great coffee, keep things simple, and leave room for people to be.",
-    "summary": "Fern & Filter is a specialty coffee bar in Northwest Portland, Oregon, roasting its own beans in small batches and open seven days a week.",
+    "title": "Two windows and a long table",
+    "lead": "Fern & Filter opened in 2019 under the green awning on NW Thimbleberry. We roast across the river on Mondays and carry the beans back the same afternoon.",
+    "summary": "Fern & Filter is a specialty coffee bar on NW Thimbleberry Avenue in Portland, Oregon. It roasts its Awning house blend and one monthly single origin every Monday, and is open seven days a week.",
     "sourcingTitle": "Where the beans come from",
-    "sourcingBody": "We roast our own beans in small batches at our roastery in southeast Portland. Every bag is sourced from farms we trust, where people are paid fairly and the land is treated well. We are not perfect about it, but we are deliberate.",
+    "sourcingBody": "The Awning blend is Brazil and Colombia, bought from the same two farms every year so it tastes the same in every bag. The single origin is where we take chances: one lot a month, picked by cupping samples at the long table. We are not perfect about sourcing, but we are deliberate.",
     "nameTitle": "About the name",
     "nameBody": "The fern is Portland: it grows everywhere and asks for very little. The filter is the work: taking something raw and turning it into something worth slowing down for.",
     "roastTitle": "How we roast",
-    "roastBody": "Light to medium. We want you to taste the origin, not the roast. Our single-origin rotates monthly, so ask at the counter or check the menu for what is fresh.",
+    "roastBody": "Light to medium, every Monday, in a small roastery in southeast Portland. The beans rest two days, so Monday's roast is Wednesday's espresso. The single origin changes on the first of the month, and the bag on the shelf says which one it is.",
     "imageAlt": "Morning light across the counter and the shelf of house-roasted beans"
   },
   "faq": {
@@ -104,8 +104,8 @@
   },
   "contact": {
     "eyebrow": "Say hello",
-    "title": "Come find us",
-    "subtitle": "Question, feedback, or you just want to talk coffee. We would love to hear from you.",
+    "title": "Under the green awning",
+    "subtitle": "Ask about the long table, beans or the next cupping. We read these after close.",
     "formTitle": "Send us a message",
     "hoursTitle": "Weekly hours",
     "form": {
@@ -138,7 +138,7 @@
   },
   "notFound": {
     "title": "Wrong turn",
-    "body": "This page does not exist, but our coffee does. Let us get you back.",
+    "body": "This page does not exist. The coffee is one click away, or two blocks north of the streetcar stop.",
     "cta": "Back to home",
     "ctaSecondary": "View our menu"
   },

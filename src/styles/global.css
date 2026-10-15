@@ -1,13 +1,18 @@
 /* larkin — the global stylesheet entry point.
    Order matters: Tailwind, then the core tokens, then the Tailwind bridge,
-   then this theme's overrides. Move one and the cascade stops working. */
+   then this theme's overrides. Move one and the cascade stops working.
+   The theme's own system (the bag, its panels, windows and seal, the
+   motion and the print stylesheet) lives in `larkin.css` next to this file
+   and is imported after it by BaseLayout: that file is ours and an update
+   replaces it; this one is yours. */
 /* Self-hosted fonts: no third-party request, nothing to disclose in a
    privacy policy, and one less connection before first paint.
-   The weight axis only. The width file is 57 KB against 30 KB for this one,
-   and the extra 27 KB bought a single effect - narrowed uppercase labels -
-   that wider letter-spacing reproduces closely enough. Every visitor
-   downloads it before first paint; a handful of labels are not worth that. */
-@import "@fontsource-variable/instrument-sans/wght.css";
+   Two families, the weight axis only: Unbounded for the headings, Figtree
+   for everything you read. The Latin file of each is about 50 KB and 20 KB;
+   the layout preloads each one while the font tokens below still name it
+   (src/lib/font-preloads.ts). */
+@import "@fontsource-variable/unbounded/wght.css";
+@import "@fontsource-variable/figtree/wght.css";
 @import "tailwindcss";
 @import "@studio/core/tokens.css";
 @import "@studio/core/theme.css";
@@ -18,27 +23,25 @@
    only block that changes when the site is rethemed — if you find yourself
    editing a component to change a color, the token is missing, not the rule.
 
-   The identity in three words: cream ground, espresso ink, one mark for
-   what changes. A cafe is read standing up, in a hurry, usually in the sun,
-   and the page is built for that: one typeface, near-black type on warm
-   cream, an espresso footer, and a single terracotta mark kept for the two
-   things a visitor scans for: what is on this season, and which page they
-   are on.
+   The identity: one screen-printed coffee bag, terracotta from top to
+   bottom. Header, page openings and the closing are printed on it in
+   cream; menu and questions sit on cream labels, workspace notes on the
+   fern-green gusset; photographs are windows, a round seal shuts the
+   bag, and its base carries the footer as small print.
 
-   Set deliberately against the restaurant theme in the catalog. That one is a
-   serif on warm paper with an ember accent and square corners; this one is a
-   grotesque on a lighter cream with soft corners, where the warmth comes from
-   the ground and the footer rather than from color on the page. Two
-   templates that share a look are two templates a buyer only buys one of.
+   Color belongs to the position, never to the content: no category, item or
+   shop has a color of its own, so a buyer can add any of them and the
+   page stays in register.
    ===================================================== */
 :root {
-  /* Near-black through to cream, all in one warm hue family so nothing on the
-     page is a foreign gray. 16.3 / 7.1 / 5.1 against the ground. */
-  --ts-color-primary-50:  #f9f6f0;
-  --ts-color-primary-100: #f1ece3;
-  --ts-color-primary-200: #e5dfd4;
-  --ts-color-primary-300: #cbc7be;
-  --ts-color-primary-400: #a8a49b;
+  /* Ink, near-black through to the creams, in one warm hue family so nothing
+     on the page is a foreign gray. 15.4:1 for the ink and 6.7:1 for the
+     muted ink against the label. */
+  --ts-color-primary-50:  #fbf4e8;
+  --ts-color-primary-100: #f6efe2;
+  --ts-color-primary-200: #e8dfcf;
+  --ts-color-primary-300: #cfc6b6;
+  --ts-color-primary-400: #a8a196;
   --ts-color-primary-500: #86827a;
   --ts-color-primary-600: #6c6961;
   --ts-color-primary-700: #55534e;
@@ -46,87 +49,110 @@
   --ts-color-primary-900: #1a1917;
   --ts-color-primary-950: #0e0e0d;
 
-  /* Terracotta, and it has two uses: the seasonal mark in the menu and the
-     underline under the current page in the header. "This changes" and "you
-     are here" are the two things a visitor scans for, so they get the color.
-     Everything else, buttons and links included, is ink. 5.0:1 on the ground. */
+  /* Terracotta. The same color as the bag, used as a mark on cream: the
+     seasonal tag in the menu (cream type on it, 5.5:1) and the small headings
+     of the footer (5.3:1 on the label). Buttons and links are never
+     terracotta; on cream they are ink and on the bag they are cream. */
   --ts-color-accent-400: #cf7a52;
-  --ts-color-accent-500: #b8623a;
-  --ts-color-accent-600: #a6522f;
+  --ts-color-accent-500: #b45a33;
+  --ts-color-accent-600: #9e4a28;
 
-  --ts-surface:        #f9f6f0;
-  --ts-surface-alt:    #f1ece3;
-  /* Espresso, a shade warmer than the ink. The footer is the largest field of
-     color on the page, so it carries the warmth the accent is not spent on.
-     Body text and buttons stay #1a1917. */
-  --ts-surface-invert: #221c16;
+  /* The label: the cream panels and the ground under the footer. */
+  --ts-surface:        #f6efe2;
+  /* The sticker paper, a shade lighter: the open/closed tag, the seal,
+     the form fields. */
+  --ts-surface-alt:    #fbf4e8;
+  /* The bag. Everything printed on it is cream, at full strength: there is
+     no gray paragraph on a colored field. 5.5:1 for the cream type, 5.3:1 for
+     the label cream. Do not lighten the terracotta without measuring again;
+     it is the tightest pair on the site. A phone browser paints its own bar
+     in this color too (src/lib/theme-color.ts reads it from here), so keep
+     it a plain hex value. */
+  --ts-surface-invert: #9e4a28;
 
   --ts-text:        #1a1917;
   --ts-text-muted:  #55534e;
-  --ts-text-subtle: #6c6961;
-  --ts-border:        #e5dfd4;
-  --ts-border-strong: #cbc7be;
-  /* The field border, in this theme's own hue but actually visible: 3.21:1
-     against the field background, where a control boundary needs 3:1. Only the
-     lightness moved; hue and saturation are unchanged, so nothing about the
-     palette shifts. It used to inherit from --ts-border and measured about
-     1.3:1 -- a border almost nobody could see, on the one element where the
-     border is what tells you the control is there. */
-  --ts-c-input-border: #94896f;
+  --ts-text-subtle: #55534e;
+  --ts-border:        #ddd4c4;
+  --ts-border-strong: #b9b0a0;
+  /* The form field border: 3.6:1 against the field, where a control
+     boundary needs 3:1. */
+  --ts-c-input-border: #857c6b;
 
-  --ts-text-invert:        #f4f3f0;
-  --ts-text-invert-muted:  #c9c6bf;
-  --ts-text-invert-subtle: #9d9a92;
-  --ts-border-invert:      #3a332b;
+  --ts-text-invert:        #fbf4e8;
+  --ts-text-invert-muted:  #f6efe2;
+  --ts-text-invert-subtle: #f6efe2;
+  --ts-border-invert:      #c9967e;
 
-  /* One family, both roles. Contrast comes from the width axis, from case and
-     from size — not from a second typeface. Five of the fifteen best-set sites
-     measured in this sector use a single family, and none of the weakest do:
-     a page that needs two faces to build a hierarchy usually has not built
-     one. Instrument Sans also carries tabular figures, which the menu and the
-     opening hours both need. */
-  --ts-font-display: "Instrument Sans Variable", ui-sans-serif, system-ui,
+  /* Two families. Unbounded is wide and round and only ever sets display
+     type: headings, category names, the workspace terms, the address in
+     the closing section. Figtree sets the reading text, labels, prices and hours,
+     and carries the tabular figures they need. The fallback faces are sized
+     to match in larkin.css, so the lines do not move when the fonts load. */
+  --ts-font-display: "Unbounded Variable", "Unbounded Fallback", ui-sans-serif, system-ui, sans-serif;
+  --ts-font-sans: "Figtree Variable", "Figtree Fallback", ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", Roboto, sans-serif;
-  --ts-font-sans: var(--ts-font-display);
 
-  /* Buttons are ink. A cafe has one action — get here — and it does not need
-     a colour to say so when it is the only filled thing on the page. */
+  /* Buttons are drawn, not filled: a ring in the ink of whatever they sit
+     on, filled only under the pointer. The contact form's send button is the
+     one filled button on the site. */
   --ts-c-btn-bg:       var(--ts-color-primary-900);
   --ts-c-btn-bg-hover: var(--ts-color-primary-950);
+  --ts-c-btn-radius:   var(--ts-radius-full);
 
-  /* Tighter than the restaurant's rhythm. Short sections, read quickly. */
   --ts-section-y: var(--ts-space-20); /* 80px */
+  --ts-container-max: 86rem;
 
-  /* The page frame. Core's 100rem is a storefront width: at 1440 the frame
-     is the whole screen, the left-aligned sections hug the left edge and the
-     right half stays empty. 80rem gives the page real margins. The hero
-     photograph and the gallery sit outside the frame and stay full width. */
-  --ts-container-max: 80rem;
+  /* The micro-label: 13px, uppercase, wide tracking. */
+  --larkin-label-size: 0.8125rem;
+  --larkin-label-tracking: 0.14em;
 
-  /* The micro-label. At 11px, uppercase, with tracking this wide the label
-     reads as a second voice without being a second face - which is what lets
-     one family carry the whole theme. The tracking does that work alone now
-     that the width axis is gone; see the font import at the top of the file. */
-  /* 12px, not 11px. At 11px this is the smallest, thinnest, most tightly
-     tracked text on the page and it passed contrast by 0.19 (4.69:1 against
-     4.5:1 required) — a margin that any future colour change spends. One
-     pixel buys the margin back without touching the design intent. After the
-     cream shift the tightest pair (this color on the alternate ground) is
-     4.66:1; do not warm or darken --ts-surface-alt further. */
-  --larkin-label-size: 0.75rem;
-  --larkin-label-tracking: 0.16em;
-
-  /* The "Open now" green. It lives in core's palette, which the docs say may
-     be replaced wholesale on an update — so a buyer who rebrands by editing
-     this file changed everything except the most prominent status indicator
-     on the site, and a buyer who edited core instead loses it on the next
-     version. It belongs here, with the rest of the palette. */
+  /* The "Open now" green. It is only ever printed on the sticker paper
+     (6.5:1), never on the terracotta or the fern, where it would not read. */
   --ts-color-success: #166534;
 
-  --ts-c-section-eyebrow-color:    var(--ts-text-subtle);
+  --ts-c-section-eyebrow-color:    currentColor;
   --ts-c-section-eyebrow-size:     var(--larkin-label-size);
-  --ts-c-section-eyebrow-weight:   var(--ts-weight-medium);
+  --ts-c-section-eyebrow-weight:   var(--ts-weight-semibold);
   --ts-c-section-eyebrow-tracking: var(--larkin-label-tracking);
+
+  /* The footer is the small print on the base of the bag: label cream. */
+  --ts-c-footer-bg:   var(--ts-surface);
+  --ts-c-footer-text: var(--ts-text);
+
+  /* ---- The bag, by name ---- */
+  --larkin-bag:      var(--ts-surface-invert);
+  /* Fern green, the side gusset: cream type 6.3:1. */
+  --larkin-gusset:   #3b6340;
+  --larkin-label:    var(--ts-surface);
+  --larkin-sticker:  var(--ts-surface-alt);
+  --larkin-on-color: var(--ts-text-invert);
+  /* The ribs of the heat seal at the top of the page and above the footer. */
+  --larkin-crimp:    #7f3b20;
+
+  /* Shapes. A window is a rounded rectangle or a horizontal capsule, never
+     anything else. Each panel has its own die-cut, so no corner is repeated
+     down the page: the label is a rounded sticker, the gusset a straight
+     fold, the second label a leaf (two opposite corners rounded). */
+  --larkin-window-rect: 2.25rem;
+  --larkin-window-pill: 999px;
+  --larkin-cut-label:   clamp(1.5rem, 3vw, 2.75rem);
+  --larkin-cut-fold:    0.5rem;
+  --larkin-cut-leaf:    clamp(2.5rem, 6vw, 5.5rem);
+  /* The bag showing round a panel. */
+  --larkin-rim:         clamp(0.5rem, 0.9vw, 0.75rem);
+
+  /* Motion. 1: the opening window opens and its seal turns into place, the
+     gallery windows open as they scroll in, the second seal turns over the
+     questions, an answer fades in and a page crossfades into the next.
+     0: all of it is still, for every visitor, every page shows its
+     finished state at once, and buttons, links and the menu control change
+     state instantly. A visitor whose device asks for reduced motion
+     gets 0 whatever this says. */
+  --larkin-motion: 1;
+  /* How a link to a place on the page gets there: `smooth` or `auto` (a
+     jump). Reduced motion always jumps. */
+  --larkin-scroll: smooth;
 }
 
 /* Figures line up in columns: prices, opening hours, the week table. */

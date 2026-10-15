@@ -1,12 +1,20 @@
 ---
 /**
- * GalleryStrip — a horizontally scrolling strip showing the room.
+ * GalleryStrip — the room, seen through windows cut into the bag.
  *
  * Images are found by convention in `src/assets/images/`. A missing file
- * drops its card; if no image resolves at all the whole section stops
+ * drops its window; if no image resolves at all the whole section stops
  * rendering. That makes a broken image or a "photo goes here" box
  * impossible, which matters for a template: the site has to look finished
  * from the first minute, including before you have replaced the photography.
+ *
+ * The section sits on the terracotta of the bag, so the field color covers
+ * the edge of every photograph. A window has two shapes, by position and
+ * never by photograph: odd places are rounded rectangles, even places
+ * horizontal capsules. With the six shipped photographs the wide-screen
+ * layout is a fixed mosaic in which the heading takes the first cell; with
+ * any other number the windows flow two to a row, a rectangle beside a
+ * capsule, which come out at nearly the same height.
  */
 import { getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
@@ -53,146 +61,178 @@ const shots = [...named, ...extras].filter((s) => s.img);
 /* Built by hand rather than with <Image>, for one reason: <Image> puts the
    FULL-SIZE rendition in `src` and the small ones in `srcset`. Every browser
    that understands srcset ignores `src`, so those large files were built and
-   deployed for nobody — 631.834 byte of the 1,79 MB dist, never served.
-   Pointing `src` at the smallest candidate keeps the fallback working for a
-   browser without srcset and stops shipping the rest. */
+   deployed for nobody. Pointing `src` at the smallest candidate keeps the
+   fallback working for a browser without srcset and stops shipping the rest.
+   The files keep the photograph's own proportions: a window crops them
+   differently at each width (a capsule on a phone, a tall rectangle in the
+   mosaic), so cutting one shape into the file would be wrong at the other. */
 const frames = await Promise.all(
   shots.map(async (shot) => {
-    /* Cropped to the frame the CSS draws (3:4), not only scaled to its
-       width. The photographs are landscape and the strip is upright, so a
-       file cut to width alone arrives 280x188 and `object-fit: cover` blows
-       it up to 280x373 — a 2x upscale on every frame in the strip. Cutting
-       the crop at build time hands the browser the pixels it displays. */
-    const [small, large] = await Promise.all([
-      getImage({ src: shot.img!, width: 280, height: 373, fit: "cover", format: "webp" }),
-      getImage({ src: shot.img!, width: 560, height: 747, fit: "cover", format: "webp" }),
+    const [small, medium, large] = await Promise.all([
+      getImage({ src: shot.img!, width: 480, format: "webp" }),
+      getImage({ src: shot.img!, width: 800, format: "webp" }),
+      getImage({ src: shot.img!, width: 1200, format: "webp" }),
     ]);
     return {
       alt: shot.alt,
       src: small.src,
-      srcset: `${small.src} 280w, ${large.src} 560w`,
+      srcset: `${small.src} 480w, ${medium.src} 800w, ${large.src} 1200w`,
       width: small.attributes.width,
       height: small.attributes.height,
     };
   })
 );
+const mosaic = frames.length === 6;
 ---
 
 {
   shots.length > 0 && (
-    <section class="gallery">
-      <Container>
-        <SectionHeading eyebrow={t("gallery.eyebrow")} title={t("gallery.title")} />
+    <section class:list={["gallery", mosaic && "gallery--mosaic"]}>
+      <Container class="gallery__frame">
+        <SectionHeading eyebrow={t("gallery.eyebrow")} title={t("gallery.title")} class="gallery__head" />
+        {/* A named region, so the windows are announced as one group. It no
+            longer scrolls sideways, so it is no longer a tab stop. */}
+        <div class="gallery__region" role="region" aria-label={t("gallery.title")}>
+          <ul class="gallery__grid">
+            {frames.map((frame) => (
+              <li class="gallery__item">
+                <div class="larkin-window larkin-window--scroll gallery__window">
+                  <img
+                    src={frame.src}
+                    srcset={frame.srcset}
+                    sizes="(min-width: 900px) 45vw, 100vw"
+                    width={frame.width}
+                    height={frame.height}
+                    alt={frame.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </Container>
-      {/* A scrolling box is focusable in Chrome whether or not anyone asked
-          for it, and this one was a 2117x396 tab stop with an empty
-          accessible name. Naming it and declaring it a region turns an
-          accident into a deliberate, announced control. */}
-      <div
-        class="gallery__scroller"
-        role="region"
-        tabindex="0"
-        aria-label={t("gallery.title")}
-      >
-        <ul class="gallery__track">
-          {frames.map((frame) => (
-            <li class="gallery__item">
-              <img
-                src={frame.src}
-                srcset={frame.srcset}
-                sizes="(min-width: 768px) 280px, 240px"
-                width={frame.width}
-                height={frame.height}
-                alt={frame.alt}
-                loading="lazy"
-                decoding="async"
-                class="gallery__img"
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
     </section>
   )
 }
 
 <style>
   .gallery {
-    padding-block: var(--ts-section-y);
+    padding-block: clamp(3rem, 5.5vw, 4.5rem) clamp(2.5rem, 4.5vw, 3.75rem);
   }
-  .gallery__scroller {
-    margin-top: var(--ts-space-10);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    padding-inline: var(--ts-container-pad);
-    /* Snap to the gutter, not to the box edge. Without it the first frame
-       was pulled to x=0 on load and the row started left of the heading. */
-    scroll-padding-inline: var(--ts-container-pad);
-    padding-bottom: var(--ts-space-3);
-  }
-  .gallery__track {
-    list-style: none;
-    display: flex;
+  .gallery :global(.gallery__head) {
     gap: var(--ts-space-4);
+  }
+  .gallery :global(.gallery__head .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2.1rem, 4.6vw, 4.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    color: inherit;
+    max-width: 14ch;
+  }
+  .gallery__region {
+    margin-top: clamp(2rem, 4vw, 3.5rem);
+  }
+  .gallery__grid {
+    list-style: none;
     margin: 0;
     padding: 0;
-    width: max-content;
+    display: grid;
+    gap: var(--ts-space-3);
+    grid-template-columns: minmax(0, 1fr);
   }
-  .gallery__item {
-    scroll-snap-align: start;
-    flex: 0 0 auto;
+  /* Odd places are rounded rectangles, even places horizontal capsules. */
+  .gallery__item .gallery__window {
+    aspect-ratio: 4 / 3;
   }
-  /* Portrait, and the ratio is declared rather than implied by a height in
-     pixels. Two things follow: the row of images reserves its space before
-     they load, so nothing below it jumps, and a strip of upright frames reads
-     as photography rather than as thumbnails. A room, a cup and a face all
-     sit better in a tall frame than a wide one. */
-  .gallery__img {
-    display: block;
-    width: 240px;
-    aspect-ratio: 3 / 4;
-    height: auto;
-    object-fit: cover;
-    /* Square, like the full-width band above. Surfaces in this theme are
-       rounded and photographs are not: one rounded image beside one squared
-       one is the difference that reads as an oversight. */
-    border-radius: 0;
-    background: var(--ts-surface-alt);
+  .gallery__item:nth-child(even) .gallery__window {
+    --win-r: var(--larkin-window-pill);
+    aspect-ratio: 5 / 2;
   }
-  @media (min-width: 768px) {
-    .gallery__img {
-      width: 280px;
+
+  /* Any number of photographs but six: a rectangle and a capsule to a row.
+     Four columns of 4:3 and eight of 5:2 land within a few pixels of the
+     same height. */
+  @media (min-width: 900px) {
+    .gallery__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: clamp(0.75rem, 1.4vw, 1.25rem);
+    }
+    .gallery__item {
+      grid-column: span 4;
+    }
+    .gallery__item:nth-child(even) {
+      grid-column: span 8;
+    }
+    /* An odd count leaves the last rectangle without its capsule: it takes
+       the whole row instead, as one wide cut at the same height as the
+       rows above (twelve columns at 4:1 match four at 4:3). */
+    .gallery__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+    .gallery__item:last-child:nth-child(odd) .gallery__window {
+      aspect-ratio: 4 / 1;
     }
   }
-  /* From 1024px the frames stop scrolling and share the container, so the
-     row starts under the heading and ends under the header's last button.
-     As a strip it ran from the page edge to the window edge with a padding
-     one gutter short of the container, and the snap pulled the first frame
-     to x=0: at 1440 the row started 128px left of the heading above it, at
-     2560 it ended 640px short of the right edge. Clipping the strip to the
-     container instead would hide the frames past the fourth with nothing to
-     say they are there. */
-  @media (min-width: 1024px) {
-    .gallery__scroller {
-      overflow-x: visible;
-      scroll-snap-type: none;
-      padding-inline: 0;
-      scroll-padding-inline: 0;
-      width: min(
-        100% - 2 * var(--ts-container-pad),
-        var(--ts-container-max) - 2 * var(--ts-container-pad)
-      );
-      margin-inline: auto;
-    }
-    .gallery__track {
+
+  /* The six shipped photographs: the heading is cut into the bag like a
+     seventh window and takes the first cell; the windows fill the rest of
+     the same three rows. */
+  @media (min-width: 900px) {
+    .gallery--mosaic :global(.gallery__frame) {
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: minmax(0, 1fr);
-      width: auto;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows:
+        minmax(clamp(9.5rem, 13.5vw, 12.5rem), auto)
+        repeat(2, clamp(9.5rem, 13.5vw, 12.5rem));
+      gap: clamp(0.75rem, 1.4vw, 1.25rem);
     }
-    .gallery__img {
-      width: 100%;
+    .gallery--mosaic :global(.gallery__head) {
+      grid-column: 1 / 6;
+      grid-row: 1;
+      align-self: end;
+      padding-bottom: var(--ts-space-1);
     }
+    .gallery--mosaic :global(.gallery__head .ts-heading__title) {
+      font-size: clamp(2.1rem, 3.6vw, 3.5rem);
+    }
+    .gallery--mosaic .gallery__region,
+    .gallery--mosaic .gallery__grid {
+      grid-column: 1 / -1;
+      grid-row: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      margin: 0;
+      gap: inherit;
+    }
+    .gallery--mosaic .gallery__region {
+      grid-row: 1 / span 3;
+    }
+    /* The photograph must not size the row: it fills the cut, and the grid
+       sizes the cut. */
+    .gallery--mosaic .gallery__item .gallery__window {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+    .gallery--mosaic .gallery__item .gallery__window img {
+      position: absolute;
+      inset: 0;
+    }
+    .gallery--mosaic .gallery__item:nth-child(1) { grid-column: 1 / span 5; grid-row: 2 / span 2; }
+    .gallery--mosaic .gallery__item:nth-child(2) { grid-column: 6 / span 7; grid-row: 1; }
+    .gallery--mosaic .gallery__item:nth-child(3) { grid-column: 6 / span 3; grid-row: 2; }
+    .gallery--mosaic .gallery__item:nth-child(4) { grid-column: 9 / span 4; grid-row: 2; }
+    .gallery--mosaic .gallery__item:nth-child(5) { grid-column: 6 / span 4; grid-row: 3; }
+    .gallery--mosaic .gallery__item:nth-child(6) { grid-column: 10 / span 3; grid-row: 3; }
+    /* In the mosaic the fifth and sixth swap shapes, so each row of the
+       right-hand block holds one capsule and one rectangle. */
+    .gallery--mosaic .gallery__item:nth-child(5) .gallery__window { --win-r: var(--larkin-window-pill); }
+    .gallery--mosaic .gallery__item:nth-child(6) .gallery__window { --win-r: var(--larkin-window-rect); }
   }
+  .gallery__item:nth-child(3) .gallery__window img { object-position: 60% 55%; }
+  .gallery__item:nth-child(5) .gallery__window img { object-position: 50% 40%; }
 </style>

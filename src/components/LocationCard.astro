@@ -103,67 +103,60 @@ const amenities = [
 </article>
 
 <style>
+  /* No box of its own: the card takes the surface it is placed on (the
+     gusset on the contact page, a label on the home page when there is more
+     than one shop) and prints in that surface's inks. Its parts are divided
+     by rules, like the lines of a printed label. */
   .loc-card {
     display: flex;
     flex-direction: column;
     gap: var(--ts-space-3);
-    background: var(--ts-surface-alt);
-    border: 1px solid var(--ts-border);
-    border-radius: var(--ts-radius-lg);
-    padding: var(--ts-space-6);
+    min-width: 0;
   }
   .loc-card__name {
     margin: 0;
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-xl);
-    font-weight: var(--ts-weight-semibold);
-    line-height: var(--ts-leading-snug);
-    color: var(--ts-color-primary-900);
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    overflow-wrap: break-word;
   }
   .loc-card__address {
     margin: 0;
     display: flex;
     align-items: flex-start;
     gap: var(--ts-space-2);
-    font-size: var(--ts-text-sm);
-    color: var(--ts-color-primary-700);
+    font-weight: 550;
   }
   .loc-card__icon {
     flex-shrink: 0;
     width: 18px;
     height: 18px;
-    margin-top: 1px;
+    margin-top: 0.2em;
     fill: none;
-    stroke: var(--ts-text-subtle);
-    stroke-width: 1.5;
+    stroke: currentColor;
+    stroke-width: 1.6;
     stroke-linecap: round;
     stroke-linejoin: round;
-  }
-  .loc-card__all-hours {
-    font-size: var(--ts-text-sm);
   }
   .loc-card__all-hours summary {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    /* The site's one link treatment: ink with a muted underline. */
-    color: var(--ts-text);
+    color: var(--lk-ink, currentColor);
     text-decoration: underline;
-    text-decoration-color: var(--ts-text-muted);
-    text-decoration-thickness: 1px;
+    text-decoration-thickness: 2px;
     text-underline-offset: 0.3em;
-    font-weight: var(--ts-weight-medium);
-  }
-  .loc-card__all-hours summary:focus-visible {
-    outline: none;
-    box-shadow: var(--ts-focus-ring);
+    font-weight: 650;
     border-radius: var(--ts-radius-sm);
   }
   .loc-card__week {
     margin: 0;
     display: grid;
-    gap: var(--ts-space-1);
+    gap: 0;
+    max-width: 24rem;
   }
   .loc-card__week-row {
     display: flex;
@@ -172,32 +165,29 @@ const amenities = [
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--ts-space-4);
-    padding-block: var(--ts-space-1);
-    border-bottom: 1px solid var(--ts-border);
+    padding-block: var(--ts-space-2);
+    border-bottom: 1px solid var(--lk-rule, currentColor);
   }
   .loc-card__week-row:last-child {
     border-bottom: none;
   }
-  .loc-card__week dt {
-    color: var(--ts-text-muted);
-  }
   .loc-card__week dd {
     margin: 0;
     font-variant-numeric: tabular-nums;
-    color: var(--ts-color-primary-700);
+    font-weight: 650;
   }
-  .loc-card__amenities {
-    margin: 0;
-    font-size: var(--ts-text-xs);
-    color: var(--ts-text-muted);
-  }
-  .loc-card__amenities-label {
-    font-weight: var(--ts-weight-semibold);
-  }
+  .loc-card__amenities,
   .loc-card__walkin {
     margin: 0;
-    font-size: var(--ts-text-xs);
-    color: var(--ts-text-muted);
+    font-size: 0.9375rem;
+    color: var(--lk-ink-soft, currentColor);
+  }
+  .loc-card__amenities {
+    padding-top: var(--ts-space-3);
+    border-top: 1px solid var(--lk-rule, currentColor);
+  }
+  .loc-card__amenities-label {
+    font-weight: 700;
   }
   .loc-card__actions {
     margin-top: var(--ts-space-1);

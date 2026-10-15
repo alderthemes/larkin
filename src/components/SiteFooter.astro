@@ -71,7 +71,7 @@ const navLinks = [
         <ul class="site-footer__list">
           {
             locations.map((loc) => (
-              <li>
+              <li class="site-footer__loc">
                 <span class="site-footer__loc-name">{loc.data.name}</span>
                 <span class="site-footer__loc-address">{formatAddress(loc)}</span>
               </li>
@@ -102,136 +102,218 @@ const navLinks = [
 </footer>
 
 <style>
-  /* The two footer tokens are the ones the theme contract hands a buyer for
-     exactly this block. Reading the palette directly here meant a buyer who
-     set --ts-c-footer-bg saw nothing change. No top margin: every page's last
-     section carries its own padding, and the margin only left a light strip
-     between that section and the footer. */
+  /* The small print on the base of the bag, under its sealed edge. Not four
+     columns: the panel of small print a bag carries on its base, one ruled
+     line per fact, its name on the left and the answer beside it, the way
+     a bag gives the roaster, the weight and the address. Nothing inside a
+     line breaks in the middle: each opening-hours row, each shop and its
+     address, each link keeps together, and a long line wraps between
+     them. On a phone the name sits above its answer and every hours row
+     and every shop gets its own line.
+     The two footer tokens are the ones the theme contract hands a buyer for
+     exactly this block. */
   .site-footer {
     background: var(--ts-c-footer-bg);
     color: var(--ts-c-footer-text);
-    padding-block: var(--ts-space-16) var(--ts-space-8);
+    padding-block: clamp(2.5rem, 5vw, 3.75rem) var(--ts-space-6);
     margin-top: 0;
+    --lk-ink: var(--ts-c-footer-text);
+    --ts-focus-ring: 0 0 0 2px var(--ts-c-footer-bg), 0 0 0 5px var(--ts-text);
   }
   .site-footer__grid {
     display: grid;
-    gap: var(--ts-space-8);
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 640px) {
-    .site-footer__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (min-width: 1024px) {
-    .site-footer__grid {
-      grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
-    }
+    /* `minmax(0, 1fr)`: grid items default to their content width and refuse
+       to shrink. At 200% text on a 320px screen that pushed the footer past
+       the viewport and the whole page scrolled sideways (WCAG 1.4.4). */
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    font-size: 1rem;
+    line-height: 1.5;
   }
   .site-footer__col {
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-3);
-    /* Grid items default to their content width and refuse to shrink. At 200%
-       text on a 320px screen that pushed the footer past the viewport and the
-       whole page scrolled sideways (WCAG 1.4.4). */
     min-width: 0;
+    overflow-wrap: anywhere;
+    padding-block: var(--ts-space-3);
+    border-top: 1px solid var(--ts-border-strong);
+  }
+  .site-footer__col:first-child {
+    padding-block: 0 var(--ts-space-4);
+    border-top: 0;
   }
   .site-footer__brand {
-    margin: 0;
+    margin: 0 0 var(--ts-space-1);
     font-family: var(--ts-font-display);
-    font-size: var(--ts-text-xl);
-    font-weight: var(--ts-weight-bold);
-    letter-spacing: var(--ts-tracking-tight);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
   }
   .site-footer__tagline {
     margin: 0;
-    font-size: var(--ts-text-sm);
-    color: var(--ts-text-invert-muted);
-    max-width: 32ch;
+    color: var(--ts-text-muted);
   }
+  /* A line's name: a terracotta dash, then the name in the display face.
+     Terracotta on the label is 5.3:1. */
   .site-footer__heading {
-    margin: 0;
-    font-size: var(--ts-text-xs);
-    font-weight: var(--ts-weight-semibold);
-    letter-spacing: var(--ts-tracking-wide);
-    text-transform: uppercase;
-    /* Quiet, not terracotta: these headings label the least important block
-       on the page, and the accent is kept for "seasonal" and "you are here".
-       The muted ink, not a third one: the dark block already carries the
-       button white, the footer text and this, and case and tracking are what
-       make it a heading. */
-    color: var(--ts-text-invert-muted);
+    margin: 0 0 var(--ts-space-1);
+    /* The dash is painted into the heading's own box, so it can never be
+       left at the end of a line with the name on the next. */
+    padding-left: 3.25rem;
+    background: linear-gradient(var(--ts-color-accent-600), var(--ts-color-accent-600)) no-repeat 0 0.62em / 2.25rem 3px;
+    font-family: var(--ts-font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: var(--ts-color-accent-600);
+    overflow-wrap: normal;
   }
-  .site-footer__list {
+  .site-footer__list,
+  .site-footer__hours {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-2);
-    font-size: var(--ts-text-sm);
   }
-  .site-footer__list li {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-  .site-footer__loc-name {
-    font-weight: var(--ts-weight-medium);
-  }
-  .site-footer__loc-address {
-    color: var(--ts-text-invert-muted);
-  }
-  .site-footer a {
-    overflow-wrap: anywhere;
-    color: var(--ts-c-footer-text);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-  }
-  .site-footer a:hover {
-    border-bottom-color: currentColor;
-  }
-  .site-footer a:focus-visible {
-    outline: none;
-    box-shadow: var(--ts-focus-ring);
-    border-radius: var(--ts-radius-sm);
-  }
-  .site-footer__hours {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-2);
-    font-size: var(--ts-text-sm);
-  }
-  .site-footer__hours-row {
+  /* The links of a line sit side by side and wrap between links. */
+  .site-footer__list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--ts-space-4);
+    column-gap: var(--ts-space-5);
+  }
+  /* Opening hours: one row per day range, the days on the left and the
+     times in a column of their own, so the times line up. */
+  .site-footer__hours {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) max-content;
+    column-gap: var(--ts-space-5);
+    row-gap: var(--ts-space-1);
+  }
+  .site-footer__hours-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
   }
   .site-footer__hours dt {
-    color: var(--ts-text-invert-muted);
+    min-width: 0;
   }
   .site-footer__hours dd {
     margin: 0;
+    white-space: nowrap;
     font-variant-numeric: tabular-nums;
+    font-weight: 650;
+  }
+  /* Find us: every shop is a line of its own, its name over its address;
+     the e-mail and the phone share the last line. */
+  .site-footer__loc {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--ts-space-3);
+    padding-block: var(--ts-space-1) var(--ts-space-2);
+  }
+  .site-footer__loc-name {
+    font-weight: 650;
+  }
+  .site-footer__loc-name,
+  .site-footer__loc-address {
+    flex-basis: 100%;
+  }
+  .site-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    overflow-wrap: anywhere;
+    color: var(--ts-c-footer-text);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    transition: text-underline-offset calc(0.25s * var(--larkin-motion, 1)) var(--ts-ease-out);
+  }
+  .site-footer a:hover {
+    text-underline-offset: 0.4em;
+    text-decoration-thickness: 2px;
+  }
+  .site-footer a:focus-visible {
+    border-radius: var(--ts-radius-sm);
+  }
+  /* From 900px the panel is a table of ruled lines: the names in a narrow
+     column of their own, each answer on one line beside its name. */
+  @media (min-width: 900px) {
+    .site-footer__grid {
+      grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr);
+      column-gap: var(--ts-space-10);
+      font-size: 1.0625rem;
+    }
+    .site-footer__col {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: baseline;
+      padding-block: var(--ts-space-2);
+    }
+    .site-footer__col:first-child {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: var(--ts-space-4);
+      padding-block: 0 var(--ts-space-4);
+    }
+    .site-footer__brand {
+      margin: 0;
+    }
+    .site-footer__heading {
+      grid-column: 1;
+      max-width: 16rem;
+      margin: 0;
+    }
+    .site-footer__list,
+    .site-footer__hours {
+      grid-column: 2;
+    }
+    /* The hours on one line, row after row; a narrow screen wraps them
+       between rows. */
+    .site-footer__hours {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: var(--ts-space-8);
+    }
+    .site-footer__hours-row {
+      display: flex;
+      column-gap: var(--ts-space-2);
+      align-items: baseline;
+      min-height: 44px;
+      align-items: center;
+    }
+    .site-footer__hours dt {
+      white-space: nowrap;
+    }
+    .site-footer__loc {
+      flex-wrap: nowrap;
+      align-items: center;
+      min-height: 44px;
+      column-gap: var(--ts-space-4);
+      padding-block: 0;
+    }
+    .site-footer__loc-name {
+      flex: none;
+      flex-basis: auto;
+    }
+    .site-footer__loc-address {
+      flex-basis: auto;
+      min-width: 0;
+    }
   }
   .site-footer__legal {
-    margin-top: var(--ts-space-12);
-    padding-top: var(--ts-space-6);
-    border-top: 1px solid var(--ts-border-invert);
+    margin-top: var(--ts-space-4);
+    padding-top: var(--ts-space-3);
+    border-top: 2px solid var(--ts-text);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    /* The legal links are 44px tall targets; centering the row keeps the
-       copyright line level with them instead of 11px above. */
     align-items: center;
-    gap: var(--ts-space-4);
-    font-size: var(--ts-text-xs);
-    color: var(--ts-text-invert-muted);
+    gap: var(--ts-space-2) var(--ts-space-4);
+    font-size: 0.9375rem;
   }
   .site-footer__legal p {
     margin: 0;
@@ -239,15 +321,16 @@ const navLinks = [
   .site-footer__legal-links {
     list-style: none;
     display: flex;
-    gap: var(--ts-space-6);
+    gap: var(--ts-space-5);
     margin: 0;
     padding: 0;
   }
-  /* These were 17px tall. Line height alone decides the height of an inline
-     link, and 11px text makes a target nobody can hit on the move. */
   .site-footer__legal-links a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+    font-weight: var(--ts-weight-medium);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-footer a {
+      transition: none;
+    }
   }
 </style>

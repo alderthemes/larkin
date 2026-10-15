@@ -283,7 +283,7 @@ and able to sign in at `/admin` and see the menu.
 ## 1. Quick start
 
 ```bash
-# Requirements: Node 22+ (check with `node -v`)
+# Requirements: Node 22.19.0 or newer (check with `node -v`)
 npm install
 npm run dev      # http://localhost:4321
 ```
@@ -339,8 +339,8 @@ Every string on the site is in this one file, grouped by area:
 
 ```json
 {
-  "site": { "name": "Fern & Filter", "tagline": "Specialty coffee and light bites…" },
-  "hero": { "title": "Good coffee, no rush", "lead": "…" },
+  "site": { "name": "Fern & Filter", "tagline": "Coffee roasted on Mondays…" },
+  "hero": { "title": "Roasted Monday, no rush", "lead": "…" },
   "workspace": { "laptopBody": "Welcome all day. On weekends we ask…" }
 }
 ```
@@ -375,46 +375,114 @@ Save; the dev server reloads. The menu page, the home page highlights and the
 
 ### Step 4: Colors & fonts (`src/styles/global.css`)
 
-The whole visual identity is one `:root` block. Change the eleven primary
-values and the three accent values and the entire site re-themes:
+The site is drawn as one screen-printed coffee bag. The bag is terracotta and
+runs the whole page: the header, each page's opening and the closing address section are
+printed straight on it in cream. The menu and the questions are cream labels
+stuck on the bag, the workspace notes are its fern-green side gusset, the
+photographs are windows cut into it, a round seal closes it, and the footer is
+the small print on its base.
+
+The whole visual identity is one `:root` block. Its colors are the eleven ink
+values (`--ts-color-primary-50` to `-950`), the three accent values, the
+three surfaces and their text colors, and three of the bag's own: the fern
+of the gusset, the label cream and the dark ribs of the sealed edges. Change
+them there and the entire site re-themes:
 
 ```css
 :root {
-  --ts-color-primary-900: #1a1917;  /* headings, buttons */
-  --ts-color-accent-600:  #a6522f;  /* eyebrows, focus ring, seasonal badge */
-  --ts-surface:           #f9f6f0;  /* page background */
-  --ts-surface-alt:       #f1ece3;  /* alternating sections, cards */
-  --ts-color-success:     #166534;  /* the "Open now" dot and its label */
-  --ts-font-display: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
-  --ts-font-sans: var(--ts-font-display);  /* an alias, not a second font */
+  --ts-text:              #1a1917;  /* ink on the cream labels */
+  --ts-surface:           #f6efe2;  /* the cream labels and the footer */
+  --ts-surface-alt:       #fbf4e8;  /* sticker paper: the open/closed tag, the seal, form fields */
+  --ts-surface-invert:    #9e4a28;  /* the bag: terracotta */
+  --ts-text-invert:       #fbf4e8;  /* everything printed on the bag */
+  --ts-color-accent-600:  #9e4a28;  /* the seasonal tag and the footer's small headings */
+  --ts-color-success:     #166534;  /* "Open now"; only ever on the sticker paper */
+  --larkin-gusset:        #3b6340;  /* fern: the side gusset */
+  --larkin-crimp:         #7f3b20;  /* the ribs of the sealed edges */
+  --ts-font-display: "Unbounded Variable", "Unbounded Fallback", ui-sans-serif, system-ui, sans-serif;
+  --ts-font-sans:    "Figtree Variable", "Figtree Fallback", ui-sans-serif, system-ui, sans-serif;
+
+  /* Motion: 1 on, 0 off for every visitor ("Motion" below) */
+  --larkin-motion: 1;
 }
 ```
 
-One file keeps its own copy of two of these: `public/favicon.svg` is a
-standalone image, so its two colors are written into it as hex. Open it in any
-text editor and change them to match if you re-theme.
+Color belongs to a position on the page, never to the content: no category,
+item or shop has a color of its own, so you can add any of them and the page
+keeps its rhythm. Changing which surface a section sits on is a CSS change in
+its component, not a token.
 
-**Check contrast after changing colors.** Body text on the background must be
-at least 4.5:1, and `--ts-color-accent-600` is used for small text, so it needs
-4.5:1 too. Use any contrast checker; the shipped palette passes with room to
-spare (16.3:1 for body text, 5.0:1 for the accent, both on the page background).
+One file keeps its own copy of the colors, because it cannot read the
+stylesheet: `public/favicon.svg` (yours), whose two colors, terracotta and
+cream, are written into it as hex. Change them to match if you change the
+terracotta. The color a phone browser paints its own bar in, next to the
+page, follows `--ts-surface-invert` by itself: the build reads it from this
+block, so keep that token a plain hex value (`#9e4a28`, not a `var()`).
 
-`--ts-font-sans` is an alias of `--ts-font-display`, not a second family: this
-template sets one typeface. Point it at another variable to run two.
+**The accent.** The terracotta is a mark on cream in two places: the
+"Seasonal" tag in the menu (cream type on a terracotta fill) and the small
+headings of the footer. Buttons and links are never terracotta: on a cream
+label they are ink, on the bag and the gusset they are cream. The focus ring
+follows the same rule, ink on cream and cream on color.
 
-To change fonts, install the family and swap the import at the top of the file:
+**Check contrast after changing colors.** Every text color must reach at
+least 4.5:1 against the surface it is printed on, and on this site that is
+three surfaces, not one. The shipped pairs: ink on the label 15.4:1, muted
+ink on the label 6.7:1, cream on the terracotta 5.5:1, cream on the fern
+6.3:1, terracotta on the label 5.3:1, "Open now" green on the sticker paper
+6.5:1. Cream on terracotta is the tightest pair: a lighter terracotta loses
+it, so measure before you lighten the bag. Use any contrast checker.
+
+**Two typefaces.** Unbounded, wide and round, sets only display type: the
+headings, the category names, the workspace terms and the address in the
+closing contact section. Figtree sets everything you read, plus the labels,
+prices and hours. `--ts-font-display` and `--ts-font-sans` are two separate
+families. To change one, install the family and swap its import at the top
+of the file:
 
 ```bash
-npm install @fontsource-variable/figtree
+npm install @fontsource-variable/fraunces
 ```
 
 ```css
-@import "@fontsource-variable/figtree";
-/* then set --ts-font-display: "Figtree Variable", …; */
+@import "@fontsource-variable/fraunces/wght.css";
+/* then set --ts-font-display: "Fraunces Variable", ui-serif, serif; */
 ```
+
+Nothing else needs editing. The layout preloads the Unbounded and Figtree
+files only while your font tokens name `"Unbounded Variable"` and
+`"Figtree Variable"` (the build reads them from this block), so with another
+family that preload leaves the page by itself. Leave the two packages
+installed: the layout still imports them. The "Unbounded Fallback" and
+"Figtree Fallback" faces are Arial resized to the shipped fonts, so the
+lines do not move when the fonts arrive; with another family, remove that
+fallback name from your font token.
 
 Fonts are self-hosted: the font files are served from your own site, and no
 request goes to Google Fonts or any other font server.
+
+**The theme's own stylesheet.** `src/styles/larkin.css` holds what every page
+shares: the surfaces and what prints on each, the windows, the seal, the
+buttons, the motion and the print styles. It reads only tokens, so the
+`:root` block above re-themes it too. It is our file: an update replaces it.
+Everything you can change about the look, the motion switch included, is in
+the `:root` block, so you never need to open `larkin.css`.
+
+**Motion.** The opening window opens once when the page loads and its seal
+turns into place; both are over in under 1.5 seconds. The gallery windows
+open as they scroll into view and the second seal turns into place over the
+edge of the questions. Nothing loops, and no text moves. When the visitor's
+device asks for reduced motion, none of it runs: the page shows its finished
+state, and so it does with JavaScript off and in a browser without scroll
+timelines.
+
+Two switches in the `:root` block of `src/styles/global.css` turn it down for
+every visitor; nothing in our files needs editing:
+
+| Token | Purpose |
+|-------|---------|
+| `--larkin-motion` | `1`: the motion above, plus a fading answer in the questions and a crossfade from page to page. `0`: all of it is still, every page shows its finished state at once, and the menu control, buttons and links change state instantly instead of over a fraction of a second. |
+| `--larkin-scroll` | How a link to a place on the page gets there: `smooth` or `auto` (a jump). Reduced motion always jumps. |
 
 ### Step 5: Images
 
@@ -424,16 +492,27 @@ Replace the files in `src/assets/images/` keeping the same names:
 |---|---|---|
 | `01-hero-room.jpg` | Home hero | 1800px wide, 4:3 |
 | `02-bar.jpg` | Gallery + About page | 1400px wide, 3:2 |
-| `03-latte.jpg` … `07-detail.jpg` | Gallery strip | 1400px wide, 3:2 |
+| `03-latte.jpg` … `07-detail.jpg` | Gallery | 1400px wide, 3:2 |
 | `public/og.jpg` | Social sharing preview | exactly 1200×630 |
 | `public/favicon.svg` | Browser tab icon | any square SVG; its colors are written in the file |
 
 Astro converts them to WebP at several widths during build, so ship the
 originals at the sizes above and let the build do the rest.
 
+Every photograph is seen through a window cut into the bag, and a window
+crops: the opening is a wide capsule, about three times as wide as it is
+tall on a laptop, and the gallery windows are rounded rectangles and
+horizontal capsules. Keep the subject in the middle of
+the frame with room around it, and the crop will not cut it. The shape of
+each window follows its place on the page, not the photograph.
+
 **If an image is missing, its section disappears rather than breaking.** Delete
 all seven and the site still renders correctly, just without photography. That
-also means you can go live before the client photoshoot.
+also means you can go live before the client photoshoot. Without
+`01-hero-room.jpg` the opening window and its seal go together, and the two
+lines of the title sit one under the other. The gallery is laid out as a
+mosaic for exactly six photographs; with any other number its windows run two
+to a row.
 
 The demo photographs are AI-generated and licensed for use in sites you build
 with this template. See `IMAGE-LICENSE.md`.
@@ -480,12 +559,15 @@ will see the two errors instead.
 
 Any key you leave out falls back to English rather than rendering blank.
 
-One number worth knowing before you choose: the shipped font is split by
-character range, and Turkish reaches into the second file. Four of its
-letters (U+011F, U+0130, U+015E, U+015F) sit outside the Latin range, so a
-Turkish page downloads the latin-ext file as
-well — 11 KB on top of the 30 KB the Latin file costs. English pages never
-fetch it. Nothing to fix; it is the price of the alphabet.
+One number worth knowing before you choose: the shipped fonts are split by
+character range, and Turkish reaches into the second file of each. Four of
+its letters (U+011F, U+0130, U+015E, U+015F) sit outside the Latin range, so
+a Turkish page that uses them downloads the latin-ext files as well: 10 KB
+for Figtree on top of its 20 KB Latin file, and 118 KB for Unbounded on top
+of its 51 KB Latin file, as soon as a heading contains one of those letters.
+English pages never fetch them. Nothing breaks; it is the price of the
+alphabet, and the one place where the wide display face costs more than a
+narrow one would.
 
 ---
 
@@ -555,7 +637,7 @@ plain hours line when JavaScript is off, so it is never wrong or blank.
 ```markdown
 ---
 question: "Do you take reservations?"
-answer: "We don't. Fern & Filter is walk-in only…"
+answer: "We don't. Take any open seat…"
 order: 10
 ---
 ```
@@ -691,14 +773,20 @@ Anthropic's crawler article, updated 2026-04-07) and Google's
 "does not impact a site's inclusion in Google Search" (Google's crawler
 documentation, updated 2026-07-14). This is a choice, and it is yours. With
 the default, the site can be read and quoted by assistants, and `/llms.txt` is
-written for the same readers. To refuse a crawler, write the rule into
+written for the same readers. To refuse a crawler, the rule goes into
 `src/pages/robots.txt.ts`: that file hands the shared `robotsTxt()` output
-back as the response, so append your lines to that string, for example:
+back as the response, so your lines are appended to that string, for
+example:
 
 ```
 User-agent: GPTBot
 Disallow: /
 ```
+
+That file is one of our files, not yours: an update replaces it and your
+lines are gone. If you add them, keep a copy of them, and after every update
+check whether the release lists `src/pages/robots.txt.ts` under "Our files"
+(section 10); if it does, add your lines to the new copy again.
 
 Each company documents its crawler names and what each one does; read the
 current lists before you choose, because the names and purposes change.
@@ -969,8 +1057,9 @@ Your files (an update never overwrites these):
 - `src/content/`: every content file (section 4)
 - `src/i18n/*.json`: your wording, in every language file
 - `src/lib/site.ts`: your site details and switches
-- `src/styles/global.css`: the `:root` block is yours; if a release changes this
-  file, carry your `:root` values into the new copy
+- `src/styles/global.css`: the `:root` block is yours (colors, fonts and the
+  motion switches); if a release changes this file, carry your `:root` values
+  into the new copy
 - `cms/fields.json`: the content editor's labels and hints
 - `src/assets/images/`: your photographs
 - `public/og.jpg`: your social sharing image
@@ -1014,18 +1103,23 @@ src/
     SiteFooter.astro     brand, links, hours, locations
     LocationCard.astro   address + today's hours + amenities + directions
     OpenStatus.astro     "Today: 07:00 – 18:00 · Open now"
-    MenuList.astro       categorized menu list with seasonal badges
-    WorkspaceInfo.astro  wifi / power / noise / laptop policy block
-    GalleryStrip.astro   horizontal photo strip (hides itself if empty)
+    MenuList.astro       the menu as a table, by category, with seasonal tags
+    WorkspaceInfo.astro  wifi / power / noise / laptop policy (the fern gusset)
+    GalleryStrip.astro   photographs in windows cut into the bag (hides itself if empty)
     FaqList.astro        accordion, zero JavaScript
+    Seal.astro           presses the shop's round seal (decoration only)
+    SealDefs.astro       the seal, drawn once per page from words already on the site
   content/               YOUR CONTENT — menu, locations, faq, legal
   i18n/                  YOUR WORDING — en.json, tr.json
   layouts/BaseLayout.astro   meta, Open Graph, JSON-LD, page shell
   lib/
     site.ts              YOUR BUSINESS IDENTITY
     locations.ts         location helpers (hours, address, schema)
+    theme-color.ts       reads the phone browser bar color from global.css
+    font-preloads.ts     picks the font files to preload from the font tokens in global.css
   pages/                 routes; add a .astro file to add a page
-  styles/global.css      YOUR COLORS AND FONTS (the :root block)
+  styles/global.css      YOUR COLORS, FONTS AND MOTION SWITCH (the :root block)
+  styles/larkin.css      the bag: surfaces, windows, seal, buttons, motion, print
 core/                    shared design tokens and components
 public/
   favicon.svg            browser tab icon (colors are written in the file)

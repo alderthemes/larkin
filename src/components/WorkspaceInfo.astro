@@ -5,8 +5,11 @@
  * honestly, including with a no, is what earns trust here; hiding the laptop
  * policy is the most common mistake a cafe site makes, and it costs the shop
  * the visit either way.
+ *
+ * It is the side gusset of the bag: a narrow fern-green fold standing next
+ * to the menu label on the home page, the four facts read top to bottom
+ * like the notes printed down a gusset.
  */
-import Container from "@studio/core/components/Container.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
 import { t } from "../lib/site";
 
@@ -18,79 +21,76 @@ const facts = [
 ];
 ---
 
-<section class="workspace" id="workspace">
-  <Container>
-    <div class="workspace__inner">
-      <SectionHeading
-        eyebrow={t("workspace.eyebrow")}
-        title={t("workspace.title")}
-        subtitle={t("workspace.lead")}
-      />
-      <dl class="workspace__grid">
-        {
-          facts.map((fact) => (
-            <div class="workspace__item">
-              <dt class="workspace__term">{fact.title}</dt>
-              <dd class="workspace__def">{fact.body}</dd>
-            </div>
-          ))
-        }
-      </dl>
-    </div>
-  </Container>
+<section class="workspace larkin-panel larkin-panel--gusset" id="workspace">
+  <div class="workspace__inner">
+    <SectionHeading
+      eyebrow={t("workspace.eyebrow")}
+      title={t("workspace.title")}
+      subtitle={t("workspace.lead")}
+      class="workspace__heading"
+    />
+    <dl class="workspace__grid">
+      {
+        facts.map((fact) => (
+          <div class="workspace__item">
+            <dt class="workspace__term">{fact.title}</dt>
+            <dd class="workspace__def">{fact.body}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
 </section>
 
 <style>
-  /* The ground color, not the alternate: next to the featured menu the two
-     alternate blocks read as one gray slab and hid where one ended. */
   .workspace {
-    padding-block: var(--ts-section-y);
-    background: var(--ts-surface);
+    padding-block: clamp(2.5rem, 5vw, 4.25rem) clamp(2.5rem, 5vw, 3.5rem);
+    scroll-margin-top: calc(var(--ts-c-nav-height) + var(--ts-space-4));
   }
-  .workspace__inner {
-    max-width: 46rem;
+  .workspace :global(.workspace__heading) {
+    gap: var(--ts-space-4);
   }
-  /* Heading left, facts right: the section uses the full frame. */
-  @media (min-width: 1024px) {
-    .workspace__inner {
-      max-width: none;
-      display: grid;
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      column-gap: var(--ts-space-16);
-      align-items: start;
-    }
-    .workspace__grid {
-      margin-top: 0;
-    }
+  .workspace :global(.workspace__heading .ts-heading__title) {
+    font-family: var(--ts-font-display);
+    font-size: clamp(2rem, 3.3vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    color: inherit;
+  }
+  .workspace :global(.workspace__heading .ts-heading__subtitle) {
+    font-size: 1rem;
+    line-height: 1.55;
   }
   .workspace__grid {
-    margin: var(--ts-space-10) 0 0;
-    display: grid;
-    gap: var(--ts-space-6);
-  }
-  @media (min-width: 640px) {
-    .workspace__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--ts-space-8);
-    }
+    margin: clamp(1.75rem, 3vw, 2.5rem) 0 0;
   }
   .workspace__item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--ts-space-1);
-    padding-left: var(--ts-space-4);
-    /* A neutral hairline. The layout does the grouping; the accent is kept
-       for the seasonal mark and the current page. */
-    border-left: 1px solid var(--ts-border-strong);
+    padding-block: var(--ts-space-4);
+    border-top: 2px solid var(--lk-rule);
   }
+  /* The terms are the gusset's voice: the display face, large, one per line
+     like the notes printed down the side of a bag. */
   .workspace__term {
-    font-size: var(--ts-text-base);
-    font-weight: var(--ts-weight-semibold);
-    color: var(--ts-color-primary-900);
+    font-family: var(--ts-font-display);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    font-size: clamp(1.6rem, 2.3vw, 2.125rem);
+    overflow-wrap: break-word;
   }
   .workspace__def {
-    margin: 0;
-    font-size: var(--ts-text-sm);
-    color: var(--ts-text-muted);
+    margin: var(--ts-space-2) 0 0;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  /* A tablet is wide for one narrow column and narrow for the menu beside
+     it: the four facts pair up. */
+  @media (min-width: 640px) and (max-width: 999.98px) {
+    .workspace__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--ts-space-6);
+    }
   }
 </style>

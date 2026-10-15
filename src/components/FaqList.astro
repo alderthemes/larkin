@@ -3,6 +3,9 @@
  * FaqList — an accordion built on details/summary, with no JavaScript.
  * The page supplies the FAQPage structured data; this file is presentation
  * only.
+ *
+ * Each question carries a round terracotta plus in front of it, a small
+ * seal of its own; opening the question turns the plus into a cross.
  */
 import type { CollectionEntry } from "astro:content";
 
@@ -18,10 +21,12 @@ const { items, class: className = "" } = Astro.props;
     items.map((item) => (
       <details class="faq__item">
         <summary class="faq__question">
-          <span>{item.data.question}</span>
-          <svg class="faq__chevron" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
+          <span class="faq__plus" aria-hidden="true">
+            <svg viewBox="0 0 16 16" focusable="false">
+              <path d="M8 1.5v13M1.5 8h13" />
+            </svg>
+          </span>
+          <span class="faq__text">{item.data.question}</span>
         </summary>
         <p class="faq__answer">{item.data.answer}</p>
       </details>
@@ -30,67 +35,89 @@ const { items, class: className = "" } = Astro.props;
 </div>
 
 <style>
-  .faq {
-    max-width: 46rem;
-  }
-  .faq__item {
-    border-bottom: 1px solid var(--ts-border);
+  .faq__item + .faq__item {
+    margin-top: var(--ts-space-1);
   }
   .faq__question {
     list-style: none;
     display: flex;
-    /* A long question, or text scaled to 200%, pushed the chevron outside
-       the box. Let the text shrink and wrap instead. */
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--ts-space-4);
-    min-height: 44px;
-    padding: var(--ts-space-4) var(--ts-space-2);
+    min-height: 52px;
+    padding-block: var(--ts-space-2);
     cursor: pointer;
-    font-size: var(--ts-text-lg);
-    font-weight: var(--ts-weight-semibold);
-    color: var(--ts-color-primary-900);
+    font-size: clamp(1.1875rem, 1.6vw, 1.375rem);
+    font-weight: 650;
+    line-height: 1.3;
     /* Tabbing backwards scrolls the question to the top edge of the screen,
        under the sticky header, and the focused question disappears behind it
        (WCAG 2.4.11). The margin keeps it below the header. */
-    scroll-margin-top: calc(var(--ts-c-nav-height, 64px) + var(--ts-space-4));
+    scroll-margin-top: calc(var(--ts-c-nav-height) + var(--ts-space-4));
+    border-radius: var(--ts-radius-md);
   }
   .faq__question::-webkit-details-marker {
     display: none;
   }
-  .faq__question:hover {
-    background: var(--ts-surface-alt);
+  /* A long question, or text scaled to 200%, wraps beside the plus. */
+  .faq__text {
+    min-width: 0;
+    overflow-wrap: break-word;
   }
-  .faq__question:focus-visible {
-    outline: none;
-    box-shadow: var(--ts-focus-ring);
-    border-radius: var(--ts-radius-sm);
+  /* The plus is a 44px terracotta disc with a cream cross: 5.5:1, a
+     non-text mark that needs 3:1. It turns to a cross when the answer is
+     open, and goes fern under the pointer. */
+  .faq__plus {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ts-radius-full);
+    background: var(--larkin-bag);
+    color: var(--larkin-on-color);
+    transition:
+      rotate calc(0.35s * var(--larkin-motion, 1)) cubic-bezier(0.2, 0.9, 0.25, 1.15),
+      background-color calc(0.25s * var(--larkin-motion, 1)) var(--ts-ease-out);
   }
-  .faq__chevron {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+  .faq__plus svg {
+    width: 16px;
+    height: 16px;
     fill: none;
-    stroke: var(--ts-color-primary-400);
-    stroke-width: 2;
+    stroke: currentColor;
+    stroke-width: 2.4;
     stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform var(--ts-duration-fast) var(--ts-ease-out);
   }
-  .faq__item[open] .faq__chevron {
-    transform: rotate(180deg);
+  .faq__question:hover .faq__plus {
+    background: var(--larkin-gusset);
+  }
+  .faq__item[open] .faq__plus {
+    rotate: 45deg;
   }
   .faq__answer {
-    margin: 0;
-    padding: 0 var(--ts-space-2) var(--ts-space-6);
-    font-size: var(--ts-text-base);
-    line-height: var(--ts-leading-body);
-    color: var(--ts-color-primary-700);
+    margin: 0 0 0 calc(44px + var(--ts-space-4));
+    padding: var(--ts-space-1) 0 var(--ts-space-5);
     max-width: var(--ts-prose-max);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--lk-ink-soft, currentColor);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq__item[open] .faq__answer {
+      animation: faq-answer-in calc(0.35s * var(--larkin-motion, 1)) var(--ts-ease-out);
+    }
+  }
+  @keyframes faq-answer-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .faq__chevron {
+    .faq__plus {
       transition: none;
     }
   }

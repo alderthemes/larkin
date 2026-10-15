@@ -1,6 +1,6 @@
 ---
 name: "Butter Croissant"
-description: "Baked down the street, delivered at six every morning."
+description: "Baked three blocks down Thimbleberry, here by 6:00. Gone by 11:00 on Saturdays."
 price: 4
 category: "food"
 tags: ["vegetarian"]

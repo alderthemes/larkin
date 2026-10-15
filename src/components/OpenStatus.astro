@@ -46,41 +46,48 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
 <script type="module" src="/open-status.js"></script>
 
 <style>
+  /* The line takes the ink of whatever it is printed on: cream on the bag
+     and the gusset, ink on a label. The open/closed state is the one part
+     printed on a sticker, because the "Open now" green reads on the sticker
+     paper (6.5:1) and on nothing else on this site. */
   .open-status {
     margin: 0;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--ts-space-2);
-    font-size: var(--ts-text-sm);
-    color: var(--ts-text-muted);
+    color: inherit;
   }
   .open-status__label {
-    font-weight: var(--ts-weight-semibold);
-    color: var(--ts-color-primary-700);
+    font-weight: 700;
   }
   .open-status__value {
     font-variant-numeric: tabular-nums;
-    color: var(--ts-color-primary-700);
   }
   .open-status__state {
     display: inline-flex;
     align-items: center;
-    gap: var(--ts-space-2);
-    padding-left: var(--ts-space-2);
-    border-left: 1px solid var(--ts-border);
-    font-weight: var(--ts-weight-medium);
+    gap: 0.4rem;
+    padding: 0.15rem 0.65rem 0.15rem 0.55rem;
+    border-radius: var(--ts-radius-full);
+    background: var(--larkin-sticker);
+    color: var(--ts-text-muted);
+    font-size: 0.875rem;
+    font-weight: 650;
+    line-height: 1.5;
+  }
+  /* `display` above would override the attribute; without the script the
+     sticker has nothing to say and must not show as an empty pill. */
+  .open-status__state[hidden] {
+    display: none;
   }
   .open-status__dot {
     width: 8px;
     height: 8px;
     border-radius: var(--ts-radius-full);
-    background: var(--ts-color-primary-400);
+    background: currentColor;
   }
-  .open-status__state--open .open-status__dot {
-    background: var(--ts-color-success);
-  }
-  .open-status__state--open .open-status__state-text {
+  .open-status__state--open {
     color: var(--ts-color-success);
   }
 </style>
