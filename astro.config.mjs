@@ -73,5 +73,13 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     resolve: { alias: coreAlias() },
+    build: {
+      /* Vite inlines assets under 4 KB as `data:` URLs, small font subsets
+         included. The Content-Security-Policy in public/_headers has
+         `font-src 'self'`, which does not cover `data:`, so the browser
+         blocked the inlined subset and logged an error on every page.
+         Not inlining costs one cached request and keeps the policy tight. */
+      assetsInlineLimit: (filePath) => (filePath.endsWith(".woff2") ? false : undefined),
+    },
   },
 });

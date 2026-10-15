@@ -1,5 +1,18 @@
 # Changelog — Larkin
 
+## 2.0.1 — 2026-10-15
+
+- Fixed: the build no longer folds small font files into the stylesheet.
+  The security policy in `public/_headers` allows fonts only from the site
+  itself, so the browser blocked the folded-in file and logged an error on
+  every page; the headings still looked right because a larger font file
+  covered them. Each font is now its own file under `/_astro/`, cached like
+  the others. The change is one setting in `astro.config.mjs`.
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions)
+
+Our files (copy over): `astro.config.mjs`
+
 ## 2.0.0 — 2026-10-15
 
 - New: the content editor reads a file named `cms/labels.json` when it exists.
