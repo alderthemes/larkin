@@ -68,7 +68,7 @@ const root = resolve(opt("root") ?? process.cwd());
 const SV_CFG = join(root, "public/admin/config.yml");
 const SV_HTML = join(root, "public/admin/index.html");
 const HDR = join(root, "public/_headers");
-/* T13: a kit with src/data/headers.json generates public/_headers at build
+/* A kit with src/data/headers.json generates public/_headers at build
    time (scripts/headers.mjs, core/security/headers.mjs) and the /admin policy
    comes from public/admin/config.yml there; this tool never writes the file in
    that shape. A kit still on the tracked file keeps the managed block below. */

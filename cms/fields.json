@@ -1,5 +1,59 @@
 {
-  "options": { "weekdays": "cms/weekdays.yaml" },
+  "records": {
+    "business": {
+      "label": "Business details",
+      "file": "src/data/business.json",
+      "hint": "The café as a whole. Each shop's address, phone and opening hours are under Locations.",
+      "fields": {
+        "name": { "label": "Café name", "hint": "Shown in the header, the footer, the browser tab and search results." },
+        "email": { "label": "E-mail" },
+        "phone": { "label": "Phone", "hint": "The main number, shown in the footer and on the contact page." },
+        "priceRange": { "label": "Price range", "hint": "As search engines show it, e.g. $ or $$." },
+        "foundingYear": { "label": "Year founded", "hint": "Four digits, e.g. 2019." },
+        "servesCuisine": { "label": "What you serve", "kind": "list", "hint": "One per line, e.g. Coffee." }
+      }
+    },
+    "pageText": {
+      "label": "Page text",
+      "file": "src/i18n/{locale}.json",
+      "hint": "The words on the home page and the About page. Keep {name} where you see it: it becomes the café's name from Business details. Section labels, buttons and form labels stay in the file.",
+      "fields": {
+        "site": {
+          "label": "Site",
+          "fields": {
+            "tagline": { "label": "Tagline", "hint": "Under the name in search results and when the site is shared." }
+          }
+        },
+        "hero": {
+          "label": "Opening section (home page)",
+          "fields": {
+            "eyebrow": { "label": "Small line above the title" },
+            "title": { "label": "Title" },
+            "lead": { "label": "Lead paragraph", "kind": "text" },
+            "primaryCta": { "label": "Main button" },
+            "secondaryCta": { "label": "Second button" },
+            "imageAlt": { "label": "Picture description", "hint": "Read out by screen readers; shown if the picture fails to load." }
+          }
+        },
+        "about": {
+          "label": "About",
+          "fields": {
+            "eyebrow": { "label": "Small line above the title" },
+            "title": { "label": "Title" },
+            "lead": { "label": "Lead paragraph", "kind": "text" },
+            "summary": { "label": "One-paragraph summary", "kind": "text", "hint": "Shown on the About page; search engines and AI assistants also read it as the café's description." },
+            "sourcingTitle": { "label": "Beans heading" },
+            "sourcingBody": { "label": "Beans text", "kind": "text" },
+            "nameTitle": { "label": "Name heading" },
+            "nameBody": { "label": "Name text", "kind": "text" },
+            "roastTitle": { "label": "Roasting heading" },
+            "roastBody": { "label": "Roasting text", "kind": "text" },
+            "imageAlt": { "label": "Picture description" }
+          }
+        }
+      }
+    }
+  },
   "collections": {
     "menu": {
       "label": "Menu",
@@ -47,12 +101,64 @@
         },
         "hours": {
           "label": "Opening hours",
-          "summary": "{{opens}} to {{closes}}",
-          "hint": "One row per group of days with the same hours. A day that is in no row shows as closed.",
+          "hint": "One entry per day. For a day the shop is closed, tick \"Closed all day\": the times are then ignored. A day that closes after midnight has a closing time earlier than its opening time.",
           "fields": {
-            "dayOfWeek": { "label": "Days", "optionsFrom": "weekdays", "hint": "Every day these hours apply to." },
-            "opens": { "label": "Opens at", "hint": "24-hour time with a colon, e.g. 07:00" },
-            "closes": { "label": "Closes at", "hint": "24-hour time with a colon, e.g. 18:00" }
+            "mon": {
+              "label": "Monday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            },
+            "tue": {
+              "label": "Tuesday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            },
+            "wed": {
+              "label": "Wednesday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            },
+            "thu": {
+              "label": "Thursday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            },
+            "fri": {
+              "label": "Friday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            },
+            "sat": {
+              "label": "Saturday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            },
+            "sun": {
+              "label": "Sunday",
+              "fields": {
+                "open": { "label": "Opens", "hint": "24-hour time, e.g. 07:00" },
+                "close": { "label": "Closes", "hint": "24-hour time, e.g. 18:00" },
+                "closed": { "label": "Closed all day" }
+              }
+            }
           }
         },
         "wifi": { "label": "Free Wi-Fi", "hint": "Shows a Free Wi-Fi line on the shop card." },
@@ -74,6 +180,22 @@
         "question": { "label": "Question" },
         "answer": { "label": "Answer", "kind": "text" },
         "order": { "label": "Position", "hint": "Lower numbers come first." }
+      }
+    },
+    "legal": {
+      "label": "Privacy and terms",
+      "folder": "src/content/legal",
+      "slugField": "title",
+      "create": false,
+      "delete": false,
+      "body": true,
+      "bodyLabel": "Page text",
+      "bodyHint": "Have your own lawyer read this before you publish. The shipped text is a starting structure, not legal advice.",
+      "fields": {
+        "title": { "label": "Page title" },
+        "description": { "label": "Short description", "hint": "One sentence about what this page covers. Search results show it under the page title." },
+        "updated": { "label": "Last updated", "kind": "date", "hint": "The day you last changed this text." },
+        "order": { "hidden": true }
       }
     }
   }

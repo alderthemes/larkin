@@ -4,7 +4,7 @@
 
 A café site built around the four things people check: where, when, what, and can I work here
 
-Astro + Tailwind CSS 4 + TypeScript. No framework JavaScript. The browser receives 2 small scripts (`public/menu-close.js`, `public/open-status.js`); each page renders its content on the server and still works with JavaScript turned off.
+Astro + Tailwind CSS 4 + TypeScript. No framework JavaScript. The browser receives 2 small scripts (`public/hours-today.js`, `public/menu-close.js`); each page renders its content on the server and still works with JavaScript turned off.
 
 **Live demo:** https://larkin.alderthemes.com
 
@@ -38,9 +38,9 @@ template and pins the exact tree this was tested against.
 
 ## Make it yours
 
-1. **Business details** (phone, e-mail): `src/lib/site.ts`. The business name is `site.name` in `src/i18n/en.json` (and `src/i18n/tr.json`).
+1. **Business details** (name, phone, e-mail): `src/data/business.json`, the "Business details" form in the editor.
 2. **Addresses and opening hours**: `src/content/locations/`, one file per shop
-3. **Every visible string**: `src/i18n/en.json` (Turkish included; switch with `LOCALE` in `site.ts`)
+3. **Every visible string**: `src/i18n/en.json` (Turkish included; switch with `locale` in `src/data/site.json`)
 4. **Content**: `src/content/`, one markdown file per item
 5. **Colors and fonts**: the `:root` block in `src/styles/global.css`
 

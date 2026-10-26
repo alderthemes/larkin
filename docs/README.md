@@ -53,12 +53,12 @@ in the terminal is normal on your computer. If something fails, see the
 ### Step 2. Make it yours
 
 Put in the café's own details and words. [Section 2](#2-make-it-yours-the-15-minute-pass)
-walks through the files: `src/lib/site.ts` (e-mail, phone),
-`src/i18n/en.json` (the name and every visible sentence),
+walks through the files: `src/data/business.json` (name, e-mail, phone),
+`src/i18n/en.json` (every visible sentence),
 `src/content/locations/` (addresses and opening hours, one file per shop) and
-`src/content/menu/` (one file per item). Menu items, questions and shops
-(addresses, opening hours) can also wait until the editor works (step 9). The
-e-mail and phone in `src/lib/site.ts` cannot: they stay in that file.
+`src/content/menu/` (one file per item). Menu items, questions, shops
+(addresses, opening hours), the business details and the home and About page
+texts can also wait until the editor works (step 9).
 
 ```bash
 npm run build
@@ -71,6 +71,8 @@ npm run build
 
 ### Step 3. Put it in a private GitHub repository
 
+[//]: # "shared:launch/private-repo begin"
+
 **You do this (needs your account).** On GitHub, create an empty **Private**
 repository (no README, no license, no `.gitignore`). Then run the commands in
 [From the zip to your own GitHub repository](#zip-to-repo) in the project
@@ -80,6 +82,8 @@ folder.
 Write down its name as `owner/name`, for example `your-name/your-repo`. Step 8
 needs it.
 
+[//]: # "shared:launch/private-repo end"
+
 <a id="launch-4"></a>
 
 ### Step 4. Put the site live, with `SITE` set
@@ -88,35 +92,44 @@ needs it.
 which rebuilds the site on every push. The editor saves by pushing, so a host
 where you upload files by hand will not work.
 
-**Cloudflare (the package's `wrangler.jsonc`).** In Cloudflare, open
-Workers & Pages and create a new application from your GitHub repository.
-Cloudflare's guide names the buttons **Create application**, then **Get
-started** next to **Import a repository**
-([Cloudflare's Workers Builds guide](https://developers.cloudflare.com/workers/ci-cd/builds/), read 2026-10-03);
-the dashboard's wording changes from time to time, so follow the screen that
-offers a Git repository. Pick the Git account that owns the repository, select
-it, and on the set-up screen fill in:
+[//]: # "shared:launch/put-site-live begin"
 
-- **Worker name** (the dashboard may call it the project name) is filled in
-  with the repository's name. It must be the same as `"name"` in
-  `wrangler.jsonc` (it ships as `larkin`), or the build fails: the same guide says
-  the two must match. Change one of the two so they match.
-- **Build command**: `npm run build`.
-- **Deploy command**: `npx wrangler deploy` (fill it in if it is not already
-  there).
-- A build variable named `SITE` with your live address as its value, for
-  example `https://your-domain.com`. Set before the first deploy, the very
-  first build already uses it. If the set-up screen gives you no place for
-  it, deploy first, then add it under the Worker's **Settings**, **Build**
-  (build variables and secrets; [Cloudflare's build settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), read 2026-10-03)
-  and push again.
+**Cloudflare (the package's `wrangler.jsonc`).**
+
+1. In Cloudflare, open **Workers & Pages** and create a new application from
+   your GitHub repository. Cloudflare's guide names the buttons **Create
+   application**, then **Get started** next to **Import a repository**
+   ([Cloudflare's Workers Builds guide](https://developers.cloudflare.com/workers/ci-cd/builds/), read 2026-10-03).
+   The dashboard's wording changes from time to time: follow the screen that
+   offers a Git repository.
+2. Pick the Git account that owns your repository (personal or organization)
+   and select the repository.
+3. On the set-up screen, fill in:
+   - **Worker name** (the dashboard may call it the project name): it is
+     filled in with the repository's name. Set it to the `"name"` in
+     `wrangler.jsonc` (it ships as `larkin`), or the build fails: the same guide
+     says the two must match. You can instead change `"name"` in
+     `wrangler.jsonc` to match.
+   - **Build command**: `npm run build`.
+   - **Deploy command**: `npx wrangler deploy` (fill it in if it is not
+     already there).
+4. Before you deploy, add a build variable named `SITE` with your live
+   address as its value, for example `https://your-domain.com`. Then deploy.
+   Setting it before the first deploy means the first build is already
+   correct. Build variables are read while the site builds, which is when
+   `SITE` is used
+   ([Cloudflare's build settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), read 2026-10-03).
+   If the set-up screen gives you no place for it, deploy first, then add it
+   under the Worker's **Settings**, **Build** (build variables and secrets,
+   same page) and push again. That is also where you change `SITE` later.
+
 - Node version: Cloudflare reads the `.node-version` file
   ([build image](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/), read 2026-09-30).
+- The build can wait in the queue for several minutes. When you push again,
+  older queued builds may show **Skipped. This build was skipped.** That is
+  normal: only the newest commit is built.
 
-Then deploy. A build can wait in a queue for several minutes when your
-account has other builds waiting. If you push again while one waits, the
-older build is listed as **Skipped** ("This build was skipped") and the
-newest one runs. That is normal.
+[//]: # "shared:launch/put-site-live end"
 
 Other hosts are in [section 9](#9-deploying).
 
@@ -130,6 +143,8 @@ address and there is no `noindex` line.
 <a id="launch-5"></a>
 
 ### Step 5. Deploy the login service
+
+[//]: # "shared:launch/deploy-login-service begin"
 
 **You do this (needs your account).** The editor signs people in with GitHub
 through a small login service,
@@ -155,9 +170,13 @@ site's address to `ALLOWED_DOMAINS`.
 subdomain is shown in Cloudflare, Workers & Pages. Write the full address
 down. The steps below call it `<worker-url>`.
 
+[//]: # "shared:launch/deploy-login-service end"
+
 <a id="launch-6"></a>
 
 ### Step 6. Create the GitHub OAuth app
+
+[//]: # "shared:launch/create-oauth-app begin"
 
 **You do this (needs your account).** On GitHub: Settings, Developer settings,
 OAuth Apps, **New OAuth App**
@@ -179,9 +198,13 @@ once.
 
 **You should see:** the app's page with a Client ID and one client secret.
 
+[//]: # "shared:launch/create-oauth-app end"
+
 <a id="launch-7"></a>
 
 ### Step 7. Give the login service its keys
+
+[//]: # "shared:launch/login-service-keys begin"
 
 **You do this (needs your account).** In Cloudflare, open Workers & Pages,
 then the `sveltia-cms-auth` Worker, then **Settings**, then
@@ -203,9 +226,13 @@ Save them, and deploy if the dashboard asks you to.
 
 **You should see:** the three names listed under **Variables & Secrets**.
 
+[//]: # "shared:launch/login-service-keys end"
+
 <a id="launch-8"></a>
 
 ### Step 8. Turn the editor on and push
+
+[//]: # "shared:launch/turn-editor-on begin"
 
 In the project folder, with `owner/name` from step 3 and `<worker-url>` from
 step 5:
@@ -230,9 +257,13 @@ git commit -m "Turn on the content editor"
 git push
 ```
 
-**You should see:** `check` prints "Editor config up to date", the build
+**You should see:** `check` ends with "Editor config up to date" (the "SITE is
+not set" box and the sync lines above it come from Astro and are normal on
+your computer), the build
 passes, and your host rebuilds after the push. Then
 `https://your-domain.com/admin` shows a **Sign In with GitHub** button.
+
+[//]: # "shared:launch/turn-editor-on end"
 
 <a id="launch-9"></a>
 
@@ -306,31 +337,38 @@ You only ever need to touch **four places**. Nothing is hardcoded in components.
 
 | What | Where |
 |---|---|
-| Business identity, email, phone | `src/lib/site.ts` |
+| Business details (name, email, phone, contact form), language, map | `src/data/business.json`, `src/data/site.json` |
 | Every visible string / language | `src/i18n/en.json` |
 | Menu, locations, FAQ, legal pages | `src/content/` |
 | Colors, fonts, corner radius | the `:root` block in `src/styles/global.css` |
 
-### Step 1: Business identity (`src/lib/site.ts`)
+### Step 1: Business details (`src/data/business.json`)
 
-```ts
-export const business = {
-  name: en.site.name,                       // comes from the i18n file
-  email: "hello@example.com",     // your email
-  phone: "+1 503 555 0142",                 // your phone
-  priceRange: "$",                          // $, $$, $$$
-  servesCuisine: ["Coffee", "Light bites"],
-  foundingYear: "2019",
-};
+Open `src/data/business.json` and replace every value. This is the same file
+the content editor's "Business details" form saves (section 8):
+
+```json
+{
+  "name": "Fern & Filter",
+  "email": "hello@example.com",
+  "phone": "+1 503 555 0142",
+  "priceRange": "$",
+  "foundingYear": "2019",
+  "servesCuisine": ["Coffee", "Light bites"],
+  "formAction": "#"
+}
 ```
 
-The contact form target lives in the same file:
+`name` is the café's name: the header, footer, page titles, schema.org data
+and `llms.txt` all print it. `foundingYear` is text, four digits.
+`formAction` is where the contact form posts (section 6); it is not in the
+editor's form. A missing or mistyped field stops the build and names the file
+and the field. The build warns while the demo e-mail or phone is still there.
 
-```ts
-export const contactFormAction = "#";       // see section 6
-```
+The language and the map on the contact page are in `src/data/site.json`
+(`locale`, `mapEmbedUrl`; sections 3 and 6).
 
-Addresses and opening hours are **not** here. They live in the locations
+Addresses and opening hours are **not** in either file. They live in the locations
 collection, because a café can have more than one shop (section 4).
 
 ### Step 2: Wording (`src/i18n/en.json`)
@@ -339,14 +377,17 @@ Every string on the site is in this one file, grouped by area:
 
 ```json
 {
-  "site": { "name": "Fern & Filter", "tagline": "Coffee roasted on Mondays…" },
+  "site": { "tagline": "Coffee roasted on Mondays…" },
   "hero": { "title": "Roasted Monday, no rush", "lead": "…" },
   "workspace": { "laptopBody": "Welcome all day. On weekends we ask…" }
 }
 ```
 
-Change `site.name` and the header, footer, page titles, schema.org data and
-`llms.txt` all follow. There is no second place to edit.
+Leave `{name}` where it is: it prints the café's name from
+`src/data/business.json`, so changing the name there changes every sentence
+that mentions it. There is no second place to edit. The home and About page
+texts (`site.tagline`, `hero`, `about`) are also in the editor's "Page text"
+form (section 8).
 
 ### Step 3: Content (`src/content/`)
 
@@ -522,40 +563,29 @@ with this template. See `IMAGE-LICENSE.md`.
 ## 3. Switching language
 
 Two files ship: `src/i18n/en.json` and `src/i18n/tr.json`. To switch the whole
-site, change one line in `src/lib/site.ts`:
+site, set `locale` in `src/data/site.json`:
 
-```ts
-export const LOCALE: Locale = "tr";   // "en" | "tr"
+```json
+{ "locale": "tr", "mapEmbedUrl": "" }
 ```
 
 Interface strings switch; content files do not translate themselves. The
 menu, the locations, the questions and the legal pages in `src/content/` stay
 in the language you wrote them in. Translate those too.
 
-To add a language, copy `en.json` to e.g. `de.json` and translate the values
-(never the keys). Registering it takes **two** files, not one — this is the
-single exception to the "four places" rule in section 2.
+**To add a new language:**
 
-First widen the language list in `core/utils/i18n.ts`:
-
-```ts
-export type Locale = "en" | "tr" | "de";
-export const LOCALES: Locale[] = ["en", "tr", "de"];
-```
-
-Then register the dictionary in `src/lib/site.ts`:
-
-```ts
-import de from "../i18n/de.json";
-const dicts: Record<Locale, typeof en> = { en, tr, de };
-export const LOCALE: Locale = "de";
-```
-
-Skip the first file and the second one does not compile: `Locale` is a fixed
-list of the languages the theme knows about, so `"de"` is not one of them yet.
-`astro build` does not type-check, so it stays green and publishes English
-text under `<html lang="de">` — run `npm run check` after this change and you
-will see the two errors instead.
+1. Copy `src/i18n/en.json` → `src/i18n/de.json` (or any locale code)
+2. Translate all **values** (never change the keys)
+3. Add it to the dictionaries in `src/lib/site.ts`:
+   ```ts
+   import de from "../i18n/de.json";
+   const dicts = { en, tr, de };
+   ```
+   `site.ts` is ours and an update replaces it (section 10), so keep a note
+   of this change and make it again after an update.
+4. Set `locale` to `"de"` in `src/data/site.json`. A language that is not in
+   the dictionaries stops the build and names the file and the field.
 
 Any key you leave out falls back to English rather than rendering blank.
 
@@ -607,12 +637,26 @@ addressCountry: "US"
 phone: "+1 503 555 0143"
 mapUrl: "https://www.google.com/maps/search/?api=1&query=…"
 hours:
-  - dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    opens: "07:00"
-    closes: "18:00"
-  - dayOfWeek: ["Saturday", "Sunday"]
-    opens: "08:00"
-    closes: "17:00"
+  mon:
+    open: "07:00"
+    close: "18:00"
+  tue:
+    open: "07:00"
+    close: "18:00"
+  wed:
+    open: "07:00"
+    close: "18:00"
+  thu:
+    open: "07:00"
+    close: "18:00"
+  fri:
+    open: "07:00"
+    close: "18:00"
+  sat:
+    open: "08:00"
+    close: "17:00"
+  sun:
+    closed: true
 wifi: true
 outlets: true
 laptopFriendly: true
@@ -624,13 +668,29 @@ order: 20
 The `primary` location supplies the address and hours used in the home page
 card and in the schema.org markup.
 
-Once the editor is on, the café can change all of this in the form
-([section 8](#8-let-your-client-edit-the-menu)). Day names must be the English
-ones above, spelled out in full: the form offers exactly those.
+`hours` is the shop's week: all seven days (`mon` … `sun`), each with
+`open` and `close` as 24-hour `HH:MM`, or `closed: true` for a day the shop
+does not open. A missing day, another time format or the same opening and
+closing time stops the build and names the file and the day. A closing time
+earlier than the opening time means the day closes after midnight. Every
+shop is read in the café's time zone, `timeZone` in `src/data/business.json`
+(an IANA name such as `America/Los_Angeles`).
 
-Opening hours drive the "Today: 07:00 – 18:00 · Open now" line. That status is
-computed in the visitor's browser from their own clock, and falls back to the
-plain hours line when JavaScript is off, so it is never wrong or blank.
+A location file from an older version that still writes `hours` as rows
+(`- dayOfWeek: ["Monday", …]` with `opens` and `closes`) keeps building with
+the same hours, and the build prints a warning naming the file: rewrite it as
+the week above.
+
+Once the editor is on, the café can change all of this in the form
+([section 8](#8-let-your-client-edit-the-menu)).
+
+Opening hours drive the "Today: 07:00 - 18:00 · Open now" line. The server
+prints the week's hours; in the browser `public/hours-today.js` (the same
+file in every Alder theme) narrows it to today's range and the open or closed
+badge, worked out in the café's time zone, not the visitor's: someone in New
+York reading a Portland café's page sees Portland's day. With JavaScript off,
+or a time zone it cannot read, the plain hours line stays, so it is never
+wrong or blank.
 
 ### FAQ (`src/content/faq/`)
 
@@ -654,6 +714,13 @@ it.
 `privacy.md` and `terms.md` render at `/legal/privacy/` and `/legal/terms/`.
 Adding `cookies.md` creates `/legal/cookies/` automatically and it appears
 nowhere in the navigation until you link it.
+
+Each page's front matter has `title`, `description` (one sentence, the
+page's meta description) and `updated`, the day you last changed the text,
+written `YYYY-MM-DD` (`2026-10-01`). The page prints it in the site's
+language ("Last updated October 1, 2026"); any other format stops the build
+and names the expected one. The owner edits both pages in the editor's
+"Privacy and terms" form (section 8).
 
 > **The supplied legal text is a short, neutral starting text, not legal
 > advice.** Read [`docs/legal-templates.md`](legal-templates.md) before you
@@ -690,7 +757,8 @@ resolving something newer.
 
 ## 6. The contact form
 
-The form posts to whatever you set in `contactFormAction`. It ships as `"#"`,
+The form posts to whatever you set in `formAction` in
+`src/data/business.json`. It ships as `"#"`,
 which means the form renders but goes nowhere — set this before launch.
 
 | Host | What to use |
@@ -700,18 +768,16 @@ which means the form renders but goes nowhere — set this before launch.
 
 Example with Formspree:
 
-```ts
-export const contactFormAction = "https://formspree.io/f/your-form-id";
+```json
+"formAction": "https://formspree.io/f/your-form-id"
 ```
 
-**Then add the service's origin to the Content-Security-Policy.** The policy
-ships with `form-action 'self'`, which means the browser blocks a submission to
-any other origin — **silently**. The page stays put, no error is shown, and the
-message goes nowhere. Edit the `form-action` directive in `public/_headers`:
-
-```
-form-action 'self' https://formspree.io
-```
+**The Content-Security-Policy follows by itself.** The policy allows
+`form-action 'self'` plus the host of `formAction`: the build reads it and
+writes it into the generated `public/_headers`, so a submission to the form
+service is not blocked. Without that the browser would block it
+**silently**: the page stays put, no error is shown, and the message goes
+nowhere. `npm run headers` prints the policy the build will write.
 
 The form already includes a hidden honeypot field named `company`. It only
 catches anything if the service that receives the form treats that field as a
@@ -720,6 +786,35 @@ filled in (its help page on honeypot filtering, undated, read 2026-10-03) and
 does nothing special with `company`. Read your service's documentation and
 rename the field to what it expects; that removes the bulk of bot spam without
 a CAPTCHA.
+
+### The map
+
+Paste the `src` of your map provider's embed iframe into `mapEmbedUrl` in
+`src/data/site.json` (in Google Maps: Share, Embed a map, copy the `src`).
+Leave it `""` and the map section does not render at all, so the page never
+shows an empty gray box. The build allows the address's host in `frame-src`
+by itself; without that the browser blocks the embed and the map stays blank.
+
+### Security headers
+
+`public/_headers`, the file Cloudflare reads for the security headers, is
+**generated** by `npm run build` (the first step runs `scripts/headers.mjs`)
+and is not kept in git: edits to it are replaced on the next build. The
+policy is ours and comes with every update. What is yours is in
+`src/data/headers.json`:
+
+- `allow`: hosts to add to a directive, as `https://` origins (scheme and
+  host only; no path, no `*`, no `'unsafe-...'`). The contact form's host and
+  the map's host come from `src/data/business.json` and `src/data/site.json`
+  and need no entry. `frame-src` is for an embed the data does not name: its
+  first host replaces `'none'`.
+- `cloudflareAnalytics`: `true` allows the two Cloudflare Web Analytics hosts
+  (the beacon script and where it reports); set `false` when the site is not
+  on Cloudflare and the policy gets tighter.
+
+A wrong value stops the build naming the file and the field. Build with
+`npm run build`, not `astro build`: the build refuses to run when
+`public/_headers` is missing or older than its data.
 
 ---
 
@@ -764,6 +859,8 @@ one environment variable reverses it.
 
 ### AI crawlers
 
+[//]: # "shared:ai-crawlers begin"
+
 The generated `robots.txt` allows every crawler (`User-agent: *`, `Allow: /`),
 and that includes the crawlers run by AI companies: OpenAI's `GPTBot`
 ("may be used in training", OpenAI's bot page, undated, read 2026-10-03),
@@ -773,23 +870,24 @@ Anthropic's crawler article, updated 2026-04-07) and Google's
 "does not impact a site's inclusion in Google Search" (Google's crawler
 documentation, updated 2026-07-14). This is a choice, and it is yours. With
 the default, the site can be read and quoted by assistants, and `/llms.txt` is
-written for the same readers. To refuse a crawler, the rule goes into
+written for the same readers. To refuse a crawler, write the rule into
 `src/pages/robots.txt.ts`: that file hands the shared `robotsTxt()` output
-back as the response, so your lines are appended to that string, for
-example:
+back as the response, so append your lines to that string, for example:
 
 ```
 User-agent: GPTBot
 Disallow: /
 ```
 
+Each company documents its crawler names and what each one does; read the
+current lists before you choose, because the names and purposes change.
+
+[//]: # "shared:ai-crawlers end"
+
 That file is one of our files, not yours: an update replaces it and your
 lines are gone. If you add them, keep a copy of them, and after every update
 check whether the release lists `src/pages/robots.txt.ts` under "Our files"
 (section 10); if it does, add your lines to the new copy again.
-
-Each company documents its crawler names and what each one does; read the
-current lists before you choose, because the names and purposes change.
 
 ---
 
@@ -860,6 +958,15 @@ café owner accepts an invitation and opens the editor.
   main one, position, and private notes. They can also add a shop or delete
   one.
 - **Questions** (the FAQ): question, answer, position.
+- **Business details**: café name, e-mail, phone, price range, year founded,
+  what you serve. Leave `{name}` in the page texts: it prints this name.
+- **Page text**: the tagline, the home page's opening section and the About
+  page texts, in the site's active language (`src/i18n/en.json` today; the
+  other language file is not edited there).
+- **Privacy and terms**: page title, short description, last updated, page
+  text. They cannot add or delete a page, so the two pages and their
+  addresses stay; the text box tells them to have their own lawyer read it
+  before publishing.
 
 The form is in English; to change its labels edit `cms/fields.json`, then run
 `npm run cms -- generate`. The menu sections and tags in the form come from
@@ -868,12 +975,10 @@ names as the site.
 
 What to tell the owner about locations:
 
-- **Opening hours** are rows: pick the days that share the same hours, then
-  type the opening and closing time as 24-hour time with a colon, for example
-  `07:00` and `18:00`. A day that is in no row has no hours on the site.
-  Removing every row leaves the shop without opening hours. The day names in
-  the form are the English ones the site reads; the site still prints the
-  days in its own language.
+- **Opening hours** are the week, one entry per day: type the opening and
+  closing time as 24-hour time with a colon, for example `07:00` and `18:00`.
+  For a day the shop is closed, tick **Closed all day**: the times beside it
+  are then ignored. The site prints the days in its own language.
 - **Directions link** is required: it is where the "Get directions" button
   goes. It must be a full web address starting with `https://`, or the
   build stops.
@@ -881,14 +986,18 @@ What to tell the owner about locations:
   details search engines read come from it.
 - **Shop phone** and **Notes** are kept in the shop's file, but the site does
   not show them: the phone number on the site is the one in
-  `src/lib/site.ts`.
+  Business details.
 - **Keep at least one shop.** The address and opening hours on the site come
   from the shops.
 
 **What the owner cannot edit, on purpose:**
 
-- **Wording and business details** (`src/i18n/en.json`, `src/lib/site.ts`).
-- **Privacy and terms** (`src/content/legal/`). These are legal text.
+- **Section labels, buttons and form labels** (`src/i18n/en.json`). They are
+  set once with the site and rarely change; the "Page text" form shows only
+  the home and About page texts.
+- **The contact form address, the language and the map**
+  (`formAction` in `src/data/business.json`, `src/data/site.json`). They are
+  set up once with your host and the security headers (section 6).
 - **Currency.** It is not in the form. Every item uses the default in
   `src/content.config.ts` (`USD`) unless its file says otherwise. If the café
   prices in another currency, change that default before you hand the site
@@ -944,8 +1053,9 @@ documentation give them (steps 5 to 10). The list below is the short reference.
    ```
 
    Add `--branch <name>` if your branch is not `main`. This writes
-   `public/admin/config.yml` and `public/admin/index.html`, and adds a marked
-   block to `public/_headers` (see below).
+   `public/admin/config.yml` and `public/admin/index.html`; the next
+   `npm run build` adds the `/admin` policy to the generated
+   `public/_headers` (see below).
 5. Build and deploy. The editor is at `/admin`.
 6. Give the owner access. The owner creates a free GitHub account. You add
    that account to the site's repository as a collaborator. For a repository
@@ -965,9 +1075,10 @@ login service and a GitHub account with access to the repository either way.
 
 **The site's security policy blocks the editor unless `/admin` gets its own.**
 The site-wide Content-Security-Policy allows nothing the editor needs (it loads
-from unpkg and talks to api.github.com). `enable sveltia` therefore adds a
-block between `# BEGIN content editor` and `# END content editor` to
-`public/_headers`, for `/admin` only. It uses Cloudflare's `!` line to
+from unpkg and talks to api.github.com). While `public/admin/config.yml`
+exists, the build therefore adds a block between `# BEGIN content editor` and
+`# END content editor` to the generated `public/_headers`, for `/admin` only
+(section 6, "Security headers"). It uses Cloudflare's `!` line to
 replace the policy on that path; Cloudflare documents that a request matching
 several rules gets all their headers and that a line made of an exclamation mark and a header name removes an earlier
 one (read 2026-09-29). The rest of the site keeps its policy, and
@@ -1023,6 +1134,8 @@ repository, the screens are in [Launch guide, step 4](#launch-4).
 
 ### Any other host
 
+[//]: # "shared:deploying-other-host begin"
+
 The site is plain static files, so it also runs on other static hosts. The
 security headers (`public/_headers`), the content editor setup and the steps
 in this guide are written for Cloudflare: on another host you set up the
@@ -1030,16 +1143,22 @@ headers yourself.
 
 ```bash
 npm run build
-# upload the contents of dist/ to your host
+# Upload the contents of dist/ to your host
 ```
+
+An upload-only host cannot rebuild on save, so the content editor will not
+update the live site there.
+
+[//]: # "shared:deploying-other-host end"
 
 ### Before you go live: security checklist
 
-- `public/_headers` (Cloudflare) ships with a strict
-  Content-Security-Policy, HSTS, `X-Content-Type-Options` and a restrictive
-  `Permissions-Policy`. **If you add a third-party embed (a map, an Instagram
-  feed, analytics), you must widen the CSP for that origin** or the browser
-  will block it.
+- `public/_headers` (Cloudflare, generated by `npm run build`) ships with a
+  strict Content-Security-Policy, HSTS, `X-Content-Type-Options` and a
+  restrictive `Permissions-Policy`. **If you add a third-party embed (an
+  Instagram feed, analytics), allow its host in `src/data/headers.json`**
+  (section 6) or the browser will block it. The map and the contact form
+  need no entry.
 - Any `<iframe>` you paste in should keep `sandbox` and `referrerpolicy`.
 - Set `SITE` to your real domain ([section 7](#site-url)).
 - Adapt the legal pages (`docs/legal-templates.md`).
@@ -1048,23 +1167,30 @@ npm run build
 
 ## 10. Updating
 
+[//]: # "shared:updating begin"
+
 Each new version is a new zip at the same download link you used the first
 time. The files you changed to make the site yours stay yours; the rest of
 the kit is ours, and an update replaces it.
+
+That includes this guide and `README.md`: an update replaces them whole, so
+keep notes of your own in a separate file of yours. An update never touches a
+file that is not in the kit.
+
+[//]: # "shared:updating end"
 
 Your files (an update never overwrites these):
 
 - `src/content/`: every content file (section 4)
 - `src/i18n/*.json`: your wording, in every language file
-- `src/lib/site.ts`: your site details and switches
 - `src/styles/global.css`: the `:root` block is yours (colors, fonts and the
   motion switches); if a release changes this file, carry your `:root` values
   into the new copy
-- `cms/fields.json`: the content editor's labels and hints
+- `src/data/`: your business details (`business.json`), your language and map settings (`site.json`) and the hosts you allow in the security headers (`headers.json`)
+- `cms/labels.json`: your editor labels and hints (the fields themselves are in `cms/fields.json`, ours)
 - `src/assets/images/`: your photographs
 - `public/og.jpg`: your social sharing image
 - `public/favicon.svg`: your browser tab icon
-- `public/_headers`: your security headers, including any host you allowed
 
 `package.json` is a special case. Every release lists it under "Your files",
 because you may have added packages or scripts of your own: merge it by hand,
@@ -1112,8 +1238,12 @@ src/
   content/               YOUR CONTENT — menu, locations, faq, legal
   i18n/                  YOUR WORDING — en.json, tr.json
   layouts/BaseLayout.astro   meta, Open Graph, JSON-LD, page shell
+  data/
+    business.json        YOUR NAME, E-MAIL, PHONE, FORM ADDRESS (editor: Business details)
+    site.json            YOUR LANGUAGE AND MAP
+    headers.json         YOUR EXTRA HOSTS FOR THE SECURITY HEADERS
   lib/
-    site.ts              YOUR BUSINESS IDENTITY
+    site.ts              checks business.json and site.json at build time
     locations.ts         location helpers (hours, address, schema)
     theme-color.ts       reads the phone browser bar color from global.css
     font-preloads.ts     picks the font files to preload from the font tokens in global.css
@@ -1124,8 +1254,8 @@ core/                    shared design tokens and components
 public/
   favicon.svg            browser tab icon (colors are written in the file)
   og.jpg                 social sharing preview, 1200×630
-  _headers               security headers + cache rules (Cloudflare)
-  open-status.js         puts today's hours on the badge, in the visitor's clock
+  _headers               generated by `npm run build` (not in git): security headers + cache rules
+  hours-today.js         today's hours and the open/closed badge, in the café's time zone (same file in every theme)
   menu-close.js          closes the mobile menu on Escape
 .env.example             copy to .env and set SITE before your first deploy
 ```
@@ -1142,9 +1272,10 @@ public/
 | Fonts look wrong / fall back | font package not installed | `npm install` again; check the `@import` lines at the top of `global.css` |
 | A menu item does not appear | `available: false`, or an invalid `category` | check the frontmatter against the enum in `src/content.config.ts` |
 | Gallery section is missing | no images in `src/assets/images/` | add the files, or leave it: the section hides itself by design |
-| "Open now" never appears | JavaScript disabled, or no `hours` on the primary location | the plain hours line is the intended fallback; add `hours` to the location file |
-| Map embed does not load | Content-Security-Policy blocks the origin | replace `'none'` in `frame-src` in `public/_headers` with the embed origin |
-| Form submits but nothing happens, and there is no error | Content-Security-Policy `form-action` does not list the form service | add its origin to `form-action` in `public/_headers` |
+| "Open now" never appears | JavaScript disabled, or `timeZone` missing or unknown in `src/data/business.json` | the plain hours line is the intended fallback; set `timeZone` to an IANA name such as `America/Los_Angeles` |
+| Map embed does not load | the generated policy does not name the map's host | set `mapEmbedUrl` in `src/data/site.json` to the iframe's `src` and rebuild with `npm run build`; `npm run headers` shows the policy (section 6) |
+| Form submits but nothing happens, and there is no error | the generated policy does not name the form service | set `formAction` in `src/data/business.json` and rebuild with `npm run build`; `npm run headers` shows the policy (section 6) |
+| Build stops: "public/_headers is missing" or "is stale" | the host runs `astro build` instead of `npm run build` | set the build command to `npm run build` |
 | Build fails after renaming the project folder | the link npm made to `./core` still points at the old path | `npm install` (the build itself no longer needs it; `npm run check` does) |
 | `npm run check` reports a type error | a TypeScript error in your edits | the file and line are in the output; `npm run build` does not run this check, so a type error never blocks a build |
 | `npm ls` says "extraneous" for `@emnapi/*`, `tslib` or `@img/sharp-wasm32` | a known friction between npm and the image library's optional WASM packages | nothing to fix — the install is not broken, and `npm ci` reports the same |

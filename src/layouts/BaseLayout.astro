@@ -1,13 +1,14 @@
 ---
 /**
- * BaseLayout — meta and Open Graph tags, fonts, schema.org JSON-LD and the
- * site shell. A page passes its own structured data through the `schema`
- * prop.
+ * BaseLayout — the site shell. The search and link-preview tags come from
+ * core's SeoHead; this layout adds the share-image size, the language tag,
+ * the font preloads and the browser color to it. A page passes its own
+ * structured data through the `schema` prop.
  */
 import "../styles/global.css";
 import "../styles/larkin.css";
-import { buildTitle, jsonLd } from "@studio/core/utils/seo";
-import { LOCALE, t } from "../lib/site";
+import SeoHead from "@studio/core/components/SeoHead.astro";
+import { LOCALE, t, business } from "../lib/site";
 import { THEME_COLOR } from "../lib/theme-color";
 import { FONT_PRELOADS } from "../lib/font-preloads";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -23,73 +24,51 @@ interface Props {
 }
 
 const { title, description, image = "/og.jpg", schema, noindex = false } = Astro.props;
-const siteName = t("site.name");
-const fullTitle = buildTitle(title, siteName);
-const canonical = new URL(Astro.url.pathname, Astro.site);
-
-/* Nobody deploys a site to example.com. If the canonical address is still the
-   placeholder, search engines are being handed a domain that is not ours: the
-   pages get indexed under it, or consolidated into it, and the effect is
-   invisible in the build output. noindex until SITE is set is the recoverable
-   failure - it shows up in Search Console as "excluded by noindex" and one
-   environment variable undoes it. See astro.config.mjs. */
-const placeholderSite = canonical.hostname.endsWith("example.com");
+const siteName = business.name;
 ---
 
 <!doctype html>
 <html lang={LOCALE}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{fullTitle}</title>
-    <meta name="description" content={description} />
-    {/* No canonical on a page that is not meant to be indexed. /404/ was
-        declaring itself canonical at an address the server answers with 404 —
-        a signal contradicting itself. */}
-    {!noindex && <link rel="canonical" href={canonical} />}
-    {(noindex || placeholderSite) && <meta name="robots" content="noindex" />}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <SeoHead
+      title={title}
+      siteName={siteName}
+      description={description}
+      image={image}
+      noindex={noindex}
+      schema={schema}
+    >
+      {/* The shipped og.jpg is exactly 1200x630. Declaring it lets a share
+          client draw the large card immediately instead of downloading the file
+          first to find out — the difference between a big card and a small one
+          on the first share of a link. Replace the numbers if you replace the
+          image with a different size. */}
+      {image === "/og.jpg" && (
+        <>
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:alt" content={t("a11y.ogImageAlt")} />
+        </>
+      )}
+      <meta property="og:locale" content={LOCALE === "tr" ? "tr_TR" : "en_US"} />
 
-    {/* Open Graph / Twitter */}
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={siteName} />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
-    {/* The shipped og.jpg is exactly 1200x630. Declaring it lets a share
-        client draw the large card immediately instead of downloading the file
-        first to find out — the difference between a big card and a small one
-        on the first share of a link. Replace the numbers if you replace the
-        image with a different size. */}
-    {image === "/og.jpg" && (
-      <>
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={t("a11y.ogImageAlt")} />
-      </>
-    )}
-    <meta property="og:locale" content={LOCALE === "tr" ? "tr_TR" : "en_US"} />
-    <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+      {/* Fonts are self-hosted through @fontsource, imported from global.css.
+          No request leaves the visitor's browser for a font file.
 
-    {/* Fonts are self-hosted through @fontsource, imported from global.css.
-        No request leaves the visitor's browser for a font file.
-
-        Without the preload the browser learns the font exists only after the
-        stylesheet has parsed, so the chain is HTML -> CSS -> font and the page
-        paints once in the fallback face and again in the real one (the
-        fallback faces in larkin.css are sized to match, so the swap does not
-        move the lines). Which files are preloaded follows the font tokens in
-        global.css (src/lib/font-preloads.ts).
-        `crossorigin` is required even for a same-origin font, because fonts
-        are fetched in CORS mode - without it the browser downloads the file
-        twice. */}
-    {FONT_PRELOADS.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
-    {/* The phone browser paints its own bar in the bag's terracotta, read
-        from global.css (src/lib/theme-color.ts). */}
-    {THEME_COLOR && <meta name="theme-color" content={THEME_COLOR} />}
-
-    {schema && <script type="application/ld+json" set:html={jsonLd(schema)} />}
+          Without the preload the browser learns the font exists only after the
+          stylesheet has parsed, so the chain is HTML -> CSS -> font and the page
+          paints once in the fallback face and again in the real one (the
+          fallback faces in larkin.css are sized to match, so the swap does not
+          move the lines). Which files are preloaded follows the font tokens in
+          global.css (src/lib/font-preloads.ts).
+          `crossorigin` is required even for a same-origin font, because fonts
+          are fetched in CORS mode - without it the browser downloads the file
+          twice. */}
+      {FONT_PRELOADS.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+      {/* The phone browser paints its own bar in the bag's terracotta, read
+          from global.css (src/lib/theme-color.ts). */}
+      {THEME_COLOR && <meta name="theme-color" content={THEME_COLOR} />}
+    </SeoHead>
   </head>
   <body class="larkin">
     <a href="#main" class="skip-link">{t("a11y.skipToContent")}</a>

@@ -11,10 +11,10 @@
  *
  * All seven days are required, so a day cannot be forgotten. A closed day is
  * `{ "closed": true }` rather than `null`: the content editor writes an object
- * with a switch, and needs no special "may be empty" field for it (founder,
- * 2026-10-10). The editor's form has the three keys for every day, so it also
+ * with a switch, and needs no special "may be empty" field for it.
+ * The editor's form has the three keys for every day, so it also
  * writes `{ "open": "", "close": "", "closed": true }` for a closed day and
- * `{ "open", "close", "closed": false }` for an open one (founder, 2026-10-13:
+ * `{ "open", "close", "closed": false }` for an open one (that is,
  * the schema reads the editor's shape; no site-wide "leave empty fields out"
  * switch, which would also change how the menu's allergen list is saved). A
  * ticked "Closed all day" wins: the times beside it are ignored. `close`
@@ -137,12 +137,12 @@ interface OpeningHoursSpec {
  * is assumed to span over the next day", OpeningHoursSpecification, V30.1,
  * 2026-09-16) and Google's LocalBusiness guide ("For hours past midnight,
  * define opening and closing hours using a single OpeningHoursSpecification
- * property", updated 2026-09-08) say the same. Founder confirmed, 2026-10-10.
+ * property", updated 2026-09-08) say the same.
  *
  * A closed day is left out, as the themes did before: schema.org reads a
  * place as closed when `opens` is not given. Google's guide suggests
  * "00:00"–"00:00" for a closed day instead; the two documents disagree on what
- * that means, so the themes keep their output (founder, 2026-10-10).
+ * that means, so the themes keep their output.
  */
 export function openingHoursSpec(hours: Hours): OpeningHoursSpec[] {
   const out: OpeningHoursSpec[] = [];

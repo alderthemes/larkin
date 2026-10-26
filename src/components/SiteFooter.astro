@@ -29,7 +29,7 @@ const navLinks = [
   <Container>
     <div class="site-footer__grid">
       <div class="site-footer__col">
-        <p class="site-footer__brand">{t("site.name")}</p>
+        <p class="site-footer__brand">{business.name}</p>
         <p class="site-footer__tagline">{t("site.tagline")}</p>
       </div>
 
@@ -92,7 +92,7 @@ const navLinks = [
     </div>
 
     <div class="site-footer__legal">
-      <p>© {year} {t("site.name")}. {t("footer.rights")}</p>
+      <p>© {year} {business.name}. {t("footer.rights")}</p>
       <ul class="site-footer__legal-links">
         <li><a href="/legal/privacy/">{t("footer.privacy")}</a></li>
         <li><a href="/legal/terms/">{t("footer.terms")}</a></li>

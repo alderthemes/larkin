@@ -12,7 +12,7 @@
  * ("business.hours.mon.open"); the form is a collection or a record of
  * cms/fields.json. "label" and "hint" are the only values. Anything else is an
  * error, so a key we renamed is caught at `npm run cms -- generate`, not found
- * as a form with the wrong name (T13, D-122).
+ * as a form with the wrong name.
  */
 import { CmsError } from "./model.mjs";
 

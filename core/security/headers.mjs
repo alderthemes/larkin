@@ -2,8 +2,8 @@
  * security/headers.mjs - the site's HTTP security headers, generated from data.
  *
  * `public/_headers` (Cloudflare's header file) is not a source file any more:
- * `npm run build` writes it (the kit's scripts/headers.mjs runs first, as the
- * `prebuild` step) from inputs that each have one home:
+ * `npm run build` writes it (the kit's scripts/headers.mjs runs first, before
+ * `astro build`) from inputs that each have one home:
  *
  *   1. our base policy: the six security headers and the cache rules for
  *      `/_astro/*` and `/favicon.svg` (BASE below; the same in every kit);
@@ -21,21 +21,20 @@
  *
  * The order is fixed here; nothing else writes the file. The first two lines
  * of the output say where it came from and carry a digest of the inputs, so a
- * build that skipped `prebuild` (a host running `astro build` directly) is
+ * build that skipped that step (a host running `astro build` directly) is
  * caught by the kit's astro.config.mjs: it recomputes the digest with the same
  * rule (HEADER_INPUT_FILES + inputDigest, copied there without importing this
  * file) and stops when the file is missing or stale.
  *
  * Why generate: the policy is ours and must reach the owner with an update;
  * what the owner really needs (allow one host) is data and stays theirs.
- * (design standard T13, headers option H2; decision D-122.)
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { adminCsp, BEGIN, END } from "../cms/headers.mjs";
 
-/** The headers every kit must send on every page (the studio security audit reads this list). */
+/** The headers every kit must send on every page (kept as one list so it can be checked). */
 export const REQUIRED_SECURITY_HEADERS = Object.freeze([
   "X-Content-Type-Options",
   "X-Frame-Options",
@@ -59,8 +58,12 @@ export const HEADER_INPUT_FILES = Object.freeze([
   "src/data/demo-framing.json",
 ]);
 
-/** The only directives src/data/headers.json may add hosts to. */
-export const ALLOW_DIRECTIVES = Object.freeze(["script-src", "connect-src", "img-src", "font-src", "style-src", "form-action"]);
+/**
+ * The only directives src/data/headers.json may add hosts to. frame-src is
+ * here for embeds the data does not name (a map on the contact page); the
+ * first host replaces 'none', the same way a booking widget's address does.
+ */
+export const ALLOW_DIRECTIVES = Object.freeze(["script-src", "connect-src", "img-src", "font-src", "style-src", "form-action", "frame-src"]);
 
 /** The directives a kit may feed from the owner's data (package.json → alderthemes.headers.origins). */
 export const DATA_ORIGIN_DIRECTIVES = Object.freeze(["form-action", "frame-src"]);
@@ -139,11 +142,9 @@ export function parseHeadersJson(text) {
       for (const [dir, list] of Object.entries(data.allow)) {
         if (!ALLOW_DIRECTIVES.includes(dir)) {
           const why =
-            dir === "frame-src"
-              ? "the booking widget's host is read from your booking settings instead"
-              : dir === "frame-ancestors" || dir === "base-uri" || dir === "default-src"
-                ? "it is part of the base policy and is not opened from data"
-                : `the directives you can add hosts to are ${ALLOW_DIRECTIVES.join(", ")}`;
+            dir === "frame-ancestors" || dir === "base-uri" || dir === "default-src"
+              ? "it is part of the base policy and is not opened from data"
+              : `the directives you can add hosts to are ${ALLOW_DIRECTIVES.join(", ")}`;
           lines.push(`allow.${dir}: not allowed here; ${why}.`);
           continue;
         }
@@ -204,7 +205,7 @@ export function authUrlOf(configYml) {
 
 /**
  * Everything buildHeaders needs, read from a kit folder (the kit's
- * scripts/headers.mjs and the studio's tools both call this).
+ * scripts/headers.mjs calls this).
  * @param {string} kitDir
  * @returns {ReturnType<typeof buildHeaders> extends string ? object : never}
  */
@@ -319,7 +320,10 @@ export function buildHeaders(input = {}) {
   }
   for (const dir of ALLOW_DIRECTIVES) {
     const cur = get(dir);
-    for (const o of data.allow[dir]) if (!cur.includes(o)) cur.push(o);
+    for (const o of data.allow[dir]) {
+      if (cur.includes("'none'")) cur.splice(cur.indexOf("'none'"), 1); /* frame-src: a host replaces 'none' */
+      if (!cur.includes(o)) cur.push(o);
+    }
   }
 
   /* 5. demo framing: the store frames the demo; never in the buyer's copy. */
@@ -355,8 +359,9 @@ export function buildHeaders(input = {}) {
     "#    'self' plus the hosts of the form addresses in your data files; another",
     "#    host is blocked by the browser silently, the visitor sees nothing happen.",
     "#    Add it under \"allow\": { \"form-action\": [...] } in src/data/headers.json.",
-    "# 2. A booking widget renders in an iframe, and frame-src is 'none' until your",
-    "#    booking settings name the widget's address; its host is taken from there.",
+    "# 2. An embed (a booking widget, a map) renders in an iframe, and frame-src is",
+    "#    'none' until your booking settings name the widget's address or you add",
+    "#    the embed's host under \"allow\": { \"frame-src\": [...] }.",
     "#    Scripts, images, fonts, styles and connections from another host go under",
     "#    \"allow\" in src/data/headers.json as well (https origins only).",
     "",
@@ -407,11 +412,6 @@ export function buildHeaders(input = {}) {
 export function buildKitHeaders(kitDir) {
   const input = collectKitInputs(kitDir);
   return { text: buildHeaders(input), digest: input.digest, editor: input.adminConfigYml !== null, demoFraming: input.demoFraming !== null };
-}
-
-/** True when the kit generates its headers (ships src/data/headers.json); false on the older, tracked-file shape. */
-export function generatesHeaders(kitDir) {
-  return existsSync(join(kitDir, "src", "data", "headers.json"));
 }
 
 /** `_headers` text without comment lines: what the host actually applies. */

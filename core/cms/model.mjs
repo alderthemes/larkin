@@ -82,7 +82,7 @@ const isDate = (p) => p?.type === "string" && p.format === "date-time";
 /**
  * Line numbers (1-based) of YAML comments in a data file: whole-line `#` comments,
  * and a ` #` after a value on a line with no quotes (a quoted "#" is text).
- * Measured live 2026-09-30 (Sveltia 0.223.0, the studio's live walk site): saving a
+ * Measured live 2026-09-30 (Sveltia 0.223.0, a live test site): saving a
  * one-file collection rewrote its YAML data file and removed all 22 of its
  * leading comment lines. So a commented file is refused for "file" collections.
  */

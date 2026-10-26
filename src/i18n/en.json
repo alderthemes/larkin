@@ -1,14 +1,6 @@
 {
   "site": {
-    "name": "Fern & Filter",
     "tagline": "Coffee roasted on Mondays, poured under a green awning in Northwest Portland"
-  },
-  "nav": {
-    "home": "Home",
-    "menu": "Menu",
-    "about": "About",
-    "contact": "Contact",
-    "cta": "Get directions"
   },
   "hero": {
     "eyebrow": "Coffee bar & roastery",
@@ -16,79 +8,13 @@
     "lead": "We roast on Mondays and let the beans rest two days before they reach the bar under the green awning.",
     "primaryCta": "Get directions",
     "secondaryCta": "View full menu",
-    "imageAlt": "The bar and window seating at Fern & Filter on a bright morning"
-  },
-  "location": {
-    "eyebrow": "Find us",
-    "title": "Where we are",
-    "todayLabel": "Today",
-    "openNow": "Open now",
-    "closedNow": "Closed",
-    "hoursFallback": "Hours vary by day",
-    "allHours": "Show all hours",
-    "directions": "Get directions",
-    "viewAll": "View all locations",
-    "amenities": "Good to know",
-    "walkInOnly": "Walk-ins only, no reservations",
-    "wifi": "Free Wi-Fi",
-    "outlets": "Power outlets",
-    "laptopFriendly": "Laptop-friendly"
-  },
-  "menu": {
-    "eyebrow": "What we serve",
-    "title": "On the bar today",
-    "subtitle": "Espresso is the Awning blend all year. The pour-over changes on the first of the month.",
-    "pageTitle": "What we serve",
-    "pageSubtitle": "Prices in USD. Drinks tagged Seasonal come and go with what we can get.",
-    "viewFull": "View full menu",
-    "seasonalBadge": "Seasonal",
-    "categoriesNav": "Menu categories",
-    "empty": "No items in this category yet.",
-    "categories": {
-      "espresso": "Espresso bar",
-      "brew": "Drip & pour-over",
-      "food": "Food",
-      "seasonal": "Seasonal"
-    },
-    "tags": {
-      "plant-based": "Plant-based",
-      "vegetarian": "Vegetarian",
-      "vegan": "Vegan",
-      "gluten-free": "Gluten-free",
-      "decaf": "Decaf available"
-    }
-  },
-  "workspace": {
-    "eyebrow": "Workspace",
-    "title": "Yes, bring your laptop",
-    "lead": "The long oak table seats eight and has outlets along its rail. On weekdays it is full by 9:00.",
-    "wifiTitle": "Wi-Fi",
-    "wifiBody": "Free, no password. For video calls, the sidewalk bench is quieter.",
-    "powerTitle": "Power",
-    "powerBody": "Long table and bar, not the windows.",
-    "noiseTitle": "Noise level",
-    "noiseBody": "Grinder, pitchers, the streetcar bell.",
-    "laptopTitle": "Laptop policy",
-    "laptopBody": "Welcome all day. On weekends we ask you to share the long table between 10:00 and 13:00."
-  },
-  "gallery": {
-    "eyebrow": "Inside",
-    "title": "The room, the bar, the cups",
-    "alts": {
-      "bar": "The bar counter with wooden shelving and a bright window behind it",
-      "latte": "A cappuccino with latte art on a saucer, set on a wooden table",
-      "pourover": "Hot water poured over a filter cone, steam rising from the brewer",
-      "food": "An almond croissant and a small plate of avocado toast",
-      "storefront": "The shopfront with its sign and a sidewalk table beside the door",
-      "detail": "A stack of ceramic cups next to a potted fern on the counter",
-      "generic": "A view inside the cafe"
-    }
+    "imageAlt": "The bar and window seating at {name} on a bright morning"
   },
   "about": {
     "eyebrow": "Our story",
     "title": "Two windows and a long table",
-    "lead": "Fern & Filter opened in 2019 under the green awning on NW Thimbleberry. We roast across the river on Mondays and carry the beans back the same afternoon.",
-    "summary": "Fern & Filter is a specialty coffee bar on NW Thimbleberry Avenue in Portland, Oregon. It roasts its Awning house blend and one monthly single origin every Monday, and is open seven days a week.",
+    "lead": "{name} opened in 2019 under the green awning on NW Thimbleberry. We roast across the river on Mondays and carry the beans back the same afternoon.",
+    "summary": "{name} is a specialty coffee bar on NW Thimbleberry Avenue in Portland, Oregon. It roasts its Awning house blend and one monthly single origin every Monday, and is open seven days a week.",
     "sourcingTitle": "Where the beans come from",
     "sourcingBody": "The Awning blend is Brazil and Colombia, bought from the same two farms every year so it tastes the same in every bag. The single origin is where we take chances: one lot a month, picked by cupping samples at the long table. We are not perfect about sourcing, but we are deliberate.",
     "nameTitle": "About the name",
@@ -97,68 +23,141 @@
     "roastBody": "Light to medium, every Monday, in a small roastery in southeast Portland. The beans rest two days, so Monday's roast is Wednesday's espresso. The single origin changes on the first of the month, and the bag on the shelf says which one it is.",
     "imageAlt": "Morning light across the counter and the shelf of house-roasted beans"
   },
-  "faq": {
-    "eyebrow": "Good to know",
-    "title": "Frequently asked questions",
-    "subtitle": "Seating, decaf, dogs and beans. The short answers."
+  "a11y": {
+    "externalLink": "Opens in a new tab",
+    "mainNav": "Main",
+    "ogImageAlt": "The cafe interior: a wooden bar with an espresso machine, ferns on the windowsill and tables by the street window",
+    "skipToContent": "Skip to content"
   },
   "contact": {
     "eyebrow": "Say hello",
-    "title": "Under the green awning",
-    "subtitle": "Ask about the long table, beans or the next cupping. We read these after close.",
-    "formTitle": "Send us a message",
-    "hoursTitle": "Weekly hours",
     "form": {
-      "name": "Your name",
       "email": "Email",
-      "message": "Message",
-      "submit": "Send message",
       "emailPlaceholder": "you@example.com",
-      "messagePlaceholder": "How can we help?",
-      "required": "(required)",
-      "errName": "Enter your name.",
       "errEmail": "Enter an email address we can reply to.",
-      "errMessage": "Tell us what you need."
+      "errMessage": "Tell us what you need.",
+      "errName": "Enter your name.",
+      "message": "Message",
+      "messagePlaceholder": "How can we help?",
+      "name": "Your name",
+      "required": "(required)",
+      "submit": "Send message"
     },
-    "mapAlt": "Map showing our location",
+    "formTitle": "Send us a message",
+    "honeypotLabel": "Company",
+    "hoursTitle": "Weekly hours",
     "info": {
       "address": "Address",
-      "phone": "Phone",
-      "email": "Email"
+      "email": "Email",
+      "phone": "Phone"
     },
-    "honeypotLabel": "Company"
-  },
-  "footer": {
-    "rights": "All rights reserved.",
-    "hoursTitle": "Hours",
-    "findUs": "Find us",
-    "browse": "Browse",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service"
-  },
-  "notFound": {
-    "title": "Wrong turn",
-    "body": "This page does not exist. The coffee is one click away, or two blocks north of the streetcar stop.",
-    "cta": "Back to home",
-    "ctaSecondary": "View our menu"
-  },
-  "legal": {
-    "updated": "Last updated"
-  },
-  "a11y": {
-    "mainNav": "Main",
-    "skipToContent": "Skip to content",
-    "externalLink": "Opens in a new tab",
-    "ogImageAlt": "The cafe interior: a wooden bar with an espresso machine, ferns on the windowsill and tables by the street window"
+    "mapAlt": "Map showing our location",
+    "subtitle": "Ask about the long table, beans or the next cupping. We read these after close.",
+    "title": "Under the green awning"
   },
   "days": {
-    "mon": "Monday",
-    "tue": "Tuesday",
-    "wed": "Wednesday",
-    "thu": "Thursday",
     "fri": "Friday",
+    "mon": "Monday",
+    "range": "{from} to {to}",
     "sat": "Saturday",
     "sun": "Sunday",
-    "range": "{from} to {to}"
+    "thu": "Thursday",
+    "tue": "Tuesday",
+    "wed": "Wednesday"
+  },
+  "faq": {
+    "eyebrow": "Good to know",
+    "subtitle": "Seating, decaf, dogs and beans. The short answers.",
+    "title": "Frequently asked questions"
+  },
+  "footer": {
+    "browse": "Browse",
+    "findUs": "Find us",
+    "hoursTitle": "Hours",
+    "privacy": "Privacy Policy",
+    "rights": "All rights reserved.",
+    "terms": "Terms of Service"
+  },
+  "gallery": {
+    "alts": {
+      "bar": "The bar counter with wooden shelving and a bright window behind it",
+      "detail": "A stack of ceramic cups next to a potted fern on the counter",
+      "food": "An almond croissant and a small plate of avocado toast",
+      "generic": "A view inside the cafe",
+      "latte": "A cappuccino with latte art on a saucer, set on a wooden table",
+      "pourover": "Hot water poured over a filter cone, steam rising from the brewer",
+      "storefront": "The shopfront with its sign and a sidewalk table beside the door"
+    },
+    "eyebrow": "Inside",
+    "title": "The room, the bar, the cups"
+  },
+  "legal": {
+    "updated": "Last updated {date}"
+  },
+  "location": {
+    "allHours": "Show all hours",
+    "amenities": "Good to know",
+    "closedNow": "Closed",
+    "directions": "Get directions",
+    "eyebrow": "Find us",
+    "hoursFallback": "Hours vary by day",
+    "laptopFriendly": "Laptop-friendly",
+    "openNow": "Open now",
+    "outlets": "Power outlets",
+    "title": "Where we are",
+    "todayLabel": "Today",
+    "viewAll": "View all locations",
+    "walkInOnly": "Walk-ins only, no reservations",
+    "wifi": "Free Wi-Fi"
+  },
+  "menu": {
+    "categories": {
+      "brew": "Drip & pour-over",
+      "espresso": "Espresso bar",
+      "food": "Food",
+      "seasonal": "Seasonal"
+    },
+    "categoriesNav": "Menu categories",
+    "empty": "No items in this category yet.",
+    "eyebrow": "What we serve",
+    "pageSubtitle": "Prices in USD. Drinks tagged Seasonal come and go with what we can get.",
+    "pageTitle": "What we serve",
+    "seasonalBadge": "Seasonal",
+    "subtitle": "Espresso is the Awning blend all year. The pour-over changes on the first of the month.",
+    "tags": {
+      "decaf": "Decaf available",
+      "gluten-free": "Gluten-free",
+      "plant-based": "Plant-based",
+      "vegan": "Vegan",
+      "vegetarian": "Vegetarian"
+    },
+    "title": "On the bar today",
+    "viewFull": "View full menu"
+  },
+  "nav": {
+    "about": "About",
+    "contact": "Contact",
+    "cta": "Get directions",
+    "home": "Home",
+    "menu": "Menu"
+  },
+  "notFound": {
+    "body": "This page does not exist. The coffee is one click away, or two blocks north of the streetcar stop.",
+    "cta": "Back to home",
+    "ctaSecondary": "View our menu",
+    "title": "Wrong turn"
+  },
+  "workspace": {
+    "eyebrow": "Workspace",
+    "laptopBody": "Welcome all day. On weekends we ask you to share the long table between 10:00 and 13:00.",
+    "laptopTitle": "Laptop policy",
+    "lead": "The long oak table seats eight and has outlets along its rail. On weekdays it is full by 9:00.",
+    "noiseBody": "Grinder, pitchers, the streetcar bell.",
+    "noiseTitle": "Noise level",
+    "powerBody": "Long table and bar, not the windows.",
+    "powerTitle": "Power",
+    "title": "Yes, bring your laptop",
+    "wifiBody": "Free, no password. For video calls, the sidewalk bench is quieter.",
+    "wifiTitle": "Wi-Fi"
   }
 }

@@ -11,6 +11,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { sitemapXml, xmlResponse } from "@studio/core/utils/crawl";
+import { isoDate } from "@studio/core/utils/legal";
 
 const PATHS = [
   { path: "/" },
@@ -27,7 +28,7 @@ export const GET: APIRoute = async ({ site }) => {
   const legal = (await getCollection("legal")).sort((a, b) => a.id.localeCompare(b.id));
   const paths = [
     ...PATHS,
-    ...legal.map((entry) => ({ path: `/legal/${entry.id}/`, lastmod: entry.data.updated })),
+    ...legal.map((entry) => ({ path: `/legal/${entry.id}/`, lastmod: isoDate(entry.data.updated) })),
   ];
   return xmlResponse(sitemapXml(site, paths));
 };

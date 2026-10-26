@@ -771,7 +771,7 @@ export function graph(...nodes: unknown[]) {
   /* One level of flattening, because both call shapes exist in the wild:
      graph(a, b) and graph([a, b]). The second produced an @graph holding a
      single ARRAY rather than a list of nodes — structurally invalid, and
-     silent: the page rendered, the JSON parsed, and no gate looked inside.
+     silent: the page rendered, the JSON parsed, and nothing looked inside.
      Measured in a live paid template (2026-09-09). */
   return { "@context": "https://schema.org", "@graph": nodes.flat().filter(Boolean) };
 }

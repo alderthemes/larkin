@@ -2,7 +2,7 @@
  * yaml.mjs - a small YAML writer for the shapes cms.mjs emits: objects, arrays,
  * strings, numbers, booleans. Every string is double-quoted with JSON rules,
  * which is valid YAML, so no value is ever read back as a different type.
- * Output is deterministic: same input, same bytes (the drift gate relies on it).
+ * Output is deterministic: same input, same bytes (regenerate-and-compare checks rely on it).
  */
 function scalar(v) {
   if (typeof v === "string") return JSON.stringify(v);

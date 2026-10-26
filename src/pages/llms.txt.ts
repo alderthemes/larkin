@@ -6,7 +6,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { t, business } from "../lib/site";
-import { getLocations, formatAddress } from "../lib/locations";
+import { getLocations, formatAddress, openingHours } from "../lib/locations";
 import { availableByCategory, formatPrice } from "../lib/menu";
 
 export const GET: APIRoute = async ({ site }) => {
@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ site }) => {
 
   const locationBlocks = locations
     .map((loc) => {
-      const hours = loc.data.hours
+      const hours = openingHours(loc)
         .map((h) => `${h.dayOfWeek.join(", ")}: ${h.opens}-${h.closes}`)
         .join("; ");
       const amenities = [

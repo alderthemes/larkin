@@ -59,7 +59,9 @@ export function createT(dict: Dict, fallback?: Dict) {
     let value = lookup(dict, key) ?? (fallback ? lookup(fallback, key) : undefined) ?? key;
     if (params) {
       for (const [k, v] of Object.entries(params)) {
-        value = value.replaceAll(`{${k}}`, String(v));
+        /* A function, not a string: a value with `$&` or `$$` in it (a business
+           called "Cash$$ Ltd") is printed as written, not as a pattern. */
+        value = value.replaceAll(`{${k}}`, () => String(v));
       }
     }
     return value;

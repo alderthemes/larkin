@@ -1,0 +1,13 @@
+{
+  "name": "Fern & Filter",
+  "email": "hello@example.com",
+  "phone": "+1 503 555 0142",
+  "priceRange": "$",
+  "foundingYear": "2019",
+  "servesCuisine": [
+    "Coffee",
+    "Light bites"
+  ],
+  "formAction": "#",
+  "timeZone": "America/Los_Angeles"
+}

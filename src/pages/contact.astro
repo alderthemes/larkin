@@ -14,7 +14,7 @@ import Button from "@studio/core/components/Button.astro";
 import SectionHeading from "@studio/core/components/SectionHeading.astro";
 import Seal from "../components/Seal.astro";
 import LocationCard from "../components/LocationCard.astro";
-import { t, business, contactFormAction, mapEmbedUrl } from "../lib/site";
+import { t, business, mapEmbedUrl } from "../lib/site";
 import { getLocations, openingHours, groupedHours, hoursRowLabel, formatAddress } from "../lib/locations";
 import { cafeSchema } from "@studio/core/utils/seo";
 
@@ -129,7 +129,7 @@ const schema = cafeSchema({
 
         <div class="contact__form-wrap larkin-panel larkin-panel--label">
           <h2 class="contact__subtitle">{t("contact.formTitle")}</h2>
-          <form class="contact__form" action={contactFormAction} method="POST">
+          <form class="contact__form" action={business.formAction} method="POST">
             <div class="contact__field">
               <label for="contact-name">
                 {t("contact.form.name")} <span class="contact__req">{t("contact.form.required")}</span>
@@ -177,7 +177,7 @@ const schema = cafeSchema({
         </div>
       </div>
 
-      {/* The map. Set `mapEmbedUrl` in src/lib/site.ts and this section
+      {/* The map. Set `mapEmbedUrl` in src/data/site.json and this section
           appears; leave it empty and the page never shows a grey box where a
           map should be. */}
       {

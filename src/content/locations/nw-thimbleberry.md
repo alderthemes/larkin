@@ -7,15 +7,27 @@ postalCode: "97210"
 addressCountry: "US"
 phone: "+1 503 555 0142"
 hours:
-  - dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    opens: "07:00"
-    closes: "18:00"
-  - dayOfWeek: ["Saturday"]
-    opens: "08:00"
-    closes: "19:00"
-  - dayOfWeek: ["Sunday"]
-    opens: "08:00"
-    closes: "17:00"
+  mon:
+    open: "07:00"
+    close: "18:00"
+  tue:
+    open: "07:00"
+    close: "18:00"
+  wed:
+    open: "07:00"
+    close: "18:00"
+  thu:
+    open: "07:00"
+    close: "18:00"
+  fri:
+    open: "07:00"
+    close: "18:00"
+  sat:
+    open: "08:00"
+    close: "19:00"
+  sun:
+    open: "08:00"
+    close: "17:00"
 wifi: true
 outlets: true
 laptopFriendly: true

@@ -1,0 +1,11 @@
+{
+  "cloudflareAnalytics": true,
+  "allow": {
+    "script-src": [],
+    "connect-src": [],
+    "img-src": [],
+    "font-src": [],
+    "style-src": [],
+    "form-action": []
+  }
+}

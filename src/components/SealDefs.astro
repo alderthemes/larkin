@@ -12,7 +12,7 @@
  * The type size follows the length of the ring text, so a long name gets
  * smaller letters rather than letters crushed together.
  */
-import { t } from "../lib/site";
+import { t, business } from "../lib/site";
 
 const place = (() => {
   const tagline = t("site.tagline");
@@ -20,7 +20,7 @@ const place = (() => {
   return at === -1 ? "" : tagline.slice(at + 4).trim();
 })();
 
-const ring = [t("site.name"), t("hero.eyebrow"), place]
+const ring = [business.name, t("hero.eyebrow"), place]
   .filter(Boolean)
   .map((part) => part.toUpperCase())
   .join(" · ");

@@ -4,12 +4,21 @@
  *
  * This is the first thing a cafe visitor looks for, so it is rendered on
  * the server with a real fallback: with JavaScript off the line still shows
- * correct opening information. `/open-status.js` only narrows it to today's
- * range and the open or closed state, and it has to run in the browser
- * because "today" depends on the visitor's clock, not on the build's.
+ * correct opening information. `/hours-today.js` (the shared script, the
+ * same file in every theme) only narrows it to today's range and the open
+ * or closed state. It runs in the browser because "today" depends on when
+ * the page is read, not on when the site was built, and it works "today"
+ * out in the café's time zone (`timeZone` in src/data/business.json), not
+ * the visitor's: a visitor in New York reading a Portland café's page sees
+ * Portland's day.
+ *
+ * The markup is the script's "scope" (fillHoursMarks): the week and the
+ * time zone on the element, one hidden range per day that the script
+ * unhides for today, and the badge it fills. Nothing is written unless the
+ * whole week reads; otherwise the fallback stays.
  */
-import { t } from "../lib/site";
-import { weeklyRanges, weeklyMinutes, type Location } from "../lib/locations";
+import { t, business } from "../lib/site";
+import { weeklyRanges, weekOf, type Location } from "../lib/locations";
 
 interface Props {
   location: Location;
@@ -18,32 +27,47 @@ interface Props {
 const { location, class: className = "" } = Astro.props;
 
 const ranges = weeklyRanges(location);
-const minutes = weeklyMinutes(location);
 /* Fallback: the single range when every day matches, otherwise a general
    opening sentence. */
 const distinct = [...new Set(ranges.filter(Boolean))];
 const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback");
+/* Sunday first, the order weeklyRanges returns. */
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 ---
 
 <p
   class:list={["open-status", className]}
-  data-ranges={JSON.stringify(ranges)}
-  data-minutes={JSON.stringify(minutes)}
-  data-open={t("location.openNow")}
-  data-closed={t("location.closedNow")}
+  data-hours-scope
+  data-hours={JSON.stringify(weekOf(location))}
+  data-tz={business.timeZone}
 >
   <span class="open-status__label">{t("location.todayLabel")}:</span>
   <span class="open-status__value">{fallback}</span>
-  <span class="open-status__state" hidden>
+  {
+    DAY_KEYS.map((key, i) => (
+      <span class="open-status__day" data-hours-day={key}>
+        <span class="open-status__value" data-today-flag hidden>
+          {ranges[i] || t("location.closedNow")}
+        </span>
+      </span>
+    ))
+  }
+  <span class="open-status__closed" data-closed-today hidden></span>
+  <span class="open-status__state">
     <span class="open-status__dot" aria-hidden="true"></span>
-    <span class="open-status__state-text"></span>
+    <span
+      class="open-status__state-text"
+      data-open-now
+      data-open-label={t("location.openNow")}
+      data-closed-label={t("location.closedNow")}
+    ></span>
   </span>
 </p>
 
 {/* This script cannot be inline: the Content-Security-Policy in
     public/_headers allows script-src 'self' only, and an inline block has no
     origin to match. Keeping it a file is what lets the policy stay strict. */}
-<script type="module" src="/open-status.js"></script>
+<script type="module" src="/hours-today.js"></script>
 
 <style>
   /* The line takes the ink of whatever it is printed on: cream on the bag
@@ -64,6 +88,19 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
   .open-status__value {
     font-variant-numeric: tabular-nums;
   }
+  /* The day wrappers only carry the script's marks; they take no room until
+     today's range inside them is unhidden. */
+  .open-status__day {
+    display: contents;
+  }
+  .open-status__value[hidden],
+  .open-status__closed[hidden] {
+    display: none;
+  }
+  /* Once the script has shown today's range, the fallback goes. */
+  .open-status:has([data-today-flag]:not([hidden])) > .open-status__value {
+    display: none;
+  }
   .open-status__state {
     display: inline-flex;
     align-items: center;
@@ -76,9 +113,11 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
     font-weight: 650;
     line-height: 1.5;
   }
-  /* `display` above would override the attribute; without the script the
-     sticker has nothing to say and must not show as an empty pill. */
-  .open-status__state[hidden] {
+  /* Without the script the sticker has nothing to say and must not show as
+     an empty pill. When the shop is closed all day the line already reads
+     "Closed"; printing the badge too would say the same thing twice. */
+  .open-status__state:has(.open-status__state-text:empty),
+  .open-status:has([data-closed-today]:not([hidden])) .open-status__state {
     display: none;
   }
   .open-status__dot {
@@ -87,7 +126,7 @@ const fallback = distinct.length === 1 ? distinct[0] : t("location.hoursFallback
     border-radius: var(--ts-radius-full);
     background: currentColor;
   }
-  .open-status__state--open {
+  .open-status__state:has([data-state="open"]) {
     color: var(--ts-color-success);
   }
 </style>

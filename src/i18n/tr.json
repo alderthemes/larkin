@@ -1,14 +1,6 @@
 {
   "site": {
-    "name": "Fern & Filter",
     "tagline": "Pazartesi kavrulan kahve, Portland kuzeybatısında yeşil bir tentenin altında"
-  },
-  "nav": {
-    "home": "Ana sayfa",
-    "menu": "Menü",
-    "about": "Hakkında",
-    "contact": "İletişim",
-    "cta": "Yol tarifi al"
   },
   "hero": {
     "eyebrow": "Kahve barı ve kavurma atölyesi",
@@ -16,79 +8,13 @@
     "lead": "Pazartesi kavuruyor, çekirdekleri yeşil tentenin altındaki bara gelmeden önce iki gün dinlendiriyoruz.",
     "primaryCta": "Yol tarifi al",
     "secondaryCta": "Menüye göz at",
-    "imageAlt": "Aydınlık bir sabahta Fern & Filter'ın barı ve pencere kenarı oturma alanı"
-  },
-  "location": {
-    "eyebrow": "Bizi bulun",
-    "title": "Neredeyiz",
-    "todayLabel": "Bugün",
-    "openNow": "Şu an açık",
-    "closedNow": "Kapalı",
-    "hoursFallback": "Saatler güne göre değişir",
-    "allHours": "Tüm saatleri göster",
-    "directions": "Yol tarifi al",
-    "viewAll": "Tüm şubeleri gör",
-    "amenities": "Bilmekte fayda var",
-    "walkInOnly": "Rezervasyon yok, doğrudan gelin",
-    "wifi": "Ücretsiz Wi-Fi",
-    "outlets": "Priz",
-    "laptopFriendly": "Dizüstüne uygun"
-  },
-  "menu": {
-    "eyebrow": "Ne ikram ederiz",
-    "title": "Bugün barda",
-    "subtitle": "Espresso yıl boyu Awning harmanı. Pour-over her ayın birinde değişir.",
-    "pageTitle": "İkram listemiz",
-    "pageSubtitle": "Fiyatlar USD cinsindendir. Sezonluk etiketli içecekler elimize ne geçerse ona göre gelir gider.",
-    "viewFull": "Menüye göz at",
-    "seasonalBadge": "Sezonluk",
-    "categoriesNav": "Menü kategorileri",
-    "empty": "Bu kategoride henüz ürün yok.",
-    "categories": {
-      "espresso": "Espresso barı",
-      "brew": "Filtre ve pour-over",
-      "food": "Yiyecek",
-      "seasonal": "Sezonluk"
-    },
-    "tags": {
-      "plant-based": "Bitkisel",
-      "vegetarian": "Vejetaryen",
-      "vegan": "Vegan",
-      "gluten-free": "Glutensiz",
-      "decaf": "Kafeinsizi var"
-    }
-  },
-  "workspace": {
-    "eyebrow": "Çalışma alanı",
-    "title": "Evet, laptopunuzu getirin",
-    "lead": "Uzun meşe masa sekiz kişilik ve kenarı boyunca priz var. Hafta içi 9:00'da dolu olur.",
-    "wifiTitle": "Wi-Fi",
-    "wifiBody": "Ücretsiz, şifresiz. Görüntülü görüşme için kaldırımdaki bank daha sessiz.",
-    "powerTitle": "Priz",
-    "powerBody": "Uzun masada ve barda, pencerelerde yok.",
-    "noiseTitle": "Ses seviyesi",
-    "noiseBody": "Öğütücü, süt potları, tramvay zili.",
-    "laptopTitle": "Laptop politikası",
-    "laptopBody": "Her gün buyrun. Hafta sonları 10:00 ile 13:00 arasında uzun masayı paylaşmanızı rica ediyoruz."
-  },
-  "gallery": {
-    "eyebrow": "İçeriden",
-    "title": "Mekan, bar ve fincanlar",
-    "alts": {
-      "bar": "Ahşap raflı bar tezgahı ve arkasında aydınlık bir pencere",
-      "latte": "Ahşap masada, tabağın üzerinde latte art'lı bir cappuccino",
-      "pourover": "Filtre koniden süzülen sıcak su ve yükselen buhar",
-      "food": "Bademli bir kruvasan ve küçük tabakta avokado toast",
-      "storefront": "Tabelasıyla dükkan cephesi ve kapının yanındaki kaldırım masası",
-      "detail": "Tezgahta saksıdaki eğreltiotunun yanında üst üste dizilmiş seramik fincanlar",
-      "generic": "Kafeden bir kare"
-    }
+    "imageAlt": "{name}: aydınlık bir sabahta bar ve pencere kenarı oturma alanı"
   },
   "about": {
     "eyebrow": "Hikayemiz",
     "title": "İki pencere ve uzun bir masa",
-    "lead": "Fern & Filter 2019'da NW Thimbleberry'deki yeşil tentenin altında açıldı. Pazartesileri nehrin karşı yakasında kavuruyor, çekirdekleri aynı öğleden sonra geri getiriyoruz.",
-    "summary": "Fern & Filter, Portland, Oregon'da NW Thimbleberry Avenue üzerinde bir specialty kahve barı. Awning ev harmanını ve her ay değişen tek menşe kahvesini her pazartesi kendi kavuruyor; haftanın yedi günü açık.",
+    "lead": "{name} 2019'da NW Thimbleberry'deki yeşil tentenin altında açıldı. Pazartesileri nehrin karşı yakasında kavuruyor, çekirdekleri aynı öğleden sonra geri getiriyoruz.",
+    "summary": "{name}, Portland, Oregon'da NW Thimbleberry Avenue üzerinde bir specialty kahve barı. Awning ev harmanını ve her ay değişen tek menşe kahvesini her pazartesi kendi kavuruyor; haftanın yedi günü açık.",
     "sourcingTitle": "Çekirdekler nereden geliyor",
     "sourcingBody": "Awning harmanı Brezilya ve Kolombiya; her yıl aynı iki çiftlikten alıyoruz ki her pakette aynı tatsın. Tek menşede risk alıyoruz: ayda bir parti, uzun masada numuneler tadılarak seçiliyor. Bu konuda mükemmel değiliz ama bilerek davranıyoruz.",
     "nameTitle": "İsim nereden geliyor",
@@ -97,68 +23,141 @@
     "roastBody": "Açıktan ortaya, her pazartesi, Portland'ın güneydoğusundaki küçük atölyemizde. Çekirdekler iki gün dinlenir; pazartesinin kavrumu çarşambanın espressosu olur. Tek menşe her ayın birinde değişir, raftaki paket hangisi olduğunu söyler.",
     "imageAlt": "Tezgahın ve kendi kavurduğumuz çekirdeklerin durduğu rafın üzerine düşen sabah ışığı"
   },
-  "faq": {
-    "eyebrow": "Bilmekte fayda var",
-    "title": "Sık sorulan sorular",
-    "subtitle": "Oturma, kafeinsiz, köpekler ve çekirdek. Kısa cevaplar."
+  "a11y": {
+    "externalLink": "Yeni sekmede açılır",
+    "mainNav": "Ana menü",
+    "ogImageAlt": "Kafenin içi: ahşap tezgah ve espresso makinesi, pencere önünde eğrelti otları ve sokak penceresi yanındaki masalar",
+    "skipToContent": "İçeriğe atla"
   },
   "contact": {
     "eyebrow": "Merhaba deyin",
-    "title": "Yeşil tentenin altında",
-    "subtitle": "Uzun masayı, çekirdekleri ya da sıradaki tadımı sorun. Kapanıştan sonra okuyoruz.",
-    "formTitle": "Bize mesaj gönderin",
-    "hoursTitle": "Haftalık saatler",
     "form": {
-      "name": "Adınız",
       "email": "E-posta",
-      "message": "Mesajınız",
-      "submit": "Mesaj gönder",
       "emailPlaceholder": "you@example.com",
-      "messagePlaceholder": "Size nasıl yardımcı olabiliriz?",
-      "required": "(zorunlu)",
-      "errName": "Adınızı yazın.",
       "errEmail": "Size dönebileceğimiz bir e-posta adresi yazın.",
-      "errMessage": "Neye ihtiyacınız olduğunu yazın."
+      "errMessage": "Neye ihtiyacınız olduğunu yazın.",
+      "errName": "Adınızı yazın.",
+      "message": "Mesajınız",
+      "messagePlaceholder": "Size nasıl yardımcı olabiliriz?",
+      "name": "Adınız",
+      "required": "(zorunlu)",
+      "submit": "Mesaj gönder"
     },
-    "mapAlt": "Konumumuzu gösteren harita",
+    "formTitle": "Bize mesaj gönderin",
+    "honeypotLabel": "Şirket",
+    "hoursTitle": "Haftalık saatler",
     "info": {
       "address": "Adres",
-      "phone": "Telefon",
-      "email": "E-posta"
+      "email": "E-posta",
+      "phone": "Telefon"
     },
-    "honeypotLabel": "Şirket"
-  },
-  "footer": {
-    "rights": "Tüm hakları saklıdır.",
-    "hoursTitle": "Saatler",
-    "findUs": "Bizi bulun",
-    "browse": "Gezinin",
-    "privacy": "Gizlilik Politikası",
-    "terms": "Kullanım Koşulları"
-  },
-  "notFound": {
-    "title": "Yanlış dönüş",
-    "body": "Bu sayfa yok. Kahve bir tık ötede, ya da tramvay durağının iki blok kuzeyinde.",
-    "cta": "Ana sayfaya dön",
-    "ctaSecondary": "Menümüze göz at"
-  },
-  "legal": {
-    "updated": "Son güncelleme"
-  },
-  "a11y": {
-    "mainNav": "Ana menü",
-    "skipToContent": "İçeriğe atla",
-    "externalLink": "Yeni sekmede açılır",
-    "ogImageAlt": "Kafenin içi: ahşap tezgah ve espresso makinesi, pencere önünde eğrelti otları ve sokak penceresi yanındaki masalar"
+    "mapAlt": "Konumumuzu gösteren harita",
+    "subtitle": "Uzun masayı, çekirdekleri ya da sıradaki tadımı sorun. Kapanıştan sonra okuyoruz.",
+    "title": "Yeşil tentenin altında"
   },
   "days": {
-    "mon": "Pazartesi",
-    "tue": "Salı",
-    "wed": "Çarşamba",
-    "thu": "Perşembe",
     "fri": "Cuma",
+    "mon": "Pazartesi",
+    "range": "{from} - {to}",
     "sat": "Cumartesi",
     "sun": "Pazar",
-    "range": "{from} - {to}"
+    "thu": "Perşembe",
+    "tue": "Salı",
+    "wed": "Çarşamba"
+  },
+  "faq": {
+    "eyebrow": "Bilmekte fayda var",
+    "subtitle": "Oturma, kafeinsiz, köpekler ve çekirdek. Kısa cevaplar.",
+    "title": "Sık sorulan sorular"
+  },
+  "footer": {
+    "browse": "Gezinin",
+    "findUs": "Bizi bulun",
+    "hoursTitle": "Saatler",
+    "privacy": "Gizlilik Politikası",
+    "rights": "Tüm hakları saklıdır.",
+    "terms": "Kullanım Koşulları"
+  },
+  "gallery": {
+    "alts": {
+      "bar": "Ahşap raflı bar tezgahı ve arkasında aydınlık bir pencere",
+      "detail": "Tezgahta saksıdaki eğreltiotunun yanında üst üste dizilmiş seramik fincanlar",
+      "food": "Bademli bir kruvasan ve küçük tabakta avokado toast",
+      "generic": "Kafeden bir kare",
+      "latte": "Ahşap masada, tabağın üzerinde latte art'lı bir cappuccino",
+      "pourover": "Filtre koniden süzülen sıcak su ve yükselen buhar",
+      "storefront": "Tabelasıyla dükkan cephesi ve kapının yanındaki kaldırım masası"
+    },
+    "eyebrow": "İçeriden",
+    "title": "Mekan, bar ve fincanlar"
+  },
+  "legal": {
+    "updated": "Son güncelleme: {date}"
+  },
+  "location": {
+    "allHours": "Tüm saatleri göster",
+    "amenities": "Bilmekte fayda var",
+    "closedNow": "Kapalı",
+    "directions": "Yol tarifi al",
+    "eyebrow": "Bizi bulun",
+    "hoursFallback": "Saatler güne göre değişir",
+    "laptopFriendly": "Dizüstüne uygun",
+    "openNow": "Şu an açık",
+    "outlets": "Priz",
+    "title": "Neredeyiz",
+    "todayLabel": "Bugün",
+    "viewAll": "Tüm şubeleri gör",
+    "walkInOnly": "Rezervasyon yok, doğrudan gelin",
+    "wifi": "Ücretsiz Wi-Fi"
+  },
+  "menu": {
+    "categories": {
+      "brew": "Filtre ve pour-over",
+      "espresso": "Espresso barı",
+      "food": "Yiyecek",
+      "seasonal": "Sezonluk"
+    },
+    "categoriesNav": "Menü kategorileri",
+    "empty": "Bu kategoride henüz ürün yok.",
+    "eyebrow": "Ne ikram ederiz",
+    "pageSubtitle": "Fiyatlar USD cinsindendir. Sezonluk etiketli içecekler elimize ne geçerse ona göre gelir gider.",
+    "pageTitle": "İkram listemiz",
+    "seasonalBadge": "Sezonluk",
+    "subtitle": "Espresso yıl boyu Awning harmanı. Pour-over her ayın birinde değişir.",
+    "tags": {
+      "decaf": "Kafeinsizi var",
+      "gluten-free": "Glutensiz",
+      "plant-based": "Bitkisel",
+      "vegan": "Vegan",
+      "vegetarian": "Vejetaryen"
+    },
+    "title": "Bugün barda",
+    "viewFull": "Menüye göz at"
+  },
+  "nav": {
+    "about": "Hakkında",
+    "contact": "İletişim",
+    "cta": "Yol tarifi al",
+    "home": "Ana sayfa",
+    "menu": "Menü"
+  },
+  "notFound": {
+    "body": "Bu sayfa yok. Kahve bir tık ötede, ya da tramvay durağının iki blok kuzeyinde.",
+    "cta": "Ana sayfaya dön",
+    "ctaSecondary": "Menümüze göz at",
+    "title": "Yanlış dönüş"
+  },
+  "workspace": {
+    "eyebrow": "Çalışma alanı",
+    "laptopBody": "Her gün buyrun. Hafta sonları 10:00 ile 13:00 arasında uzun masayı paylaşmanızı rica ediyoruz.",
+    "laptopTitle": "Laptop politikası",
+    "lead": "Uzun meşe masa sekiz kişilik ve kenarı boyunca priz var. Hafta içi 9:00'da dolu olur.",
+    "noiseBody": "Öğütücü, süt potları, tramvay zili.",
+    "noiseTitle": "Ses seviyesi",
+    "powerBody": "Uzun masada ve barda, pencerelerde yok.",
+    "powerTitle": "Priz",
+    "title": "Evet, laptopunuzu getirin",
+    "wifiBody": "Ücretsiz, şifresiz. Görüntülü görüşme için kaldırımdaki bank daha sessiz.",
+    "wifiTitle": "Wi-Fi"
   }
 }

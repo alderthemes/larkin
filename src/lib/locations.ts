@@ -7,12 +7,45 @@
  * a file, not a code path.
  */
 import { getCollection, type CollectionEntry } from "astro:content";
+import { readFileSync } from "node:fs";
+import { hoursSchema, openingHoursSpec, type Hours } from "@studio/core/utils/hours";
 
 export type Location = CollectionEntry<"locations">;
+
+/* Files already warned about in this build (pages read the shops many times). */
+const warned = new Set<string>();
+
+/**
+ * A location file still writing `hours` as rows (`- dayOfWeek: [...]`, the
+ * format before the week) keeps building: the collection schema reads the
+ * rows into the week (src/content.config.ts, weekFromRows). The build says
+ * so once per file, with the way to rewrite it.
+ */
+function warnOldHours(entry: Location): void {
+  const file = entry.filePath;
+  if (!file || warned.has(file)) return;
+  warned.add(file);
+  let text = "";
+  try {
+    text = readFileSync(file, "utf8");
+  } catch {
+    return;
+  }
+  /* Block rows (`hours:` then `- dayOfWeek: …`) or flow rows (`hours: [{ dayOfWeek: … }]`, `hours: []`). */
+  if (!/^hours:[ \t]*(?:\r?\n[ \t]*-[ \t]|\[)/m.test(text)) return;
+  console.warn(
+    `\n  [larkin] ${file}: \`hours\` is in the old rows format (- dayOfWeek: [...]).\n` +
+      `           It still builds; rewrite it as the week, one entry per day:\n` +
+      `             hours:\n               mon:\n                 open: "07:00"\n                 close: "18:00"\n` +
+      `               ...\n               sun:\n                 closed: true\n` +
+      `           All seven days (mon ... sun). docs/README.md, section 4, "Locations".\n`
+  );
+}
 
 /** Every shop, in order. */
 export async function getLocations(): Promise<Location[]> {
   const all = await getCollection("locations");
+  for (const entry of all) warnOldHours(entry);
   return all.sort((a, b) => a.data.order - b.data.order);
 }
 
@@ -28,50 +61,38 @@ export function formatAddress(loc: Location): string {
   return `${d.streetAddress}, ${d.addressLocality}, ${d.addressRegion} ${d.postalCode}`;
 }
 
-const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-] as const;
+/** Day keys of the week, index 0 = Sunday (the order `dayLabels` and `WEEK_ORDER` use). */
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
 /**
- * Day index (0 = Sunday) to a "07:00 - 18:00" range.
- * A closed day returns an empty string. Built on the server and read in the
- * browser, because "today" has to be worked out from the visitor's clock
- * rather than from the time the site was built.
+ * Day index (0 = Sunday) to a "07:00 - 18:00" range, from the shop's week
+ * (`hours`: mon…sun, each `{ open, close }` or `{ closed: true }`).
+ * A closed day returns an empty string.
  */
 export function weeklyRanges(loc: Location): string[] {
-  const map: Record<string, string> = {};
-  for (const h of loc.data.hours) {
-    for (const d of h.dayOfWeek) map[d] = `${h.opens} - ${h.closes}`;
-  }
-  return DAYS.map((d) => map[d] ?? "");
+  const week = weekOf(loc);
+  return DAY_KEYS.map((key) => {
+    const day = week[key];
+    return day.closed === true ? "" : `${day.open} - ${day.close}`;
+  });
 }
 
-/** Opening and closing minutes by day index, for the client-side check. */
-export function weeklyMinutes(loc: Location): ([number, number] | null)[] {
-  const toMin = (t: string) => {
-    const [h, m] = t.split(":").map(Number);
-    return h * 60 + (m || 0);
-  };
-  const map: Record<string, [number, number]> = {};
-  for (const h of loc.data.hours) {
-    for (const d of h.dayOfWeek) map[d] = [toMin(h.opens), toMin(h.closes)];
-  }
-  return DAYS.map((d) => map[d] ?? null);
+/**
+ * The shop's week in core's format. The collection schema has already
+ * checked it against `hoursSchema` (src/content.config.ts); reading it
+ * through the same schema here drops the times beside a ticked "Closed all
+ * day" and gives the week its type.
+ */
+export function weekOf(loc: Location): Hours {
+  return hoursSchema.parse(loc.data.hours);
 }
 
-/** One entry per row of schema.org's openingHoursSpecification. */
+/**
+ * schema.org's openingHoursSpecification for one shop, from core: consecutive
+ * days with the same hours share an entry, a closed day is left out.
+ */
 export function openingHours(loc: Location) {
-  return loc.data.hours.map((h) => ({
-    dayOfWeek: h.dayOfWeek,
-    opens: h.opens,
-    closes: h.closes,
-  }));
+  return openingHoursSpec(weekOf(loc));
 }
 
 /**
@@ -83,11 +104,11 @@ export function openingHours(loc: Location) {
  * strings sat outside the i18n layer entirely. Two copies also meant a fix in
  * one was invisible in the other.
  *
- * Index 0 is Sunday, matching JavaScript's `Date.getDay()` and the arrays
- * `weeklyRanges` and `weeklyMinutes` return, so the three line up.
+ * Index 0 is Sunday, matching the array `weeklyRanges` returns, so the two
+ * line up.
  */
 export function dayLabels(t: (key: string) => string): string[] {
-  return ["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((d) => t(`days.${d}`));
+  return DAY_KEYS.map((d) => t(`days.${d}`));
 }
 
 /** Monday-first reading order, as an index into the arrays above. */

@@ -17,7 +17,7 @@
  *   one-file collection - sveltiacms.app/en/docs/collections/files and fields/list "Top-Level List"
  *                (single-file entry collections are JSON-only: collections/entries/single-file)
  *   omit_empty_optional_fields - sveltiacms.app/en/docs/data-output and frameworks/astro
- * Measured live 2026-09-30 (Sveltia 0.223.0, all eight kinds on the studio's live walk site):
+ * Measured live 2026-09-30 (Sveltia 0.223.0, all eight kinds on a live test site):
  *   - image: an upload lands in the media folder in the same commit as the entry;
  *     removing the image from an entry later does NOT delete the file - it stays in the repo.
  *   - omit_empty_optional_fields: empty optional fields leave the file on save (no ""),

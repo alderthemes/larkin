@@ -30,7 +30,7 @@
  * it as not required and writes it back as it is ("" for a cleared text, false
  * for an unticked switch): the file's schema reads that shape. No site-wide
  * omit_empty_optional_fields for this - that switch is one for the whole site
- * and would change how the collections save their optional lists (founder, 2026-10-13).
+ * and would change how the collections save their optional lists.
  *
  * Key order. The editor rewrites the whole file on save, in its own key order
  * (Sveltia 0.223.0, src/lib/services/contents/draft/save/serialize.js,
@@ -69,7 +69,7 @@ function typeName(v) {
 }
 
 /**
- * The active language of a kit, for a "{locale}" record path. Two shapes (T13):
+ * The active language of a kit, for a "{locale}" record path. Two shapes:
  * a kit with src/data/site.json reads `locale` there (the owner's file) and
  * site.ts is not consulted; a kit from before the move reads
  * `export const LOCALE ... = "tr"` or `= DEFAULT_LOCALE` in src/lib/site.ts,

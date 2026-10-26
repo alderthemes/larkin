@@ -21,7 +21,7 @@ interface Props {
    * Pass h1 when the section IS the page, as it is on a dedicated contact
    * route. Leaving it out there produced a page whose headings began at h2 and
    * jumped to h3 with no h1 at all -- an accessibility failure that shipped,
-   * because the gate measured the home route and the fault was on /contact/.
+   * because only the home route was checked and the fault was on /contact/.
    */
   level?: "h1" | "h2" | "h3";
   address?: string;
