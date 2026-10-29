@@ -30,8 +30,9 @@ const { hours, timeZone, label, closedLabel, fallback } = Astro.props;
 
 <p class="hours-today" data-hours={JSON.stringify(hours)} data-tz={timeZone} data-closed={closedLabel}>
   <span class="hours-today__dot" aria-hidden="true"></span>
-  <span class="hours-today__label">{label}:</span>
-  <span class="hours-today__value">{fallback}</span>
+  {/* The space is text, not only the flex gap: a theme that sets the line
+      inline, a copy and a screen reader all get "Today: 09:00". */}
+  <span class="hours-today__label">{label}:</span>{" "}<span class="hours-today__value">{fallback}</span>
 </p>
 
 {/* CSP: this script cannot be inline (public/_headers sets script-src 'self') */}

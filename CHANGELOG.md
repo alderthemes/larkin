@@ -1,5 +1,14 @@
 # Changelog — Larkin
 
+## 2.1.1 — 2026-10-29
+
+- Fixed: the "Today" opening-hours line prints a space between the label and the hours, so a
+  theme that sets the line inline, a copied line and a screen reader read "Today: 09:00".
+
+Your files (merge by hand): `package.json` (merge: keep dependencies you added; take our version, scripts and dependency versions)
+
+Our files (copy over): `core/components/HoursToday.astro`
+
 ## 2.1.0 — 2026-10-26
 
 - Changed: code comments in `core/` (content editor, security headers,
